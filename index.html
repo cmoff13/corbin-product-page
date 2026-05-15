@@ -74,7 +74,7 @@
       align-items: center;
       justify-content: center;
       pointer-events: none;
-      z-index: 5;
+      z-index: 50;
       width: 100%;
       height: 100vh;
     }
@@ -286,16 +286,6 @@
       scroll-margin-top: 96px;
     }
 
-    /* Subtle dark radial overlay so content always reads over figure */
-    .section::before {
-      content: '';
-      position: absolute;
-      inset: 0;
-      background: radial-gradient(ellipse at center, rgba(13, 11, 10, 0.70) 20%, rgba(13, 11, 10, 0.35) 100%);
-      pointer-events: none;
-      z-index: -1;
-    }
-
     /* HERO — figure has full space, text at bottom third */
     .section--hero {
       align-items: center;
@@ -310,12 +300,12 @@
       max-width: fit-content;
       margin: 0 auto;
       /* Frosted dark pill so headline always reads over figure */
-      background: rgba(13, 11, 10, 0.78);
-      backdrop-filter: blur(18px);
-      -webkit-backdrop-filter: blur(18px);
-      border: 1px solid rgba(138, 127, 120, 0.18);
-      border-radius: 6px;
-      padding: 28px 52px 24px;
+      background: rgba(13, 11, 10, 0.75);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      border: 1px solid rgba(138, 127, 120, 0.25);
+      border-radius: 4px;
+      padding: 16px 32px;
     }
 
     .hero-eyebrow {
@@ -375,11 +365,11 @@
       margin-left: auto;
       padding: 28px 32px;
       /* Accent top border — product label feel */
-      border: 1px solid rgba(138, 127, 120, 0.2);
+      border: 1px solid rgba(138, 127, 120, 0.25);
       border-top: 2px solid var(--accent);
-      background: rgba(13, 11, 10, 0.85);
-      backdrop-filter: blur(10px);
-      -webkit-backdrop-filter: blur(10px);
+      background: rgba(13, 11, 10, 0.92);
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
     }
 
     .specs-panel h2 {
@@ -465,11 +455,11 @@
 
     .review-card {
       /* Left accent border for real review-card feel */
-      border: 1px solid rgba(138, 127, 120, 0.2);
+      border: 1px solid rgba(138, 127, 120, 0.25);
       border-left: 2px solid rgba(232, 68, 26, 0.4);
-      background: rgba(13, 11, 10, 0.85);
-      backdrop-filter: blur(10px);
-      -webkit-backdrop-filter: blur(10px);
+      background: rgba(13, 11, 10, 0.92);
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
       padding: 28px 26px;
     }
 
@@ -505,10 +495,10 @@
       z-index: 25;
       max-width: 640px;
       /* Frosted dark pill — same as hero-copy */
-      background: rgba(13, 11, 10, 0.78);
-      backdrop-filter: blur(18px);
-      -webkit-backdrop-filter: blur(18px);
-      border: 1px solid rgba(138, 127, 120, 0.18);
+      background: rgba(13, 11, 10, 0.75);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      border: 1px solid rgba(138, 127, 120, 0.25);
       border-radius: 6px;
       padding: 40px 52px;
     }
