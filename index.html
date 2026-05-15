@@ -72,143 +72,73 @@
       will-change: transform;
     }
 
-    /* ——— Figure shell: fixed, always viewport-centered ——— */
-    .figure-shell {
+    /* ——— Figure shell: fixed, centered around photo ——— */
+    #figure-shell {
       position: fixed;
-      inset: 0;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      pointer-events: none;
-      z-index: 50;
-      width: 100%;
-      height: 100vh;
-    }
-
-    /* Spotlight pulse behind figure */
-    .figure-spotlight {
-      position: absolute;
       top: 50%;
       left: 50%;
-      width: 700px;
-      height: 700px;
-      border-radius: 50%;
       transform: translate(-50%, -50%);
-      background: radial-gradient(circle, rgba(232, 68, 26, 0.06) 0%, rgba(232, 68, 26, 0.02) 40%, transparent 70%);
-      animation: spotlightPulse 5s ease-in-out infinite;
+      z-index: 50;
+      width: 600px;
+      height: auto;
       pointer-events: none;
     }
 
-    @keyframes spotlightPulse {
-      0%, 100% { transform: translate(-50%, -50%) scale(1);    opacity: 1; }
-      50%       { transform: translate(-50%, -50%) scale(1.25); opacity: 0.45; }
-    }
-
-    #product-figure {
+    /* Photo wrapper — GSAP animates this element (id="product-figure") */
+    .photo-wrapper {
       position: relative;
-      transform-origin: 50% 85%;
-      will-change: transform, opacity;
+      display: inline-block;
+      width: 100%;
     }
 
-    .figure-inner {
-      animation: figureBob 3s ease-in-out infinite;
-    }
-
-    #product-figure.idle-paused .figure-inner {
-      animation: none;
-    }
-
-    @keyframes figureBob {
-      0%, 100% { transform: translateY(0); }
-      50%       { transform: translateY(-8px); }
-    }
-
-    .figure-glow {
+    /* Dark fade at photo bottom blends into page background */
+    .photo-wrapper::after {
+      content: '';
       position: absolute;
-      left: 50%;
-      bottom: -12%;
-      width: 280px;
-      height: 120px;
-      transform: translateX(-50%);
-      background: radial-gradient(ellipse at center, rgba(232, 68, 26, 0.22) 0%, rgba(232, 68, 26, 0.05) 45%, transparent 70%);
-      filter: blur(8px);
-      z-index: 0;
+      inset: 0;
+      background: linear-gradient(180deg, transparent 40%, rgba(13, 11, 10, 0.6) 100%);
+      pointer-events: none;
+      z-index: 3;
     }
 
-    .pedestal {
+    #corbin-photo {
+      width: 100%;
+      height: auto;
+      display: block;
+      filter: drop-shadow(0 40px 80px rgba(0, 0, 0, 0.8));
       position: relative;
-      width: 200px;
-      height: 36px;
-      margin: 0 auto -4px;
+      z-index: 2;
+    }
+
+    #photo-glow {
+      position: absolute;
+      bottom: -60px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 400px;
+      height: 400px;
+      background: radial-gradient(circle, rgba(232, 68, 26, 0.15) 0%, rgba(232, 68, 26, 0.05) 40%, transparent 70%);
       border-radius: 50%;
-      background: radial-gradient(ellipse at 50% 30%, #3a3532 0%, #1a1614 55%, #0d0b0a 100%);
-      box-shadow:
-        inset 0 4px 12px rgba(255, 245, 235, 0.08),
-        inset 0 -6px 16px rgba(0, 0, 0, 0.65),
-        0 12px 40px rgba(0, 0, 0, 0.5);
+      z-index: 1;
+      animation: glowPulse 4s ease-in-out infinite alternate;
+    }
+
+    #photo-pedestal {
+      position: absolute;
+      bottom: -20px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 200px;
+      height: 6px;
+      background: linear-gradient(90deg, transparent, rgba(232, 68, 26, 0.4), transparent);
+      border-radius: 50%;
       z-index: 1;
     }
 
-    .pedestal::after {
-      content: "";
-      position: absolute;
-      inset: 10% 8% 35%;
-      border-radius: 50%;
-      background: linear-gradient(180deg, rgba(245, 240, 235, 0.12) 0%, transparent 100%);
+    @keyframes glowPulse {
+      from { opacity: 0.6; transform: translateX(-50%) scale(1); }
+      to   { opacity: 1;   transform: translateX(-50%) scale(1.15); }
     }
-
-    .vinyl-figure {
-      position: relative;
-      width: 160px;
-      margin: 0 auto;
-      z-index: 2;
-      filter: drop-shadow(0 24px 32px rgba(0, 0, 0, 0.45));
-    }
-
-    .head {
-      width: 110px;
-      height: 110px;
-      margin: 0 auto -8px;
-      border-radius: 50%;
-      background:
-        radial-gradient(circle at 32% 28%, rgba(255, 220, 200, 0.55) 0%, transparent 35%),
-        radial-gradient(circle at 70% 65%, rgba(80, 45, 35, 0.35) 0%, transparent 45%),
-        linear-gradient(145deg, #c9987a 0%, #a67558 40%, #8b5a44 100%);
-      box-shadow:
-        inset -8px -10px 20px rgba(0, 0, 0, 0.25),
-        inset 6px 8px 16px rgba(255, 235, 220, 0.2),
-        0 8px 0 rgba(0, 0, 0, 0.15);
-    }
-
-    .torso {
-      position: relative;
-      width: 88px;
-      height: 100px;
-      margin: 0 auto;
-      border-radius: 36% 36% 28% 28% / 42% 42% 32% 32%;
-      background:
-        linear-gradient(105deg, rgba(255, 255, 255, 0.14) 0%, transparent 42%),
-        radial-gradient(ellipse at 40% 15%, rgba(255, 240, 230, 0.25) 0%, transparent 50%),
-        radial-gradient(ellipse at 80% 90%, rgba(40, 25, 20, 0.4) 0%, transparent 55%),
-        linear-gradient(165deg, #b87a5c 0%, #9a6248 45%, #7a4a38 100%);
-      box-shadow:
-        inset 0 -18px 28px rgba(0, 0, 0, 0.28),
-        inset 10px 0 20px rgba(255, 220, 200, 0.08),
-        0 6px 0 rgba(0, 0, 0, 0.12);
-    }
-
-    .arm {
-      position: absolute;
-      width: 22px;
-      height: 58px;
-      top: 118px;
-      border-radius: 40%;
-      background: linear-gradient(90deg, #9e664c, #b07a5e);
-      box-shadow: inset -4px 0 8px rgba(0, 0, 0, 0.2);
-    }
-
-    .arm.left  { left: 8px;  transform: rotate(12deg); }
-    .arm.right { right: 8px; transform: rotate(-12deg); }
 
     /* ——— Header ——— */
     .site-header {
@@ -474,15 +404,10 @@
     @media (max-width: 768px) {
       body { cursor: auto; }
 
-      .figure-shell {
-        position: relative;
-        inset: auto;
-        height: auto;
-        min-height: 50vh;
-        padding: 40px 0 20px;
+      #figure-shell {
+        width: 90vw;
+        max-width: 360px;
       }
-
-      .figure-spotlight { display: none; }
 
       .site-header {
         position: relative;
@@ -520,20 +445,12 @@
     <a class="logo" href="#">CM™</a>
   </header>
 
-  <div class="figure-shell" id="figure-shell" aria-hidden="true">
-    <div class="figure-spotlight"></div>
-    <div id="product-figure">
-      <div class="figure-inner">
-        <div class="figure-glow"></div>
-        <div class="vinyl-figure">
-          <div class="arm left"></div>
-          <div class="arm right"></div>
-          <div class="head"></div>
-          <div class="torso"></div>
-        </div>
-        <div class="pedestal"></div>
-      </div>
+  <div id="figure-shell" aria-hidden="true">
+    <div id="photo-glow"></div>
+    <div class="photo-wrapper" id="product-figure">
+      <img id="corbin-photo" src="assets/corbin.png" alt="Corbin Moffitt" />
     </div>
+    <div id="photo-pedestal"></div>
   </div>
 
   <!-- Entry overlay: visible 0–5% scroll -->
