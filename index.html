@@ -1,0 +1,1141 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>CORBIN MOFFITT™ — LIMITED EDITION</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=IBM+Plex+Mono:ital,wght@0,400;0,500;0,600;1,400&display=swap" rel="stylesheet" />
+  <style>
+    :root {
+      --bg: #0D0B0A;
+      --accent: #E8441A;
+      --muted: #8A7F78;
+      --cream: #F5F0EB;
+      --cursor-size: 12px;
+    }
+
+    *,
+    *::before,
+    *::after {
+      box-sizing: border-box;
+    }
+
+    html {
+      scroll-behavior: smooth;
+    }
+
+    body {
+      margin: 0;
+      background: var(--bg);
+      color: var(--cream);
+      font-family: "IBM Plex Mono", monospace;
+      overflow-x: hidden;
+      cursor: none;
+      min-height: 100vh;
+    }
+
+    @media (pointer: coarse) {
+      body { cursor: auto; }
+      #custom-cursor { display: none !important; }
+    }
+
+    /* Film grain — slightly more pronounced */
+    .grain {
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+      z-index: 9998;
+      opacity: 0.09;
+      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+      mix-blend-mode: overlay;
+    }
+
+    #custom-cursor {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: var(--cursor-size);
+      height: var(--cursor-size);
+      border: 1.5px solid var(--accent);
+      border-radius: 50%;
+      pointer-events: none;
+      z-index: 10000;
+      transform: translate(-50%, -50%) scale(1);
+      will-change: transform;
+    }
+
+    /* ——— Figure shell: truly fixed, always centered ——— */
+    .figure-shell {
+      position: fixed;
+      inset: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      pointer-events: none;
+      z-index: 5;
+      width: 100%;
+      height: 100vh;
+    }
+
+    /* Radial spotlight behind figure — slow pulse */
+    .figure-spotlight {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      width: 700px;
+      height: 700px;
+      border-radius: 50%;
+      transform: translate(-50%, -50%);
+      background: radial-gradient(circle, rgba(232, 68, 26, 0.06) 0%, rgba(232, 68, 26, 0.02) 40%, transparent 70%);
+      animation: spotlightPulse 5s ease-in-out infinite;
+      pointer-events: none;
+    }
+
+    @keyframes spotlightPulse {
+      0%, 100% { transform: translate(-50%, -50%) scale(1); opacity: 1; }
+      50%       { transform: translate(-50%, -50%) scale(1.25); opacity: 0.45; }
+    }
+
+    #product-figure {
+      position: relative;
+      transform-origin: 50% 85%;
+      will-change: transform;
+    }
+
+    .figure-inner {
+      animation: figureBob 3s ease-in-out infinite;
+    }
+
+    #product-figure.idle-paused .figure-inner {
+      animation: none;
+    }
+
+    @keyframes figureBob {
+      0%, 100% { transform: translateY(0); }
+      50%       { transform: translateY(-8px); }
+    }
+
+    .figure-glow {
+      position: absolute;
+      left: 50%;
+      bottom: -12%;
+      width: 280px;
+      height: 120px;
+      transform: translateX(-50%);
+      background: radial-gradient(ellipse at center, rgba(232, 68, 26, 0.22) 0%, rgba(232, 68, 26, 0.05) 45%, transparent 70%);
+      filter: blur(8px);
+      z-index: 0;
+    }
+
+    .pedestal {
+      position: relative;
+      width: 200px;
+      height: 36px;
+      margin: 0 auto -4px;
+      border-radius: 50%;
+      background: radial-gradient(ellipse at 50% 30%, #3a3532 0%, #1a1614 55%, #0d0b0a 100%);
+      box-shadow:
+        inset 0 4px 12px rgba(255, 245, 235, 0.08),
+        inset 0 -6px 16px rgba(0, 0, 0, 0.65),
+        0 12px 40px rgba(0, 0, 0, 0.5);
+      z-index: 1;
+    }
+
+    .pedestal::after {
+      content: "";
+      position: absolute;
+      inset: 10% 8% 35%;
+      border-radius: 50%;
+      background: linear-gradient(180deg, rgba(245, 240, 235, 0.12) 0%, transparent 100%);
+    }
+
+    .vinyl-figure {
+      position: relative;
+      width: 160px;
+      margin: 0 auto;
+      z-index: 2;
+      filter: drop-shadow(0 24px 32px rgba(0, 0, 0, 0.45));
+    }
+
+    .head {
+      width: 110px;
+      height: 110px;
+      margin: 0 auto -8px;
+      border-radius: 50%;
+      background:
+        radial-gradient(circle at 32% 28%, rgba(255, 220, 200, 0.55) 0%, transparent 35%),
+        radial-gradient(circle at 70% 65%, rgba(80, 45, 35, 0.35) 0%, transparent 45%),
+        linear-gradient(145deg, #c9987a 0%, #a67558 40%, #8b5a44 100%);
+      box-shadow:
+        inset -8px -10px 20px rgba(0, 0, 0, 0.25),
+        inset 6px 8px 16px rgba(255, 235, 220, 0.2),
+        0 8px 0 rgba(0, 0, 0, 0.15);
+    }
+
+    .torso {
+      position: relative;
+      width: 88px;
+      height: 100px;
+      margin: 0 auto;
+      border-radius: 36% 36% 28% 28% / 42% 42% 32% 32%;
+      background:
+        linear-gradient(105deg, rgba(255, 255, 255, 0.14) 0%, transparent 42%),
+        radial-gradient(ellipse at 40% 15%, rgba(255, 240, 230, 0.25) 0%, transparent 50%),
+        radial-gradient(ellipse at 80% 90%, rgba(40, 25, 20, 0.4) 0%, transparent 55%),
+        linear-gradient(165deg, #b87a5c 0%, #9a6248 45%, #7a4a38 100%);
+      box-shadow:
+        inset 0 -18px 28px rgba(0, 0, 0, 0.28),
+        inset 10px 0 20px rgba(255, 220, 200, 0.08),
+        0 6px 0 rgba(0, 0, 0, 0.12);
+    }
+
+    .arm {
+      position: absolute;
+      width: 22px;
+      height: 58px;
+      top: 118px;
+      border-radius: 40%;
+      background: linear-gradient(90deg, #9e664c, #b07a5e);
+      box-shadow: inset -4px 0 8px rgba(0, 0, 0, 0.2);
+    }
+
+    .arm.left  { left: 8px;  transform: rotate(12deg); }
+    .arm.right { right: 8px; transform: rotate(-12deg); }
+
+    /* ——— Layout ——— */
+    .site-header {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      z-index: 100;
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      padding: 28px 40px;
+      pointer-events: none;
+    }
+
+    .site-header a {
+      pointer-events: auto;
+    }
+
+    .logo {
+      font-family: "Bebas Neue", sans-serif;
+      font-size: 24px;
+      color: var(--accent);
+      letter-spacing: 0.02em;
+      text-decoration: none;
+    }
+
+    .nav {
+      display: flex;
+      gap: 20px;
+      flex-wrap: wrap;
+      justify-content: flex-end;
+      max-width: 55%;
+    }
+
+    .nav a {
+      position: relative;
+      font-size: 11px;
+      letter-spacing: 0.22em;
+      text-transform: uppercase;
+      color: var(--muted);
+      text-decoration: none;
+      transition: color 0.25s ease;
+      padding-bottom: 4px;
+    }
+
+    /* Underline draws in from left on hover */
+    .nav a::after {
+      content: '';
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      width: 0;
+      height: 1px;
+      background: var(--cream);
+      transition: width 0.3s ease;
+    }
+
+    .nav a:hover {
+      color: var(--cream);
+    }
+
+    .nav a:hover::after {
+      width: 100%;
+    }
+
+    main {
+      position: relative;
+      z-index: 10;
+    }
+
+    /* Sections — 120vh for cinematic scroll room */
+    .section {
+      min-height: 120vh;
+      position: relative;
+      z-index: 15;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      padding: 120px 40px 140px;
+      scroll-margin-top: 96px;
+    }
+
+    /* Subtle dark radial overlay so content always reads over figure */
+    .section::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: radial-gradient(ellipse at center, rgba(13, 11, 10, 0.70) 20%, rgba(13, 11, 10, 0.35) 100%);
+      pointer-events: none;
+      z-index: -1;
+    }
+
+    /* HERO — figure has full space, text at bottom third */
+    .section--hero {
+      align-items: center;
+      text-align: center;
+      justify-content: flex-end;
+      padding-bottom: 14vh;
+    }
+
+    .hero-copy {
+      position: relative;
+      z-index: 20;
+      max-width: fit-content;
+      margin: 0 auto;
+      /* Frosted dark pill so headline always reads over figure */
+      background: rgba(13, 11, 10, 0.78);
+      backdrop-filter: blur(18px);
+      -webkit-backdrop-filter: blur(18px);
+      border: 1px solid rgba(138, 127, 120, 0.18);
+      border-radius: 6px;
+      padding: 28px 52px 24px;
+    }
+
+    .hero-eyebrow {
+      font-size: 11px;
+      letter-spacing: 0.35em;
+      text-transform: uppercase;
+      color: var(--muted);
+      margin-bottom: 12px;
+    }
+
+    .hero-title {
+      font-family: "Bebas Neue", sans-serif;
+      font-size: clamp(100px, 15vw, 180px);
+      line-height: 0.92;
+      letter-spacing: 0.02em;
+      color: var(--cream);
+      margin: 0;
+      text-transform: uppercase;
+    }
+
+    .hero-sub {
+      font-size: 11px;
+      letter-spacing: 0.28em;
+      text-transform: uppercase;
+      color: var(--muted);
+      margin-top: 16px;
+    }
+
+    .scroll-hint {
+      position: absolute;
+      bottom: 40px;
+      left: 50%;
+      transform: translateX(-50%);
+      font-size: 10px;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      color: var(--muted);
+      z-index: 20;
+      animation: pulseFade 2.4s ease-in-out infinite;
+    }
+
+    @keyframes pulseFade {
+      0%, 100% { opacity: 0.35; }
+      50%       { opacity: 0.95; }
+    }
+
+    /* SPECS — content zone: right side */
+    .section--specs {
+      align-items: flex-end;
+    }
+
+    .specs-panel {
+      position: relative;
+      z-index: 20;
+      max-width: 420px;
+      width: 100%;
+      margin-left: auto;
+      padding: 28px 32px;
+      /* Accent top border — product label feel */
+      border: 1px solid rgba(138, 127, 120, 0.2);
+      border-top: 2px solid var(--accent);
+      background: rgba(13, 11, 10, 0.85);
+      backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
+    }
+
+    .specs-panel h2 {
+      font-family: "IBM Plex Mono", monospace;
+      font-size: 11px;
+      letter-spacing: 0.28em;
+      color: var(--muted);
+      margin: 0 0 8px;
+      font-weight: 500;
+    }
+
+    .specs-panel hr {
+      border: none;
+      border-top: 1px solid rgba(138, 127, 120, 0.25);
+      margin: 0 0 20px;
+    }
+
+    .spec-row {
+      display: grid;
+      grid-template-columns: 110px 1fr;
+      gap: 12px;
+      font-size: 12px;
+      line-height: 1.55;
+      margin-bottom: 14px;
+    }
+
+    .spec-row:last-child { margin-bottom: 0; }
+
+    .spec-label {
+      color: var(--muted);
+      letter-spacing: 0.06em;
+    }
+
+    .spec-value { color: var(--cream); }
+
+    /* FEATURES — content zone: left side */
+    .section--features {
+      align-items: flex-start;
+    }
+
+    .features-list {
+      position: relative;
+      z-index: 20;
+      max-width: 560px;
+    }
+
+    .feature-line {
+      font-family: "Bebas Neue", sans-serif;
+      font-size: clamp(40px, 5vw, 64px);
+      line-height: 1.1;
+      letter-spacing: 0.03em;
+      color: var(--cream);
+      margin: 0 0 22px;
+      text-transform: uppercase;
+      transition: text-shadow 0.35s ease;
+      cursor: default;
+    }
+
+    .feature-line:hover {
+      text-shadow: 0 0 40px rgba(232, 68, 26, 0.3);
+    }
+
+    .feature-line .num {
+      color: var(--accent);
+      margin-right: 10px;
+    }
+
+    /* REVIEWS — full width, centered */
+    .section--reviews {
+      align-items: center;
+    }
+
+    .section--reviews .reviews-grid {
+      position: relative;
+      z-index: 20;
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+      gap: 24px;
+      max-width: 1100px;
+      margin: 0 auto;
+      width: 100%;
+    }
+
+    .review-card {
+      /* Left accent border for real review-card feel */
+      border: 1px solid rgba(138, 127, 120, 0.2);
+      border-left: 2px solid rgba(232, 68, 26, 0.4);
+      background: rgba(13, 11, 10, 0.85);
+      backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
+      padding: 28px 26px;
+    }
+
+    .stars {
+      color: var(--accent);
+      font-size: 14px;
+      letter-spacing: 2px;
+      margin-bottom: 14px;
+    }
+
+    .review-quote {
+      font-size: 14px;
+      line-height: 1.6;
+      color: var(--cream);
+      margin: 0 0 16px;
+    }
+
+    .review-by {
+      font-size: 12px;
+      color: var(--muted);
+    }
+
+    /* CTA — figure center full size, content at bottom third */
+    .section--cta {
+      align-items: center;
+      justify-content: flex-end;
+      padding-bottom: 14vh;
+      text-align: center;
+    }
+
+    .cta-block {
+      position: relative;
+      z-index: 25;
+      max-width: 640px;
+      /* Frosted dark pill — same as hero-copy */
+      background: rgba(13, 11, 10, 0.78);
+      backdrop-filter: blur(18px);
+      -webkit-backdrop-filter: blur(18px);
+      border: 1px solid rgba(138, 127, 120, 0.18);
+      border-radius: 6px;
+      padding: 40px 52px;
+    }
+
+    .cta-eyebrow {
+      font-size: 11px;
+      letter-spacing: 0.35em;
+      text-transform: uppercase;
+      color: var(--muted);
+      margin-bottom: 14px;
+    }
+
+    .cta-title {
+      font-family: "Bebas Neue", sans-serif;
+      font-size: clamp(64px, 12vw, 140px);
+      line-height: 0.95;
+      color: var(--cream);
+      margin: 0 0 24px;
+      text-transform: uppercase;
+    }
+
+    .cta-meta {
+      font-size: 13px;
+      line-height: 1.8;
+      color: var(--muted);
+      margin-bottom: 32px;
+    }
+
+    .btn-primary {
+      position: relative;
+      overflow: hidden;
+      font-family: "Bebas Neue", sans-serif;
+      font-size: 24px;
+      letter-spacing: 0.06em;
+      color: var(--cream);
+      background: var(--accent);
+      border: none;
+      padding: 18px 48px;
+      cursor: none;
+      transition: background 0.25s ease, transform 0.25s ease;
+      text-transform: uppercase;
+    }
+
+    @media (pointer: coarse) {
+      .btn-primary { cursor: pointer; }
+    }
+
+    /* Scanline texture on hover — tactile feel */
+    .btn-primary::after {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: repeating-linear-gradient(
+        0deg,
+        transparent,
+        transparent 3px,
+        rgba(0, 0, 0, 0.1) 3px,
+        rgba(0, 0, 0, 0.1) 4px
+      );
+      opacity: 0;
+      transition: opacity 0.3s ease;
+      pointer-events: none;
+    }
+
+    .btn-primary:hover {
+      background: #ff5a2e;
+      transform: scale(1.03);
+    }
+
+    .btn-primary:hover::after {
+      opacity: 1;
+    }
+
+    .btn-primary:disabled {
+      opacity: 1;
+      cursor: default;
+      transform: none;
+    }
+
+    .btn-primary:disabled::after {
+      display: none;
+    }
+
+    .checkout-link {
+      display: inline-block;
+      margin-top: 24px;
+      font-size: 13px;
+      color: var(--accent);
+      text-decoration: underline;
+      text-underline-offset: 4px;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.5s ease;
+    }
+
+    .checkout-link.visible {
+      opacity: 1;
+      pointer-events: auto;
+    }
+
+    .checkout-link:hover { color: #ff5a2e; }
+
+    /* Toast */
+    #toast {
+      position: fixed;
+      top: 100px;
+      right: 24px;
+      max-width: 320px;
+      padding: 18px 20px 18px 22px;
+      background: #161210;
+      border: 1px solid rgba(138, 127, 120, 0.25);
+      border-left: 4px solid var(--accent);
+      font-size: 13px;
+      line-height: 1.55;
+      color: var(--cream);
+      z-index: 10100;
+      pointer-events: none;
+      box-shadow: 0 16px 48px rgba(0, 0, 0, 0.45);
+      visibility: hidden;
+    }
+
+    #toast strong {
+      display: block;
+      color: var(--cream);
+      margin-bottom: 6px;
+      font-weight: 600;
+    }
+
+    /* Marquee — more visible, accent dots */
+    .marquee-wrap {
+      position: fixed;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      z-index: 200;
+      overflow: hidden;
+      background: linear-gradient(180deg, transparent, rgba(13, 11, 10, 0.95));
+      padding: 10px 0 12px;
+      pointer-events: none;
+    }
+
+    .marquee-inner {
+      display: flex;
+      width: max-content;
+      animation: marquee 80s linear infinite;
+    }
+
+    .marquee-inner span {
+      font-size: 12px;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      color: var(--muted);
+      white-space: nowrap;
+    }
+
+    .marquee-dot {
+      color: var(--accent);
+      font-size: 8px;
+      vertical-align: middle;
+      margin: 0 10px;
+      opacity: 0.85;
+    }
+
+    @keyframes marquee {
+      0%   { transform: translateX(0); }
+      100% { transform: translateX(-50%); }
+    }
+
+    /* Mobile — simplified stack layout */
+    @media (max-width: 768px) {
+      body { cursor: auto; }
+
+      .figure-shell {
+        position: relative;
+        inset: auto;
+        height: auto;
+        min-height: 48vh;
+        padding: 32px 0 16px;
+      }
+
+      .figure-spotlight { display: none; }
+
+      .site-header {
+        position: relative;
+        padding: 20px;
+      }
+
+      .nav {
+        max-width: 100%;
+        gap: 12px;
+      }
+
+      .nav a { font-size: 9px; }
+
+      .section {
+        min-height: auto;
+        padding: 48px 20px 80px;
+      }
+
+      .section--hero {
+        justify-content: center;
+        padding-bottom: 40px;
+      }
+
+      .hero-copy {
+        padding: 20px 24px;
+      }
+
+      .section--cta {
+        justify-content: center;
+        padding-bottom: 80px;
+      }
+
+      .cta-block {
+        padding: 28px 24px;
+      }
+
+      .scroll-hint { display: none; }
+
+      .section--specs,
+      .section--features {
+        align-items: stretch;
+      }
+
+      .specs-panel {
+        margin-left: 0;
+        max-width: none;
+      }
+
+      .features-list { max-width: none; }
+
+      .spec-row {
+        grid-template-columns: 1fr;
+        gap: 4px;
+      }
+
+      .spec-label {
+        font-size: 10px;
+        letter-spacing: 0.15em;
+        text-transform: uppercase;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="grain" aria-hidden="true"></div>
+  <div id="custom-cursor" aria-hidden="true"></div>
+
+  <header class="site-header">
+    <a class="logo" href="#hero">CM™</a>
+    <nav class="nav" aria-label="Primary">
+      <a href="#specs">SPECS</a>
+      <a href="#features">FEATURES</a>
+      <a href="#reviews">REVIEWS</a>
+      <a href="#add-to-team">ADD TO TEAM</a>
+    </nav>
+  </header>
+
+  <div class="figure-shell" id="figure-shell" aria-hidden="true">
+    <div class="figure-spotlight"></div>
+    <div id="product-figure">
+      <div class="figure-inner">
+        <div class="figure-glow"></div>
+        <div class="vinyl-figure">
+          <div class="arm left"></div>
+          <div class="arm right"></div>
+          <div class="head"></div>
+          <div class="torso"></div>
+        </div>
+        <div class="pedestal"></div>
+      </div>
+    </div>
+  </div>
+
+  <main id="main-scroll">
+    <section id="hero" class="section section--hero">
+      <div class="hero-copy" id="hero-copy">
+        <p class="hero-eyebrow">LIMITED EDITION</p>
+        <h1 class="hero-title">CORBIN MOFFITT™</h1>
+        <p class="hero-sub">SENIOR DESIGNER — 1 OF 1</p>
+      </div>
+      <p class="scroll-hint" id="scroll-hint">SCROLL TO EXPLORE ↓</p>
+    </section>
+
+    <section id="specs" class="section section--specs">
+      <div class="specs-panel" id="specs-panel">
+        <h2>PRODUCT SPECIFICATIONS</h2>
+        <hr />
+        <div class="spec-row"><span class="spec-label">MODEL</span><span class="spec-value">Senior Interactive Designer</span></div>
+        <div class="spec-row"><span class="spec-label">VERSION</span><span class="spec-value">2025</span></div>
+        <div class="spec-row"><span class="spec-label">EXPERIENCE</span><span class="spec-value">7+ Years</span></div>
+        <div class="spec-row"><span class="spec-label">STACK</span><span class="spec-value">Figma · Webflow · Cursor · GSAP</span></div>
+        <div class="spec-row"><span class="spec-label">SPECIALTY</span><span class="spec-value">Brand · Web · UX · Performance</span></div>
+        <div class="spec-row"><span class="spec-label">COMPATIBLE</span><span class="spec-value">Ambitious Teams · Fast Startups<br />Award-Hungry Agencies</span></div>
+        <div class="spec-row"><span class="spec-label">SHIPS</span><span class="spec-value">Saratoga Springs, UT</span></div>
+        <div class="spec-row"><span class="spec-label">WARRANTY</span><span class="spec-value">Results Guaranteed</span></div>
+      </div>
+    </section>
+
+    <section id="features" class="section section--features">
+      <div class="features-list" id="features-list">
+        <p class="feature-line"><span class="num">01</span>— Ships with 7+ years of craft.</p>
+        <p class="feature-line"><span class="num">02</span>— No assembly required.</p>
+        <p class="feature-line"><span class="num">03</span>— Pairs well with ambitious briefs.</p>
+        <p class="feature-line"><span class="num">04</span>— Battery: curiosity-powered, never runs out.</p>
+      </div>
+    </section>
+
+    <section id="reviews" class="section section--reviews">
+      <div class="reviews-grid" id="reviews-grid">
+        <article class="review-card">
+          <div class="stars">★★★★★</div>
+          <p class="review-quote">"Took our CVR from average to 63% better."</p>
+          <p class="review-by">— Linear Design</p>
+        </article>
+        <article class="review-card">
+          <div class="stars">★★★★★</div>
+          <p class="review-quote">"Grew revenue from $550K to nearly $1M."</p>
+          <p class="review-by">— Disruptive Advertising</p>
+        </article>
+        <article class="review-card">
+          <div class="stars">★★★★★</div>
+          <p class="review-quote">"Built his own portfolio in Cursor with zero prior coding experience. Unhinged in the best way."</p>
+          <p class="review-by">— Himself, probably</p>
+        </article>
+      </div>
+    </section>
+
+    <section id="add-to-team" class="section section--cta">
+      <div class="cta-block">
+        <p class="cta-eyebrow">READY TO SHIP</p>
+        <h2 class="cta-title">ADD TO TEAM</h2>
+        <p class="cta-meta">
+          Only 1 remaining.<br />
+          Starting bid: Competitive salary.<br />
+          Ready to ship to Saratoga Springs, UT.
+        </p>
+        <button type="button" class="btn-primary" id="cta-btn">ADD TO TEAM →</button>
+        <a class="checkout-link" id="checkout-link" href="https://corbinmoffitt.com" target="_blank" rel="noopener noreferrer">PROCEED TO CHECKOUT → corbinmoffitt.com</a>
+      </div>
+    </section>
+  </main>
+
+  <div class="marquee-wrap" aria-hidden="true">
+    <div class="marquee-inner" id="marquee-track">
+      <span>SENIOR DESIGNER <span class="marquee-dot">◆</span> AVAILABLE NOW <span class="marquee-dot">◆</span> SARATOGA SPRINGS UT <span class="marquee-dot">◆</span> FIGMA <span class="marquee-dot">◆</span> WEBFLOW <span class="marquee-dot">◆</span> GSAP <span class="marquee-dot">◆</span> BRAND <span class="marquee-dot">◆</span> WEB <span class="marquee-dot">◆</span> UX <span class="marquee-dot">◆</span> PERFORMANCE <span class="marquee-dot">◆</span> 1 OF 1 <span class="marquee-dot">◆</span> LIMITED EDITION <span class="marquee-dot">◆</span> </span>
+      <span>SENIOR DESIGNER <span class="marquee-dot">◆</span> AVAILABLE NOW <span class="marquee-dot">◆</span> SARATOGA SPRINGS UT <span class="marquee-dot">◆</span> FIGMA <span class="marquee-dot">◆</span> WEBFLOW <span class="marquee-dot">◆</span> GSAP <span class="marquee-dot">◆</span> BRAND <span class="marquee-dot">◆</span> WEB <span class="marquee-dot">◆</span> UX <span class="marquee-dot">◆</span> PERFORMANCE <span class="marquee-dot">◆</span> 1 OF 1 <span class="marquee-dot">◆</span> LIMITED EDITION <span class="marquee-dot">◆</span> </span>
+    </div>
+  </div>
+
+  <div id="toast" role="status" aria-live="polite">
+    <strong>✓ Nice choice.</strong>
+    Corbin has been added to your team.
+  </div>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
+  <script>
+    gsap.registerPlugin(ScrollTrigger);
+
+    const prefersCoarse = window.matchMedia("(pointer: coarse)").matches;
+    const isMobile     = window.matchMedia("(max-width: 768px)").matches;
+
+    /* ——— Custom cursor (desktop only) ——— */
+    const cursor = document.getElementById("custom-cursor");
+
+    if (!prefersCoarse && !isMobile && cursor) {
+      const xTo = gsap.quickTo(cursor, "x", { duration: 0.45, ease: "power3.out" });
+      const yTo = gsap.quickTo(cursor, "y", { duration: 0.45, ease: "power3.out" });
+
+      window.addEventListener("mousemove", (e) => {
+        xTo(e.clientX);
+        yTo(e.clientY);
+      });
+
+      const clickableSel = "a[href], button, [role='button'], input[type='submit'], label[for]";
+      let hoveringClickable = false;
+
+      document.addEventListener("mousemove", (e) => {
+        const el  = document.elementFromPoint(e.clientX, e.clientY);
+        const hit = el && el.closest && el.closest(clickableSel);
+        if (hit && !hoveringClickable) {
+          hoveringClickable = true;
+          gsap.to(cursor, { scale: 2, duration: 0.25, ease: "power2.out" });
+        } else if (!hit && hoveringClickable) {
+          hoveringClickable = false;
+          gsap.to(cursor, { scale: 1, duration: 0.25, ease: "power2.out" });
+        }
+      });
+
+      gsap.set(cursor, { x: innerWidth / 2, y: innerHeight / 2, xPercent: -50, yPercent: -50 });
+    }
+
+    const productFigure = document.getElementById("product-figure");
+    const heroCopy      = document.getElementById("hero-copy");
+    const specsPanel    = document.getElementById("specs-panel");
+    const featureLines  = gsap.utils.toArray("#features-list .feature-line");
+    const reviewCards   = gsap.utils.toArray("#reviews-grid .review-card");
+    const ctaBtn        = document.getElementById("cta-btn");
+    const checkoutLink  = document.getElementById("checkout-link");
+    const toast         = document.getElementById("toast");
+    const scrollHint    = document.getElementById("scroll-hint");
+
+    gsap.set(toast, { x: 120, opacity: 0, visibility: "hidden" });
+
+    function setIdlePaused(paused) {
+      if (paused) productFigure.classList.add("idle-paused");
+      else        productFigure.classList.remove("idle-paused");
+    }
+
+    if (!isMobile) {
+      /* Hero copy + scroll hint fade out over first 12% of total scroll */
+      const heroFadeTargets = [heroCopy, scrollHint].filter(Boolean);
+      gsap.fromTo(
+        heroFadeTargets,
+        { opacity: 1 },
+        {
+          opacity: 0,
+          ease: "none",
+          scrollTrigger: {
+            trigger: "body",
+            start: "top top",
+            end: () => "+=" + ScrollTrigger.maxScroll(window) * 0.12,
+            scrub: true,
+          },
+        }
+      );
+
+      /* Pin figure shell for entire scroll — truly fixed in viewport */
+      const figureShell = document.getElementById("figure-shell");
+      ScrollTrigger.create({
+        trigger: "#main-scroll",
+        start: "top top",
+        end: "bottom bottom",
+        pin: figureShell,
+        pinSpacing: false,
+      });
+
+      /* Figure position timeline across full scroll
+         0–20%  hero      center, scale 1, rotation 0
+         20–40% specs     left –28vw, scale 0.72, rotation –5
+         40–60% features  right +28vw, scale 0.85, rotation +5
+         60–80% reviews   center, scale 0.62, rotation 0
+         80–100% cta      center, scale 1, rotation 0             */
+      const figureTl = gsap.timeline({
+        scrollTrigger: {
+          trigger: "#main-scroll",
+          start: "top top",
+          end: "bottom bottom",
+          scrub: 1.5,
+          onUpdate: (self) => {
+            const p = self.progress;
+            /* Bob only during hero (0–18%) and cta (82–100%) */
+            setIdlePaused(!(p <= 0.18 || p >= 0.82));
+          },
+        },
+      });
+
+      figureTl
+        /* Hold at hero center */
+        .fromTo(
+          productFigure,
+          { x: 0, y: 0, scale: 1, rotation: 0 },
+          { x: 0, y: 0, scale: 1, rotation: 0, duration: 0.2, ease: "power3.inOut" },
+          0
+        )
+        /* Drift left for specs */
+        .to(
+          productFigure,
+          { x: "-28vw", scale: 0.72, rotation: -5, duration: 0.2, ease: "power3.inOut" },
+          0.2
+        )
+        /* Drift right for features */
+        .to(
+          productFigure,
+          { x: "28vw", scale: 0.85, rotation: 5, duration: 0.2, ease: "power3.inOut" },
+          0.4
+        )
+        /* Return center, scale down for reviews */
+        .to(
+          productFigure,
+          { x: 0, scale: 0.62, rotation: 0, duration: 0.2, ease: "power3.inOut" },
+          0.6
+        )
+        /* Return center, full scale for cta */
+        .to(
+          productFigure,
+          { x: 0, scale: 1, rotation: 0, duration: 0.2, ease: "power3.inOut" },
+          0.8
+        );
+
+      /* ——— Specs panel: slide in from right + deblur ——— */
+      gsap.set(specsPanel, { x: 80, opacity: 0, filter: "blur(4px)" });
+      ScrollTrigger.create({
+        trigger: "#specs",
+        start: "top 58%",
+        end: "bottom 42%",
+        onEnter: () =>
+          gsap.to(specsPanel, { x: 0, opacity: 1, filter: "blur(0px)", duration: 0.7, ease: "power3.inOut" }),
+        onLeave: () =>
+          gsap.to(specsPanel, { x: -80, opacity: 0, filter: "blur(4px)", duration: 0.55, ease: "power3.inOut" }),
+        onEnterBack: () =>
+          gsap.to(specsPanel, { x: 0, opacity: 1, filter: "blur(0px)", duration: 0.7, ease: "power3.inOut" }),
+        onLeaveBack: () =>
+          gsap.to(specsPanel, { x: 80, opacity: 0, filter: "blur(4px)", duration: 0.55, ease: "power3.inOut" }),
+      });
+
+      /* ——— Feature lines: stagger in from left + deblur ——— */
+      gsap.set(featureLines, { x: -60, opacity: 0, filter: "blur(4px)" });
+      ScrollTrigger.create({
+        trigger: "#features",
+        start: "top 58%",
+        end: "bottom 42%",
+        onEnter: () =>
+          gsap.to(featureLines, {
+            x: 0, opacity: 1, filter: "blur(0px)",
+            duration: 0.7, stagger: 0.15, ease: "power3.inOut",
+          }),
+        onLeave: () =>
+          gsap.to(featureLines, {
+            x: -60, opacity: 0, filter: "blur(4px)",
+            duration: 0.5, stagger: 0.08, ease: "power3.inOut",
+          }),
+        onEnterBack: () =>
+          gsap.to(featureLines, {
+            x: 0, opacity: 1, filter: "blur(0px)",
+            duration: 0.7, stagger: 0.15, ease: "power3.inOut",
+          }),
+        onLeaveBack: () =>
+          gsap.to(featureLines, {
+            x: -60, opacity: 0, filter: "blur(4px)",
+            duration: 0.5, stagger: 0.08, ease: "power3.inOut",
+          }),
+      });
+
+      /* ——— Review cards: rise up + deblur ——— */
+      gsap.set(reviewCards, { y: 60, opacity: 0, filter: "blur(4px)" });
+      ScrollTrigger.create({
+        trigger: "#reviews",
+        start: "top 58%",
+        end: "bottom 42%",
+        onEnter: () =>
+          gsap.to(reviewCards, {
+            y: 0, opacity: 1, filter: "blur(0px)",
+            duration: 0.75, stagger: 0.2, ease: "power3.inOut",
+          }),
+        onLeave: () =>
+          gsap.to(reviewCards, {
+            y: 60, opacity: 0, filter: "blur(4px)",
+            duration: 0.5, stagger: 0.1, ease: "power3.inOut",
+          }),
+        onEnterBack: () =>
+          gsap.to(reviewCards, {
+            y: 0, opacity: 1, filter: "blur(0px)",
+            duration: 0.75, stagger: 0.2, ease: "power3.inOut",
+          }),
+        onLeaveBack: () =>
+          gsap.to(reviewCards, {
+            y: 60, opacity: 0, filter: "blur(4px)",
+            duration: 0.5, stagger: 0.1, ease: "power3.inOut",
+          }),
+      });
+
+    } else {
+      /* Mobile: simple fade-up per section */
+      productFigure.classList.remove("idle-paused");
+      gsap.utils.toArray(".section").forEach((sec) => {
+        gsap.from(sec, {
+          opacity: 0,
+          y: 36,
+          duration: 0.8,
+          ease: "power2.out",
+          scrollTrigger: {
+            trigger: sec,
+            start: "top 88%",
+            toggleActions: "play none none reverse",
+          },
+        });
+      });
+    }
+
+    /* ——— CTA add-to-team ——— */
+    let added = false;
+    ctaBtn.addEventListener("click", () => {
+      if (added) return;
+      added = true;
+      ctaBtn.textContent = "✓ ADDED TO TEAM";
+      ctaBtn.disabled = true;
+
+      gsap.fromTo(
+        toast,
+        { x: 120, opacity: 0, visibility: "visible" },
+        {
+          x: 0,
+          opacity: 1,
+          duration: 0.55,
+          ease: "power3.out",
+          onComplete: () => {
+            gsap.delayedCall(3.2, () => {
+              gsap.to(toast, {
+                x: 120,
+                opacity: 0,
+                duration: 0.45,
+                ease: "power2.in",
+                onComplete: () => gsap.set(toast, { visibility: "hidden" }),
+              });
+            });
+          },
+        }
+      );
+
+      gsap
+        .timeline({ defaults: { overwrite: "auto" } })
+        .to(productFigure, { scale: 1.2, duration: 0.18, ease: "power2.out" })
+        .to(productFigure, { scale: 1, duration: 0.35, ease: "elastic.out(1, 0.45)" }, "-=0.12")
+        .to(productFigure, { rotation: 6,  duration: 0.08, ease: "power1.inOut" }, 0.12)
+        .to(productFigure, { rotation: -5, duration: 0.1,  ease: "power1.inOut" })
+        .to(productFigure, { rotation: 3,  duration: 0.08, ease: "power1.inOut" })
+        .to(productFigure, { rotation: 0,  duration: 0.12, ease: "power2.out" });
+
+      gsap.delayedCall(1.5, () => {
+        checkoutLink.classList.add("visible");
+      });
+    });
+
+    /* Refresh ScrollTrigger after all assets load */
+    window.addEventListener("load", () => ScrollTrigger.refresh());
+  </script>
+</body>
+</html>
