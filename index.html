@@ -24,6 +24,11 @@
 
     html {
       scroll-behavior: smooth;
+      scrollbar-width: none;
+    }
+
+    html::-webkit-scrollbar {
+      display: none;
     }
 
     body {
@@ -41,7 +46,7 @@
       #custom-cursor { display: none !important; }
     }
 
-    /* Film grain — slightly more pronounced */
+    /* ——— Film grain ——— */
     .grain {
       position: fixed;
       inset: 0;
@@ -52,6 +57,7 @@
       mix-blend-mode: overlay;
     }
 
+    /* ——— Custom cursor ——— */
     #custom-cursor {
       position: fixed;
       top: 0;
@@ -66,7 +72,7 @@
       will-change: transform;
     }
 
-    /* ——— Figure shell: truly fixed, always centered ——— */
+    /* ——— Figure shell: fixed, always viewport-centered ——— */
     .figure-shell {
       position: fixed;
       inset: 0;
@@ -79,7 +85,7 @@
       height: 100vh;
     }
 
-    /* Radial spotlight behind figure — slow pulse */
+    /* Spotlight pulse behind figure */
     .figure-spotlight {
       position: absolute;
       top: 50%;
@@ -94,14 +100,14 @@
     }
 
     @keyframes spotlightPulse {
-      0%, 100% { transform: translate(-50%, -50%) scale(1); opacity: 1; }
+      0%, 100% { transform: translate(-50%, -50%) scale(1);    opacity: 1; }
       50%       { transform: translate(-50%, -50%) scale(1.25); opacity: 0.45; }
     }
 
     #product-figure {
       position: relative;
       transform-origin: 50% 85%;
-      will-change: transform;
+      will-change: transform, opacity;
     }
 
     .figure-inner {
@@ -204,329 +210,60 @@
     .arm.left  { left: 8px;  transform: rotate(12deg); }
     .arm.right { right: 8px; transform: rotate(-12deg); }
 
-    /* ——— Layout ——— */
+    /* ——— Header ——— */
     .site-header {
       position: fixed;
       top: 0;
       left: 0;
       right: 0;
       z-index: 100;
-      display: flex;
-      justify-content: space-between;
-      align-items: flex-start;
       padding: 28px 40px;
       pointer-events: none;
     }
 
-    .site-header a {
-      pointer-events: auto;
-    }
-
     .logo {
       font-family: "Bebas Neue", sans-serif;
-      font-size: 24px;
+      font-size: 20px;
       color: var(--accent);
       letter-spacing: 0.02em;
       text-decoration: none;
+      pointer-events: auto;
     }
 
-    .nav {
-      display: flex;
-      gap: 20px;
-      flex-wrap: wrap;
-      justify-content: flex-end;
-      max-width: 55%;
-    }
-
-    .nav a {
-      position: relative;
-      font-size: 11px;
-      letter-spacing: 0.22em;
-      text-transform: uppercase;
-      color: var(--muted);
-      text-decoration: none;
-      transition: color 0.25s ease;
-      padding-bottom: 4px;
-    }
-
-    /* Underline draws in from left on hover */
-    .nav a::after {
-      content: '';
-      position: absolute;
-      bottom: 0;
-      left: 0;
-      width: 0;
-      height: 1px;
-      background: var(--cream);
-      transition: width 0.3s ease;
-    }
-
-    .nav a:hover {
-      color: var(--cream);
-    }
-
-    .nav a:hover::after {
-      width: 100%;
-    }
-
-    main {
+    /* ——— Scroll container: 600vh total ——— */
+    #scroll-container {
+      height: 600vh;
       position: relative;
       z-index: 10;
     }
 
-    /* Sections — 120vh for cinematic scroll room */
-    .section {
-      min-height: 120vh;
+    .scene {
+      height: 100vh;
+      width: 100%;
       position: relative;
-      z-index: 15;
-      display: flex;
-      flex-direction: column;
-      justify-content: center;
-      padding: 120px 40px 140px;
-      scroll-margin-top: 96px;
     }
 
-    /* HERO — figure has full space, text at bottom third */
-    .section--hero {
-      align-items: center;
-      text-align: center;
-      justify-content: flex-end;
-      padding-bottom: 14vh;
-    }
-
-    .hero-copy {
-      position: relative;
-      z-index: 20;
-      max-width: fit-content;
-      margin: 0 auto;
-      /* Frosted dark pill so headline always reads over figure */
-      background: rgba(13, 11, 10, 0.75);
-      backdrop-filter: blur(12px);
-      -webkit-backdrop-filter: blur(12px);
-      border: 1px solid rgba(138, 127, 120, 0.25);
-      border-radius: 4px;
-      padding: 16px 32px;
-    }
-
-    .hero-eyebrow {
-      font-size: 11px;
-      letter-spacing: 0.35em;
-      text-transform: uppercase;
-      color: var(--muted);
-      margin-bottom: 12px;
-    }
-
-    .hero-title {
-      font-family: "Bebas Neue", sans-serif;
-      font-size: clamp(100px, 15vw, 180px);
-      line-height: 0.92;
-      letter-spacing: 0.02em;
-      color: var(--cream);
-      margin: 0;
-      text-transform: uppercase;
-    }
-
-    .hero-sub {
-      font-size: 11px;
-      letter-spacing: 0.28em;
-      text-transform: uppercase;
-      color: var(--muted);
-      margin-top: 16px;
-    }
-
-    .scroll-hint {
-      position: absolute;
-      bottom: 40px;
+    /* ——— CTA overlay: fixed, centered, shown during scene-cta ——— */
+    #cta-overlay {
+      position: fixed;
+      bottom: 14vh;
       left: 50%;
       transform: translateX(-50%);
-      font-size: 10px;
-      letter-spacing: 0.2em;
-      text-transform: uppercase;
-      color: var(--muted);
       z-index: 20;
-      animation: pulseFade 2.4s ease-in-out infinite;
-    }
-
-    @keyframes pulseFade {
-      0%, 100% { opacity: 0.35; }
-      50%       { opacity: 0.95; }
-    }
-
-    /* SPECS — content zone: right side */
-    .section--specs {
-      align-items: flex-end;
-    }
-
-    .specs-panel {
-      position: relative;
-      z-index: 20;
-      max-width: 420px;
-      width: 100%;
-      margin-left: auto;
-      padding: 28px 32px;
-      /* Accent top border — product label feel */
-      border: 1px solid rgba(138, 127, 120, 0.25);
-      border-top: 2px solid var(--accent);
-      background: rgba(13, 11, 10, 0.92);
-      backdrop-filter: blur(16px);
-      -webkit-backdrop-filter: blur(16px);
-    }
-
-    .specs-panel h2 {
-      font-family: "IBM Plex Mono", monospace;
-      font-size: 11px;
-      letter-spacing: 0.28em;
-      color: var(--muted);
-      margin: 0 0 8px;
-      font-weight: 500;
-    }
-
-    .specs-panel hr {
-      border: none;
-      border-top: 1px solid rgba(138, 127, 120, 0.25);
-      margin: 0 0 20px;
-    }
-
-    .spec-row {
-      display: grid;
-      grid-template-columns: 110px 1fr;
-      gap: 12px;
-      font-size: 12px;
-      line-height: 1.55;
-      margin-bottom: 14px;
-    }
-
-    .spec-row:last-child { margin-bottom: 0; }
-
-    .spec-label {
-      color: var(--muted);
-      letter-spacing: 0.06em;
-    }
-
-    .spec-value { color: var(--cream); }
-
-    /* FEATURES — content zone: left side */
-    .section--features {
-      align-items: flex-start;
-    }
-
-    .features-list {
-      position: relative;
-      z-index: 20;
-      max-width: 560px;
-    }
-
-    .feature-line {
-      font-family: "Bebas Neue", sans-serif;
-      font-size: clamp(40px, 5vw, 64px);
-      line-height: 1.1;
-      letter-spacing: 0.03em;
-      color: var(--cream);
-      margin: 0 0 22px;
-      text-transform: uppercase;
-      transition: text-shadow 0.35s ease;
-      cursor: default;
-    }
-
-    .feature-line:hover {
-      text-shadow: 0 0 40px rgba(232, 68, 26, 0.3);
-    }
-
-    .feature-line .num {
-      color: var(--accent);
-      margin-right: 10px;
-    }
-
-    /* REVIEWS — full width, centered */
-    .section--reviews {
+      display: flex;
+      flex-direction: column;
       align-items: center;
-    }
-
-    .section--reviews .reviews-grid {
-      position: relative;
-      z-index: 20;
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
-      gap: 24px;
-      max-width: 1100px;
-      margin: 0 auto;
-      width: 100%;
-    }
-
-    .review-card {
-      /* Left accent border for real review-card feel */
-      border: 1px solid rgba(138, 127, 120, 0.25);
-      border-left: 2px solid rgba(232, 68, 26, 0.4);
-      background: rgba(13, 11, 10, 0.92);
-      backdrop-filter: blur(16px);
-      -webkit-backdrop-filter: blur(16px);
-      padding: 28px 26px;
-    }
-
-    .stars {
-      color: var(--accent);
-      font-size: 14px;
-      letter-spacing: 2px;
-      margin-bottom: 14px;
-    }
-
-    .review-quote {
-      font-size: 14px;
-      line-height: 1.6;
-      color: var(--cream);
-      margin: 0 0 16px;
-    }
-
-    .review-by {
-      font-size: 12px;
-      color: var(--muted);
-    }
-
-    /* CTA — figure center full size, content at bottom third */
-    .section--cta {
-      align-items: center;
-      justify-content: flex-end;
-      padding-bottom: 14vh;
+      gap: 16px;
+      opacity: 0;
+      pointer-events: none;
       text-align: center;
     }
 
-    .cta-block {
-      position: relative;
-      z-index: 25;
-      max-width: 640px;
-      /* Frosted dark pill — same as hero-copy */
-      background: rgba(13, 11, 10, 0.75);
-      backdrop-filter: blur(12px);
-      -webkit-backdrop-filter: blur(12px);
-      border: 1px solid rgba(138, 127, 120, 0.25);
-      border-radius: 6px;
-      padding: 40px 52px;
+    #cta-overlay.active {
+      pointer-events: auto;
     }
 
-    .cta-eyebrow {
-      font-size: 11px;
-      letter-spacing: 0.35em;
-      text-transform: uppercase;
-      color: var(--muted);
-      margin-bottom: 14px;
-    }
-
-    .cta-title {
-      font-family: "Bebas Neue", sans-serif;
-      font-size: clamp(64px, 12vw, 140px);
-      line-height: 0.95;
-      color: var(--cream);
-      margin: 0 0 24px;
-      text-transform: uppercase;
-    }
-
-    .cta-meta {
-      font-size: 13px;
-      line-height: 1.8;
-      color: var(--muted);
-      margin-bottom: 32px;
-    }
-
+    /* ——— Button ——— */
     .btn-primary {
       position: relative;
       overflow: hidden;
@@ -535,10 +272,10 @@
       letter-spacing: 0.06em;
       color: var(--cream);
       background: var(--accent);
-      border: none;
-      padding: 18px 48px;
+      border: 1px solid var(--accent);
+      padding: 16px 48px;
       cursor: none;
-      transition: background 0.25s ease, transform 0.25s ease;
+      transition: background 0.3s ease, color 0.3s ease;
       text-transform: uppercase;
     }
 
@@ -546,7 +283,6 @@
       .btn-primary { cursor: pointer; }
     }
 
-    /* Scanline texture on hover — tactile feel */
     .btn-primary::after {
       content: '';
       position: absolute;
@@ -564,27 +300,23 @@
     }
 
     .btn-primary:hover {
-      background: #ff5a2e;
-      transform: scale(1.03);
+      background: transparent;
+      color: var(--accent);
     }
 
     .btn-primary:hover::after {
-      opacity: 1;
+      opacity: 0;
     }
 
     .btn-primary:disabled {
       opacity: 1;
       cursor: default;
-      transform: none;
-    }
-
-    .btn-primary:disabled::after {
-      display: none;
+      background: var(--accent);
+      color: var(--cream);
     }
 
     .checkout-link {
       display: inline-block;
-      margin-top: 24px;
       font-size: 13px;
       color: var(--accent);
       text-decoration: underline;
@@ -601,7 +333,7 @@
 
     .checkout-link:hover { color: #ff5a2e; }
 
-    /* Toast */
+    /* ——— Toast ——— */
     #toast {
       position: fixed;
       top: 100px;
@@ -627,7 +359,7 @@
       font-weight: 600;
     }
 
-    /* Marquee — more visible, accent dots */
+    /* ——— Marquee ——— */
     .marquee-wrap {
       position: fixed;
       bottom: 0;
@@ -667,7 +399,7 @@
       100% { transform: translateX(-50%); }
     }
 
-    /* Mobile — simplified stack layout */
+    /* ——— Mobile ——— */
     @media (max-width: 768px) {
       body { cursor: auto; }
 
@@ -675,8 +407,8 @@
         position: relative;
         inset: auto;
         height: auto;
-        min-height: 48vh;
-        padding: 32px 0 16px;
+        min-height: 50vh;
+        padding: 40px 0 20px;
       }
 
       .figure-spotlight { display: none; }
@@ -686,59 +418,25 @@
         padding: 20px;
       }
 
-      .nav {
-        max-width: 100%;
-        gap: 12px;
+      #scroll-container {
+        height: auto;
       }
 
-      .nav a { font-size: 9px; }
-
-      .section {
-        min-height: auto;
-        padding: 48px 20px 80px;
-      }
-
-      .section--hero {
+      .scene {
+        height: 100vh;
+        display: flex;
+        align-items: center;
         justify-content: center;
-        padding-bottom: 40px;
       }
 
-      .hero-copy {
-        padding: 20px 24px;
-      }
-
-      .section--cta {
-        justify-content: center;
-        padding-bottom: 80px;
-      }
-
-      .cta-block {
-        padding: 28px 24px;
-      }
-
-      .scroll-hint { display: none; }
-
-      .section--specs,
-      .section--features {
-        align-items: stretch;
-      }
-
-      .specs-panel {
-        margin-left: 0;
-        max-width: none;
-      }
-
-      .features-list { max-width: none; }
-
-      .spec-row {
-        grid-template-columns: 1fr;
-        gap: 4px;
-      }
-
-      .spec-label {
-        font-size: 10px;
-        letter-spacing: 0.15em;
-        text-transform: uppercase;
+      #cta-overlay {
+        position: relative;
+        bottom: auto;
+        left: auto;
+        transform: none;
+        opacity: 1;
+        pointer-events: auto;
+        padding: 40px 20px;
       }
     }
   </style>
@@ -748,13 +446,7 @@
   <div id="custom-cursor" aria-hidden="true"></div>
 
   <header class="site-header">
-    <a class="logo" href="#hero">CM™</a>
-    <nav class="nav" aria-label="Primary">
-      <a href="#specs">SPECS</a>
-      <a href="#features">FEATURES</a>
-      <a href="#reviews">REVIEWS</a>
-      <a href="#add-to-team">ADD TO TEAM</a>
-    </nav>
+    <a class="logo" href="#">CM™</a>
   </header>
 
   <div class="figure-shell" id="figure-shell" aria-hidden="true">
@@ -773,74 +465,20 @@
     </div>
   </div>
 
-  <main id="main-scroll">
-    <section id="hero" class="section section--hero">
-      <div class="hero-copy" id="hero-copy">
-        <p class="hero-eyebrow">LIMITED EDITION</p>
-        <h1 class="hero-title">CORBIN MOFFITT™</h1>
-        <p class="hero-sub">SENIOR DESIGNER — 1 OF 1</p>
-      </div>
-      <p class="scroll-hint" id="scroll-hint">SCROLL TO EXPLORE ↓</p>
-    </section>
-
-    <section id="specs" class="section section--specs">
-      <div class="specs-panel" id="specs-panel">
-        <h2>PRODUCT SPECIFICATIONS</h2>
-        <hr />
-        <div class="spec-row"><span class="spec-label">MODEL</span><span class="spec-value">Senior Interactive Designer</span></div>
-        <div class="spec-row"><span class="spec-label">VERSION</span><span class="spec-value">2025</span></div>
-        <div class="spec-row"><span class="spec-label">EXPERIENCE</span><span class="spec-value">7+ Years</span></div>
-        <div class="spec-row"><span class="spec-label">STACK</span><span class="spec-value">Figma · Webflow · Cursor · GSAP</span></div>
-        <div class="spec-row"><span class="spec-label">SPECIALTY</span><span class="spec-value">Brand · Web · UX · Performance</span></div>
-        <div class="spec-row"><span class="spec-label">COMPATIBLE</span><span class="spec-value">Ambitious Teams · Fast Startups<br />Award-Hungry Agencies</span></div>
-        <div class="spec-row"><span class="spec-label">SHIPS</span><span class="spec-value">Saratoga Springs, UT</span></div>
-        <div class="spec-row"><span class="spec-label">WARRANTY</span><span class="spec-value">Results Guaranteed</span></div>
-      </div>
-    </section>
-
-    <section id="features" class="section section--features">
-      <div class="features-list" id="features-list">
-        <p class="feature-line"><span class="num">01</span>— Ships with 7+ years of craft.</p>
-        <p class="feature-line"><span class="num">02</span>— No assembly required.</p>
-        <p class="feature-line"><span class="num">03</span>— Pairs well with ambitious briefs.</p>
-        <p class="feature-line"><span class="num">04</span>— Battery: curiosity-powered, never runs out.</p>
-      </div>
-    </section>
-
-    <section id="reviews" class="section section--reviews">
-      <div class="reviews-grid" id="reviews-grid">
-        <article class="review-card">
-          <div class="stars">★★★★★</div>
-          <p class="review-quote">"Took our CVR from average to 63% better."</p>
-          <p class="review-by">— Linear Design</p>
-        </article>
-        <article class="review-card">
-          <div class="stars">★★★★★</div>
-          <p class="review-quote">"Grew revenue from $550K to nearly $1M."</p>
-          <p class="review-by">— Disruptive Advertising</p>
-        </article>
-        <article class="review-card">
-          <div class="stars">★★★★★</div>
-          <p class="review-quote">"Built his own portfolio in Cursor with zero prior coding experience. Unhinged in the best way."</p>
-          <p class="review-by">— Himself, probably</p>
-        </article>
-      </div>
-    </section>
-
-    <section id="add-to-team" class="section section--cta">
-      <div class="cta-block">
-        <p class="cta-eyebrow">READY TO SHIP</p>
-        <h2 class="cta-title">ADD TO TEAM</h2>
-        <p class="cta-meta">
-          Only 1 remaining.<br />
-          Starting bid: Competitive salary.<br />
-          Ready to ship to Saratoga Springs, UT.
-        </p>
-        <button type="button" class="btn-primary" id="cta-btn">ADD TO TEAM →</button>
-        <a class="checkout-link" id="checkout-link" href="https://corbinmoffitt.com" target="_blank" rel="noopener noreferrer">PROCEED TO CHECKOUT → corbinmoffitt.com</a>
-      </div>
-    </section>
+  <main id="scroll-container">
+    <div id="scene-entry"     class="scene"></div>
+    <div id="scene-hero"      class="scene"></div>
+    <div id="scene-statement" class="scene"></div>
+    <div id="scene-specs"     class="scene"></div>
+    <div id="scene-features"  class="scene"></div>
+    <div id="scene-cta"       class="scene"></div>
   </main>
+
+  <!-- CTA: fixed overlay, activated during scene-cta -->
+  <div id="cta-overlay">
+    <button type="button" class="btn-primary" id="cta-btn">ADD TO TEAM →</button>
+    <a class="checkout-link" id="checkout-link" href="https://corbinmoffitt.com" target="_blank" rel="noopener noreferrer">PROCEED TO CHECKOUT → corbinmoffitt.com</a>
+  </div>
 
   <div class="marquee-wrap" aria-hidden="true">
     <div class="marquee-inner" id="marquee-track">
@@ -860,9 +498,9 @@
     gsap.registerPlugin(ScrollTrigger);
 
     const prefersCoarse = window.matchMedia("(pointer: coarse)").matches;
-    const isMobile     = window.matchMedia("(max-width: 768px)").matches;
+    const isMobile      = window.matchMedia("(max-width: 768px)").matches;
 
-    /* ——— Custom cursor (desktop only) ——— */
+    /* ——— Custom cursor ——— */
     const cursor = document.getElementById("custom-cursor");
 
     if (!prefersCoarse && !isMobile && cursor) {
@@ -893,14 +531,10 @@
     }
 
     const productFigure = document.getElementById("product-figure");
-    const heroCopy      = document.getElementById("hero-copy");
-    const specsPanel    = document.getElementById("specs-panel");
-    const featureLines  = gsap.utils.toArray("#features-list .feature-line");
-    const reviewCards   = gsap.utils.toArray("#reviews-grid .review-card");
     const ctaBtn        = document.getElementById("cta-btn");
+    const ctaOverlay    = document.getElementById("cta-overlay");
     const checkoutLink  = document.getElementById("checkout-link");
     const toast         = document.getElementById("toast");
-    const scrollHint    = document.getElementById("scroll-hint");
 
     gsap.set(toast, { x: 120, opacity: 0, visibility: "hidden" });
 
@@ -910,169 +544,91 @@
     }
 
     if (!isMobile) {
-      /* Hero copy + scroll hint fade out over first 12% of total scroll */
-      const heroFadeTargets = [heroCopy, scrollHint].filter(Boolean);
-      gsap.fromTo(
-        heroFadeTargets,
-        { opacity: 1 },
-        {
-          opacity: 0,
-          ease: "none",
-          scrollTrigger: {
-            trigger: "body",
-            start: "top top",
-            end: () => "+=" + ScrollTrigger.maxScroll(window) * 0.12,
-            scrub: true,
-          },
-        }
-      );
+      /* ——— Set initial figure state: entry — invisible ——— */
+      gsap.set(productFigure, { opacity: 0, scale: 0.8, x: 0, rotation: 0 });
 
-      /* Pin figure shell for entire scroll — truly fixed in viewport */
-      const figureShell = document.getElementById("figure-shell");
+      /*
+       * Figure timeline mapped to full 600vh scroll progress.
+       * Keyframe positions (0–1) correspond to scroll percentages:
+       *   0.00 – 0.05  scene-entry:     opacity 0,   scale 0.8,  x 0,      rot 0
+       *   0.05 – 0.20  scene-hero:      opacity 1,   scale 1,    x 0,      rot 0
+       *   0.20 – 0.35  scene-statement: opacity 0.4, scale 0.8,  x 0,      rot 0
+       *   0.35 – 0.50  scene-specs:     opacity 0.9, scale 0.75, x –22vw,  rot –4
+       *   0.50 – 0.65  scene-features:  opacity 0.9, scale 0.85, x +22vw,  rot +4
+       *   0.65 – 1.00  scene-cta:       opacity 1,   scale 1.1,  x 0,      rot 0
+       */
+      const figureTl = gsap.timeline();
+
+      figureTl
+        /* Entry: hold invisible */
+        .to(productFigure,
+          { opacity: 0, scale: 0.8, x: 0, rotation: 0, duration: 0.05, ease: "none" },
+          0)
+        /* Hero: fade in full */
+        .to(productFigure,
+          { opacity: 1, scale: 1, x: 0, rotation: 0, duration: 0.15, ease: "power3.inOut" },
+          0.05)
+        /* Statement: ghost back */
+        .to(productFigure,
+          { opacity: 0.4, scale: 0.8, x: 0, rotation: 0, duration: 0.15, ease: "power3.inOut" },
+          0.20)
+        /* Specs: drift left */
+        .to(productFigure,
+          { opacity: 0.9, scale: 0.75, x: "-22vw", rotation: -4, duration: 0.15, ease: "power3.inOut" },
+          0.35)
+        /* Features: drift right */
+        .to(productFigure,
+          { opacity: 0.9, scale: 0.85, x: "22vw", rotation: 4, duration: 0.15, ease: "power3.inOut" },
+          0.50)
+        /* CTA: return center, slightly oversized */
+        .to(productFigure,
+          { opacity: 1, scale: 1.1, x: 0, rotation: 0, duration: 0.35, ease: "power3.inOut" },
+          0.65);
+
+      /* Attach timeline to scroll — scrub: 2 for heavy weighted feel */
       ScrollTrigger.create({
-        trigger: "#main-scroll",
+        animation: figureTl,
+        trigger: "#scroll-container",
         start: "top top",
         end: "bottom bottom",
-        pin: figureShell,
-        pinSpacing: false,
-      });
-
-      /* Figure position timeline across full scroll
-         0–20%  hero      center, scale 1, rotation 0
-         20–40% specs     left –28vw, scale 0.72, rotation –5
-         40–60% features  right +28vw, scale 0.85, rotation +5
-         60–80% reviews   center, scale 0.62, rotation 0
-         80–100% cta      center, scale 1, rotation 0             */
-      const figureTl = gsap.timeline({
-        scrollTrigger: {
-          trigger: "#main-scroll",
-          start: "top top",
-          end: "bottom bottom",
-          scrub: 1.5,
-          onUpdate: (self) => {
-            const p = self.progress;
-            /* Bob only during hero (0–18%) and cta (82–100%) */
-            setIdlePaused(!(p <= 0.18 || p >= 0.82));
-          },
+        scrub: 2,
+        onUpdate: (self) => {
+          const p = self.progress;
+          /* Idle bob active during hero (5–20%) and CTA (65–100%) */
+          const shouldBob = (p >= 0.05 && p <= 0.20) || p >= 0.65;
+          setIdlePaused(!shouldBob);
         },
       });
 
-      figureTl
-        /* Hold at hero center */
-        .fromTo(
-          productFigure,
-          { x: 0, y: 0, scale: 1, rotation: 0 },
-          { x: 0, y: 0, scale: 1, rotation: 0, duration: 0.2, ease: "power3.inOut" },
-          0
-        )
-        /* Drift left for specs */
-        .to(
-          productFigure,
-          { x: "-28vw", scale: 0.72, rotation: -5, duration: 0.2, ease: "power3.inOut" },
-          0.2
-        )
-        /* Drift right for features */
-        .to(
-          productFigure,
-          { x: "28vw", scale: 0.85, rotation: 5, duration: 0.2, ease: "power3.inOut" },
-          0.4
-        )
-        /* Return center, scale down for reviews */
-        .to(
-          productFigure,
-          { x: 0, scale: 0.62, rotation: 0, duration: 0.2, ease: "power3.inOut" },
-          0.6
-        )
-        /* Return center, full scale for cta */
-        .to(
-          productFigure,
-          { x: 0, scale: 1, rotation: 0, duration: 0.2, ease: "power3.inOut" },
-          0.8
-        );
-
-      /* ——— Specs panel: slide in from right + deblur ——— */
-      gsap.set(specsPanel, { x: 80, opacity: 0, filter: "blur(4px)" });
+      /* ——— CTA overlay: fade in when scene-cta enters view ——— */
       ScrollTrigger.create({
-        trigger: "#specs",
-        start: "top 58%",
-        end: "bottom 42%",
-        onEnter: () =>
-          gsap.to(specsPanel, { x: 0, opacity: 1, filter: "blur(0px)", duration: 0.7, ease: "power3.inOut" }),
-        onLeave: () =>
-          gsap.to(specsPanel, { x: -80, opacity: 0, filter: "blur(4px)", duration: 0.55, ease: "power3.inOut" }),
-        onEnterBack: () =>
-          gsap.to(specsPanel, { x: 0, opacity: 1, filter: "blur(0px)", duration: 0.7, ease: "power3.inOut" }),
-        onLeaveBack: () =>
-          gsap.to(specsPanel, { x: 80, opacity: 0, filter: "blur(4px)", duration: 0.55, ease: "power3.inOut" }),
-      });
-
-      /* ——— Feature lines: stagger in from left + deblur ——— */
-      gsap.set(featureLines, { x: -60, opacity: 0, filter: "blur(4px)" });
-      ScrollTrigger.create({
-        trigger: "#features",
-        start: "top 58%",
-        end: "bottom 42%",
-        onEnter: () =>
-          gsap.to(featureLines, {
-            x: 0, opacity: 1, filter: "blur(0px)",
-            duration: 0.7, stagger: 0.15, ease: "power3.inOut",
-          }),
-        onLeave: () =>
-          gsap.to(featureLines, {
-            x: -60, opacity: 0, filter: "blur(4px)",
-            duration: 0.5, stagger: 0.08, ease: "power3.inOut",
-          }),
-        onEnterBack: () =>
-          gsap.to(featureLines, {
-            x: 0, opacity: 1, filter: "blur(0px)",
-            duration: 0.7, stagger: 0.15, ease: "power3.inOut",
-          }),
-        onLeaveBack: () =>
-          gsap.to(featureLines, {
-            x: -60, opacity: 0, filter: "blur(4px)",
-            duration: 0.5, stagger: 0.08, ease: "power3.inOut",
-          }),
-      });
-
-      /* ——— Review cards: rise up + deblur ——— */
-      gsap.set(reviewCards, { y: 60, opacity: 0, filter: "blur(4px)" });
-      ScrollTrigger.create({
-        trigger: "#reviews",
-        start: "top 58%",
-        end: "bottom 42%",
-        onEnter: () =>
-          gsap.to(reviewCards, {
-            y: 0, opacity: 1, filter: "blur(0px)",
-            duration: 0.75, stagger: 0.2, ease: "power3.inOut",
-          }),
-        onLeave: () =>
-          gsap.to(reviewCards, {
-            y: 60, opacity: 0, filter: "blur(4px)",
-            duration: 0.5, stagger: 0.1, ease: "power3.inOut",
-          }),
-        onEnterBack: () =>
-          gsap.to(reviewCards, {
-            y: 0, opacity: 1, filter: "blur(0px)",
-            duration: 0.75, stagger: 0.2, ease: "power3.inOut",
-          }),
-        onLeaveBack: () =>
-          gsap.to(reviewCards, {
-            y: 60, opacity: 0, filter: "blur(4px)",
-            duration: 0.5, stagger: 0.1, ease: "power3.inOut",
-          }),
+        trigger: "#scene-cta",
+        start: "top 60%",
+        end: "bottom bottom",
+        onEnter: () => {
+          ctaOverlay.classList.add("active");
+          gsap.to(ctaOverlay, { opacity: 1, duration: 0.8, ease: "power2.inOut" });
+        },
+        onLeaveBack: () => {
+          ctaOverlay.classList.remove("active");
+          gsap.to(ctaOverlay, { opacity: 0, duration: 0.5, ease: "power2.inOut" });
+        },
       });
 
     } else {
-      /* Mobile: simple fade-up per section */
+      /* ——— Mobile: figure visible, no scroll reactions ——— */
+      gsap.set(productFigure, { opacity: 1, scale: 1, x: 0, rotation: 0 });
       productFigure.classList.remove("idle-paused");
-      gsap.utils.toArray(".section").forEach((sec) => {
-        gsap.from(sec, {
+
+      /* Simple fade-up per scene */
+      gsap.utils.toArray(".scene").forEach((scene) => {
+        gsap.from(scene, {
           opacity: 0,
-          y: 36,
+          y: 30,
           duration: 0.8,
           ease: "power2.out",
           scrollTrigger: {
-            trigger: sec,
+            trigger: scene,
             start: "top 88%",
             toggleActions: "play none none reverse",
           },
@@ -1080,7 +636,7 @@
       });
     }
 
-    /* ——— CTA add-to-team ——— */
+    /* ——— CTA button click ——— */
     let added = false;
     ctaBtn.addEventListener("click", () => {
       if (added) return;
@@ -1088,6 +644,7 @@
       ctaBtn.textContent = "✓ ADDED TO TEAM";
       ctaBtn.disabled = true;
 
+      /* Toast slide in */
       gsap.fromTo(
         toast,
         { x: 120, opacity: 0, visibility: "visible" },
@@ -1110,21 +667,22 @@
         }
       );
 
+      /* Figure celebration */
       gsap
         .timeline({ defaults: { overwrite: "auto" } })
-        .to(productFigure, { scale: 1.2, duration: 0.18, ease: "power2.out" })
-        .to(productFigure, { scale: 1, duration: 0.35, ease: "elastic.out(1, 0.45)" }, "-=0.12")
+        .to(productFigure, { scale: 1.25, duration: 0.18, ease: "power2.out" })
+        .to(productFigure, { scale: 1.1,  duration: 0.35, ease: "elastic.out(1, 0.45)" }, "-=0.12")
         .to(productFigure, { rotation: 6,  duration: 0.08, ease: "power1.inOut" }, 0.12)
-        .to(productFigure, { rotation: -5, duration: 0.1,  ease: "power1.inOut" })
+        .to(productFigure, { rotation: -5, duration: 0.10, ease: "power1.inOut" })
         .to(productFigure, { rotation: 3,  duration: 0.08, ease: "power1.inOut" })
         .to(productFigure, { rotation: 0,  duration: 0.12, ease: "power2.out" });
 
+      /* Checkout link */
       gsap.delayedCall(1.5, () => {
         checkoutLink.classList.add("visible");
       });
     });
 
-    /* Refresh ScrollTrigger after all assets load */
     window.addEventListener("load", () => ScrollTrigger.refresh());
   </script>
 </body>
