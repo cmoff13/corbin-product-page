@@ -399,6 +399,77 @@
       100% { transform: translateX(-50%); }
     }
 
+    /* ——— Entry content ——— */
+    #entry-content {
+      position: fixed;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      z-index: 30;
+      text-align: center;
+      pointer-events: none;
+    }
+
+    #entry-content .entry-logo {
+      font-family: "Bebas Neue", sans-serif;
+      font-size: 32px;
+      color: var(--accent);
+      letter-spacing: 0.04em;
+      display: block;
+    }
+
+    #entry-content .entry-est {
+      font-size: 11px;
+      letter-spacing: 0.4em;
+      color: var(--muted);
+      text-transform: uppercase;
+      margin-top: 8px;
+      display: block;
+    }
+
+    /* ——— Hero content ——— */
+    #hero-content {
+      position: fixed;
+      bottom: 15vh;
+      left: 50%;
+      transform: translateX(-50%);
+      z-index: 30;
+      text-align: center;
+      pointer-events: none;
+      background: rgba(13, 11, 10, 0.6);
+      backdrop-filter: blur(8px);
+      -webkit-backdrop-filter: blur(8px);
+      border-radius: 2px;
+      padding: 12px 24px;
+      white-space: nowrap;
+    }
+
+    #hero-content .hero-eyebrow {
+      font-size: 11px;
+      letter-spacing: 0.4em;
+      color: var(--muted);
+      text-transform: uppercase;
+      margin: 0 0 6px;
+    }
+
+    #hero-content .hero-title {
+      font-family: "Bebas Neue", sans-serif;
+      font-size: clamp(80px, 12vw, 160px);
+      line-height: 0.92;
+      color: var(--cream);
+      margin: 0;
+      text-transform: uppercase;
+      letter-spacing: 0.02em;
+    }
+
+    #hero-content .hero-sub {
+      font-size: 13px;
+      letter-spacing: 0.2em;
+      color: var(--muted);
+      text-transform: uppercase;
+      margin: 8px 0 0;
+    }
+
     /* ——— Mobile ——— */
     @media (max-width: 768px) {
       body { cursor: auto; }
@@ -463,6 +534,19 @@
         <div class="pedestal"></div>
       </div>
     </div>
+  </div>
+
+  <!-- Entry overlay: visible 0–5% scroll -->
+  <div id="entry-content" aria-hidden="true">
+    <span class="entry-logo">CM™</span>
+    <span class="entry-est">Est. 2017</span>
+  </div>
+
+  <!-- Hero overlay: visible 5–20% scroll -->
+  <div id="hero-content" aria-hidden="true">
+    <p class="hero-eyebrow">Limited Edition</p>
+    <h1 class="hero-title">Corbin Moffitt™</h1>
+    <p class="hero-sub">Senior Designer — 1 of 1</p>
   </div>
 
   <main id="scroll-container">
@@ -531,6 +615,8 @@
     }
 
     const productFigure = document.getElementById("product-figure");
+    const entryContent  = document.getElementById("entry-content");
+    const heroContent   = document.getElementById("hero-content");
     const ctaBtn        = document.getElementById("cta-btn");
     const ctaOverlay    = document.getElementById("cta-overlay");
     const checkoutLink  = document.getElementById("checkout-link");
@@ -546,6 +632,42 @@
     if (!isMobile) {
       /* ——— Set initial figure state: entry — invisible ——— */
       gsap.set(productFigure, { opacity: 0, scale: 0.8, x: 0, rotation: 0 });
+
+      /* ——— Entry content: fade out over first 5% of scroll ——— */
+      gsap.set(entryContent, { opacity: 1 });
+      gsap.to(entryContent, {
+        opacity: 0,
+        ease: "none",
+        scrollTrigger: {
+          trigger: "#scroll-container",
+          start: "top top",
+          end: () => "+=" + ScrollTrigger.maxScroll(window) * 0.05,
+          scrub: true,
+        },
+      });
+
+      /* ——— Hero content: fade in at 5%, fade out at 20% ——— */
+      gsap.set(heroContent, { opacity: 0, y: 0 });
+
+      ScrollTrigger.create({
+        trigger: "#scroll-container",
+        start: () => ScrollTrigger.maxScroll(window) * 0.05 + "px top",
+        end:   () => ScrollTrigger.maxScroll(window) * 0.12 + "px top",
+        scrub: true,
+        onUpdate: (self) => {
+          gsap.set(heroContent, { opacity: self.progress, y: 0 });
+        },
+      });
+
+      ScrollTrigger.create({
+        trigger: "#scroll-container",
+        start: () => ScrollTrigger.maxScroll(window) * 0.12 + "px top",
+        end:   () => ScrollTrigger.maxScroll(window) * 0.20 + "px top",
+        scrub: true,
+        onUpdate: (self) => {
+          gsap.set(heroContent, { opacity: 1 - self.progress, y: self.progress * 30 });
+        },
+      });
 
       /*
        * Figure timeline mapped to full 600vh scroll progress.
