@@ -10,7 +10,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
 
-  <!-- Libraries: synchronous, no defer/async, dependency order -->
+  <!-- Libraries: synchronous, no defer/async -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/ScrollTrigger.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
@@ -21,14 +21,12 @@
       --accent: #E8441A;
       --muted: #8A7F78;
       --cream: #F5F0EB;
-      --cursor-size: 12px;
       --font-mono: "Space Mono", monospace;
       --font-body: "DM Sans", sans-serif;
       --font-display: "Bebas Neue", sans-serif;
     }
 
     *, *::before, *::after { box-sizing: border-box; }
-
     html { scroll-behavior: smooth; scrollbar-width: none; }
     html::-webkit-scrollbar { display: none; }
 
@@ -47,66 +45,64 @@
       #custom-cursor { display: none !important; }
     }
 
-    /* ——— Vignette ——— */
+    /* ——— Overlays ——— */
     .vignette {
-      position: fixed;
-      inset: 0;
-      pointer-events: none;
-      z-index: 998;
+      position: fixed; inset: 0;
+      pointer-events: none; z-index: 998;
       background: radial-gradient(ellipse at center, transparent 40%, rgba(10,9,8,0.85) 100%);
     }
 
-    /* ——— Film grain ——— */
     .grain {
-      position: fixed;
-      inset: 0;
-      pointer-events: none;
-      z-index: 999;
-      opacity: 0.12;
+      position: fixed; inset: 0;
+      pointer-events: none; z-index: 999; opacity: 0.12;
       background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
       mix-blend-mode: overlay;
     }
 
-    /* ——— Custom cursor ——— */
+    /* ——— Cursor ——— */
     #custom-cursor {
-      position: fixed;
-      top: 0; left: 0;
-      width: var(--cursor-size);
-      height: var(--cursor-size);
+      position: fixed; top: 0; left: 0;
+      width: 12px; height: 12px;
       border: 1.5px solid var(--accent);
       border-radius: 50%;
-      pointer-events: none;
-      z-index: 10000;
-      transform: translate(-50%, -50%) scale(1);
+      pointer-events: none; z-index: 10000;
+      transform: translate(-50%, -50%);
       will-change: transform;
+      opacity: 0;
     }
 
-    /* ——— Figure shell ——— */
+    /* ——— Logo: fixed independently, not relying on header ——— */
+    .logo {
+      position: fixed;
+      top: 24px;
+      left: 24px;
+      z-index: 100;
+      font-family: var(--font-display);
+      font-size: 20px; color: var(--accent);
+      letter-spacing: 0.04em; text-decoration: none;
+    }
+
+    /* ——— Figure shell: GSAP owns all transforms ——— */
     #figure-shell {
       position: fixed;
       top: 50%;
       left: 50%;
-      z-index: 50;
-      width: 520px;
-      height: auto;
-      min-height: 600px;
+      width: 480px;
+      z-index: 10;
+      opacity: 0;
       pointer-events: none;
-      opacity: 1;
-      visibility: visible;
-      display: block;
-      animation: figureFloat 4s ease-in-out infinite alternate;
+      /* No CSS transform — GSAP handles centering via xPercent/yPercent */
     }
 
-    @keyframes figureFloat {
-      from { transform: translate(-50%, -50%) translateY(0); }
-      to   { transform: translate(-50%, -50%) translateY(-10px); }
-    }
-
+    /* Float lives on product-figure so GSAP on figure-shell stays clean */
     #product-figure {
-      position: relative;
       width: 100%;
-      will-change: transform, opacity;
-      transform-origin: center bottom;
+      animation: floatY 4s ease-in-out infinite alternate;
+    }
+
+    @keyframes floatY {
+      from { transform: translateY(0); }
+      to   { transform: translateY(-10px); }
     }
 
     #action-figure {
@@ -144,24 +140,6 @@
       to   { opacity: 1;   transform: translateX(-50%) scale(1.15); }
     }
 
-    /* ——— Header ——— */
-    .site-header {
-      position: fixed;
-      top: 0; left: 0; right: 0;
-      z-index: 100;
-      padding: 28px 40px;
-      pointer-events: none;
-    }
-
-    .logo {
-      font-family: var(--font-display);
-      font-size: 20px;
-      color: var(--accent);
-      letter-spacing: 0.04em;
-      text-decoration: none;
-      pointer-events: auto;
-    }
-
     /* ——— Scroll container ——— */
     #scroll-container {
       height: 600vh;
@@ -175,24 +153,28 @@
       position: relative;
     }
 
-    /* ═══════════════════════════════════════
-       CONTENT OVERLAYS — all fixed, z-index 30,
-       opacity:1 in CSS, GSAP sets initial state
-    ═══════════════════════════════════════ */
-
-    /* shared base */
-    #entry-content,
-    #hero-content,
-    #statement-content,
-    #specs-content,
-    #features-content,
-    #cta-content {
+    /* ═══════════════════════════════════════════
+       SCENE CONTENT — base class
+       opacity:0 by default; GSAP fades in per scene
+    ═══════════════════════════════════════════ */
+    .scene-content {
       position: fixed;
       z-index: 30;
-      opacity: 1;
-      visibility: visible;
+      opacity: 0;
       pointer-events: none;
+      transition: none;
+      /* Frosted backdrop for visual separation from figure */
+      background: rgba(10,9,8,0.75);
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
+      padding: 24px 32px;
+      border-radius: 2px;
+      border: 1px solid rgba(245,240,235,0.06);
     }
+
+    /* Allow interactive elements inside CTA to be clicked */
+    #cta-content button,
+    #cta-content a { pointer-events: auto; }
 
     /* ——— Entry ——— */
     #entry-content {
@@ -201,112 +183,103 @@
       text-align: center;
     }
 
-    #entry-content .entry-logo {
-      font-family: var(--font-display);
-      font-size: 32px;
-      color: var(--accent);
-      letter-spacing: 0.04em;
-      display: block;
-    }
-
-    #entry-content .entry-est {
-      font-family: var(--font-mono);
-      font-size: 10px;
-      letter-spacing: 0.45em;
-      color: var(--muted);
-      text-transform: uppercase;
-      margin-top: 10px;
-      display: block;
-    }
-
     /* ——— Hero ——— */
     #hero-content {
-      bottom: 12vh;
-      left: 50%;
+      bottom: 12vh; left: 50%;
       transform: translateX(-50%);
-      text-align: center;
-      width: 90vw;
-      max-width: 900px;
-      background: rgba(10,9,8,0.6);
-      backdrop-filter: blur(8px);
-      -webkit-backdrop-filter: blur(8px);
-      border-radius: 2px;
-      padding: 12px 32px;
-    }
-
-    #hero-content .hero-eyebrow {
-      font-family: var(--font-mono);
-      font-size: 10px;
-      letter-spacing: 0.45em;
-      color: var(--muted);
-      text-transform: uppercase;
-      margin: 0 0 8px;
-    }
-
-    #hero-content .hero-title {
-      font-family: var(--font-display);
-      font-size: clamp(64px, 10vw, 148px);
-      line-height: 0.92;
-      color: var(--cream);
-      margin: 0;
-      text-transform: uppercase;
-      letter-spacing: 0.02em;
-    }
-
-    #hero-content .hero-sub {
-      font-family: var(--font-mono);
-      font-size: 11px;
-      letter-spacing: 0.22em;
-      color: var(--muted);
-      text-transform: uppercase;
-      margin: 10px 0 0;
+      text-align: center; width: 90vw;
+      max-width: 1000px;
     }
 
     /* ——— Statement ——— */
     #statement-content {
       top: 50%; left: 50%;
       transform: translate(-50%, -50%);
-      text-align: center;
-      width: 90vw;
-      max-width: 720px;
+      text-align: center; width: 90vw;
+      max-width: 800px;
     }
 
-    .statement-line {
+    /* ——— Specs: right side ——— */
+    #specs-content {
+      top: 50%;
+      right: 6vw;
+      left: auto;
+      transform: translateY(-50%);
+      text-align: left;
+      max-width: 400px;
+    }
+
+    /* ——— Features: left side ——— */
+    #features-content {
+      top: 50%;
+      left: 6vw;
+      right: auto;
+      transform: translateY(-50%);
+      text-align: left;
+      max-width: 440px;
+    }
+
+    /* ——— CTA ——— */
+    #cta-content {
+      bottom: 10vh; left: 50%;
+      transform: translateX(-50%);
+      text-align: center; width: 90vw;
+      max-width: 700px;
+    }
+
+    #cta-content h2 {
+      font-size: clamp(48px, 8vw, 100px);
+    }
+
+    /* ——— Typography ——— */
+    h1, h2 {
       font-family: var(--font-display);
-      font-size: clamp(48px, 7.5vw, 108px);
-      line-height: 1;
       color: var(--cream);
-      display: block;
+      margin: 0;
+    }
+
+    h1 {
+      font-size: clamp(64px, 10vw, 148px);
+      line-height: 0.92;
+      letter-spacing: 0.02em;
+    }
+
+    h2 {
+      font-size: clamp(44px, 6.5vw, 96px);
+      line-height: 1;
       letter-spacing: 0.04em;
     }
 
-    .statement-rule {
-      width: 48px;
-      height: 1px;
+    .label {
+      font-family: var(--font-mono);
+      font-size: 10px;
+      letter-spacing: 0.45em;
+      color: var(--accent);
+      text-transform: uppercase;
+      margin: 0 0 12px;
+    }
+
+    .sublabel {
+      font-family: var(--font-mono);
+      font-size: 11px;
+      letter-spacing: 0.15em;
+      color: var(--muted);
+      text-transform: uppercase;
+      margin: 12px 0 0;
+      line-height: 1.7;
+    }
+
+    .rule {
+      width: 48px; height: 1px;
       background: var(--accent);
       margin: 24px auto;
     }
 
-    .statement-tagline {
-      font-family: var(--font-mono);
-      font-size: 12px;
-      letter-spacing: 0.08em;
-      color: var(--muted);
-      line-height: 1.85;
-    }
-
-    /* ——— Specs ——— */
-    #specs-content {
-      top: 50%;
-      right: 7vw;
-      transform: translateY(-50%);
-      width: 320px;
-    }
-
-    .specs-heading {
+    /* Specs */
+    .specs-header {
       font-family: var(--font-mono);
       font-size: 9px;
-      letter-spacing: 0.38em;
+      letter-spacing: 0.4em;
       color: var(--accent);
       text-transform: uppercase;
       margin: 0 0 20px;
@@ -338,133 +311,77 @@
       letter-spacing: 0.03em;
     }
 
-    /* ——— Features ——— */
-    #features-content {
-      top: 50%;
-      left: 7vw;
-      transform: translateY(-50%);
-      width: 300px;
-    }
-
-    .features-heading {
-      font-family: var(--font-mono);
-      font-size: 9px;
-      letter-spacing: 0.38em;
-      color: var(--accent);
-      text-transform: uppercase;
-      margin: 0 0 20px;
-    }
-
-    .feature-item {
-      font-family: var(--font-mono);
-      font-size: 14px;
-      letter-spacing: 0.06em;
-      color: var(--cream);
-      padding: 11px 0;
-      border-bottom: 1px solid rgba(245,240,235,0.06);
-      line-height: 1;
-    }
-
-    .feature-arrow {
-      color: var(--accent);
-      margin-right: 10px;
-    }
-
-    /* ——— CTA content (copy above button) ——— */
-    #cta-content {
-      bottom: calc(14vh + 110px);
-      left: 50%;
-      transform: translateX(-50%);
-      text-align: center;
-      width: 90vw;
-      max-width: 600px;
-    }
-
-    .cta-headline {
-      font-family: var(--font-display);
-      font-size: clamp(36px, 5vw, 68px);
-      letter-spacing: 0.06em;
-      color: var(--cream);
-      line-height: 1.05;
-      margin: 0;
-      display: block;
-    }
-
-    .cta-sub {
-      font-family: var(--font-mono);
-      font-size: 11px;
-      letter-spacing: 0.2em;
-      color: var(--muted);
-      text-transform: uppercase;
-      margin: 14px 0 0;
-      display: block;
-    }
-
-    /* ——— CTA button overlay ——— */
-    #cta-overlay {
-      position: fixed;
-      bottom: 14vh;
-      left: 50%;
-      transform: translateX(-50%);
-      z-index: 20;
+    /* Features */
+    .feature-line {
       display: flex;
-      flex-direction: column;
-      align-items: center;
-      gap: 16px;
-      opacity: 0;
-      pointer-events: none;
-      text-align: center;
+      align-items: baseline;
+      gap: 20px;
+      padding: 14px 0;
+      border-bottom: 1px solid rgba(245,240,235,0.07);
     }
 
-    #cta-overlay.active { pointer-events: auto; }
+    .feature-num {
+      font-family: var(--font-mono);
+      font-size: 10px;
+      letter-spacing: 0.2em;
+      color: var(--accent);
+      flex-shrink: 0;
+    }
 
-    .btn-primary {
-      position: relative;
-      overflow: hidden;
+    .feature-text {
+      font-family: var(--font-body);
+      font-size: 16px;
+      color: var(--cream);
+      font-weight: 400;
+      line-height: 1.4;
+    }
+
+    /* CTA button */
+    #cta-button {
       font-family: var(--font-display);
-      font-size: 24px;
+      font-size: 22px;
       letter-spacing: 0.08em;
       color: var(--cream);
       background: var(--accent);
       border: 1px solid var(--accent);
-      padding: 16px 48px;
+      padding: 16px 52px;
       cursor: none;
-      transition: background 0.3s ease, color 0.3s ease;
+      display: block;
+      margin: 24px auto 0;
+      opacity: 1;
+      visibility: visible;
+      transition: background 0.3s, color 0.3s;
       text-transform: uppercase;
     }
 
-    @media (pointer: coarse) { .btn-primary { cursor: pointer; } }
-    .btn-primary:hover { background: transparent; color: var(--accent); }
-    .btn-primary:disabled { opacity: 1; cursor: default; background: var(--accent); color: var(--cream); }
+    @media (pointer: coarse) { #cta-button { cursor: pointer; } }
+    #cta-button:hover { background: transparent; color: var(--accent); }
+    #cta-button:disabled { opacity: 1; cursor: default; background: var(--accent); color: var(--cream); }
 
-    .checkout-link {
-      display: inline-block;
+    #checkout-link {
+      display: none;
+      margin-top: 16px;
       font-family: var(--font-mono);
       font-size: 11px;
       letter-spacing: 0.06em;
       color: var(--accent);
       text-decoration: underline;
       text-underline-offset: 4px;
-      opacity: 0;
-      pointer-events: none;
-      transition: opacity 0.5s ease;
     }
 
-    .checkout-link.visible { opacity: 1; pointer-events: auto; }
-    .checkout-link:hover { color: #ff5a2e; }
+    #checkout-link:hover { color: #ff5a2e; }
 
     /* ——— Toast ——— */
     #toast {
       position: fixed;
       top: 100px; right: 24px;
-      max-width: 320px;
+      max-width: 300px;
       padding: 18px 20px 18px 22px;
       background: #161210;
       border: 1px solid rgba(138,127,120,0.25);
       border-left: 4px solid var(--accent);
       font-family: var(--font-mono);
-      font-size: 12px;
-      line-height: 1.6;
+      font-size: 12px; line-height: 1.6;
       color: var(--cream);
       z-index: 10100;
       pointer-events: none;
@@ -475,104 +392,73 @@
     #toast strong {
       display: block;
       font-family: var(--font-display);
-      font-size: 16px;
-      letter-spacing: 0.06em;
-      color: var(--cream);
-      margin-bottom: 6px;
+      font-size: 16px; letter-spacing: 0.06em;
+      color: var(--cream); margin-bottom: 6px;
     }
 
     /* ——— Marquee ——— */
     .marquee-wrap {
       position: fixed;
       bottom: 0; left: 0; right: 0;
-      z-index: 200;
-      overflow: hidden;
+      z-index: 200; overflow: hidden;
       background: linear-gradient(180deg, transparent, rgba(10,9,8,0.95));
       padding: 10px 0 12px;
       pointer-events: none;
     }
 
     .marquee-inner {
-      display: flex;
-      width: max-content;
+      display: flex; width: max-content;
       animation: marquee 80s linear infinite;
     }
 
     .marquee-inner span {
       font-family: var(--font-mono);
-      font-size: 10px;
-      letter-spacing: 0.22em;
-      text-transform: uppercase;
-      color: var(--muted);
+      font-size: 10px; letter-spacing: 0.22em;
+      text-transform: uppercase; color: var(--muted);
       white-space: nowrap;
     }
 
     .marquee-dot {
-      color: var(--accent);
-      font-size: 8px;
-      vertical-align: middle;
-      margin: 0 10px;
-      opacity: 0.85;
+      color: var(--accent); font-size: 8px;
+      vertical-align: middle; margin: 0 10px; opacity: 0.85;
     }
 
     @keyframes marquee {
-      0%   { transform: translateX(0); }
-      100% { transform: translateX(-50%); }
+      from { transform: translateX(0); }
+      to   { transform: translateX(-50%); }
     }
 
     /* ——— Mobile ——— */
     @media (max-width: 768px) {
       body { cursor: auto; }
 
+      .logo {
+        position: fixed;
+        top: 20px;
+        left: 20px;
+      }
+
       #figure-shell {
-        top: 10vh; left: 50%;
-        transform: translateX(-50%);
-        width: 80vw;
-        max-width: 380px;
-        min-height: unset;
-        animation: none;
+        position: relative;
+        top: auto; left: auto;
+        width: 80vw; max-width: 340px;
+        opacity: 1 !important;
+        margin: 40px auto 0;
       }
 
-      .site-header { position: relative; padding: 20px; }
       #scroll-container { height: auto; }
+      .scene { height: auto; }
 
-      .scene {
-        height: auto;
-        min-height: 60vh;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        padding: 48px 24px;
-      }
-
-      /* stack all content overlays as normal flow on mobile */
-      #entry-content,
-      #hero-content,
-      #statement-content,
-      #specs-content,
-      #features-content,
-      #cta-content {
+      .scene-content {
         position: relative;
         top: auto; left: auto; right: auto; bottom: auto;
-        transform: none;
-        opacity: 1 !important;
-        visibility: visible;
-        width: 100%;
-        max-width: 100%;
-        padding: 40px 24px;
-        text-align: center;
-      }
-
-      #specs-content { width: 100%; }
-      #features-content { width: 100%; }
-
-      #cta-overlay {
-        position: relative;
-        bottom: auto; left: auto;
-        transform: none;
+        transform: none !important;
         opacity: 1 !important;
         pointer-events: auto;
-        padding: 40px 20px;
+        width: 100% !important;
+        max-width: 100% !important;
+        padding: 48px 24px;
+        text-align: center;
       }
     }
   </style>
@@ -582,9 +468,8 @@
   <div class="grain" aria-hidden="true"></div>
   <div id="custom-cursor" aria-hidden="true"></div>
 
-  <header class="site-header">
-    <a class="logo" href="#">CM™</a>
-  </header>
+  <!-- Logo: fixed directly, not inside any scrolling container -->
+  <a class="logo" href="#">CM™</a>
 
   <!-- Figure -->
   <div id="figure-shell" aria-hidden="true">
@@ -594,81 +479,57 @@
         id="action-figure"
         src="assets/action-figure.png"
         alt=""
-        onerror="if(!this.dataset.retry){this.dataset.retry='1';this.src='./assets/action-figure.png';}else{console.error('Image failed to load. Tried:',this.src);}"
+        onerror="if(!this.dataset.retry){this.dataset.retry='1';this.src='./assets/action-figure.png';}else{console.error('Image failed to load:',this.src);}"
       />
     </div>
     <div id="figure-shadow"></div>
   </div>
 
-  <!-- SCENE 1: Entry — visible at load, fades out 0–5% -->
-  <div id="entry-content">
-    <span class="entry-logo">CM™</span>
-    <span class="entry-est">Est. 2017</span>
+  <!-- Scene content overlays -->
+  <div id="entry-content" class="scene-content">
+    <p class="sublabel">EST. 2017</p>
   </div>
 
-  <!-- SCENE 2: Hero — fades in 5–12%, out 12–20% -->
-  <div id="hero-content">
-    <p class="hero-eyebrow">Limited Edition</p>
-    <h1 class="hero-title">Corbin Moffitt™</h1>
-    <p class="hero-sub">Senior Designer — 1 of 1</p>
+  <div id="hero-content" class="scene-content">
+    <p class="label">LIMITED EDITION</p>
+    <h1>CORBIN MOFFITT™</h1>
+    <p class="sublabel">SENIOR DESIGNER — 1 OF 1</p>
   </div>
 
-  <!-- SCENE 3: Statement — visible 20–35% -->
-  <div id="statement-content">
-    <span class="statement-line">SEVEN YEARS.</span>
-    <span class="statement-line">ZERO SHORTCUTS.</span>
-    <div class="statement-rule"></div>
-    <p class="statement-tagline">Systems that scale. Details that land.<br>Results you can present.</p>
+  <div id="statement-content" class="scene-content">
+    <h2>SEVEN YEARS.</h2>
+    <h2>ZERO SHORTCUTS.</h2>
+    <div class="rule"></div>
+    <p class="sublabel">Brand · Web · UX · Performance</p>
   </div>
 
-  <!-- SCENE 4: Specs — visible 35–50% -->
-  <div id="specs-content">
-    <p class="specs-heading">Technical Specs</p>
-    <div class="spec-row">
-      <span class="spec-label">ROLE</span>
-      <span class="spec-value">Senior Designer</span>
-    </div>
-    <div class="spec-row">
-      <span class="spec-label">SINCE</span>
-      <span class="spec-value">2017</span>
-    </div>
-    <div class="spec-row">
-      <span class="spec-label">TOOLS</span>
-      <span class="spec-value">Figma · Webflow · GSAP · Framer</span>
-    </div>
-    <div class="spec-row">
-      <span class="spec-label">SKILLS</span>
-      <span class="spec-value">Brand · Web · UX · Motion</span>
-    </div>
-    <div class="spec-row">
-      <span class="spec-label">LOCATION</span>
-      <span class="spec-value">Saratoga Springs, UT</span>
-    </div>
-    <div class="spec-row">
-      <span class="spec-label">EDITION</span>
-      <span class="spec-value">1 of 1 — Limited</span>
-    </div>
+  <div id="specs-content" class="scene-content">
+    <p class="specs-header">PRODUCT SPECIFICATIONS</p>
+    <div class="spec-row"><span class="spec-label">MODEL</span><span class="spec-value">Senior Interactive Designer</span></div>
+    <div class="spec-row"><span class="spec-label">VERSION</span><span class="spec-value">2025</span></div>
+    <div class="spec-row"><span class="spec-label">EXPERIENCE</span><span class="spec-value">7+ Years</span></div>
+    <div class="spec-row"><span class="spec-label">STACK</span><span class="spec-value">Figma · Webflow · Cursor · GSAP</span></div>
+    <div class="spec-row"><span class="spec-label">SPECIALTY</span><span class="spec-value">Brand · Web · UX · Performance</span></div>
+    <div class="spec-row"><span class="spec-label">SHIPS</span><span class="spec-value">Saratoga Springs, UT</span></div>
+    <div class="spec-row"><span class="spec-label">WARRANTY</span><span class="spec-value">Results Guaranteed</span></div>
   </div>
 
-  <!-- SCENE 5: Features — visible 50–65% -->
-  <div id="features-content">
-    <p class="features-heading">Core Features</p>
-    <div class="feature-item"><span class="feature-arrow">→</span>SYSTEMS THINKER</div>
-    <div class="feature-item"><span class="feature-arrow">→</span>PIXEL PERFECT</div>
-    <div class="feature-item"><span class="feature-arrow">→</span>BRAND TO BROWSER</div>
-    <div class="feature-item"><span class="feature-arrow">→</span>MOTION NATIVE</div>
-    <div class="feature-item"><span class="feature-arrow">→</span>SHIPS ON TIME</div>
+  <div id="features-content" class="scene-content">
+    <div class="feature-line"><span class="feature-num">01</span><span class="feature-text">Ships with 7+ years of craft.</span></div>
+    <div class="feature-line"><span class="feature-num">02</span><span class="feature-text">No assembly required.</span></div>
+    <div class="feature-line"><span class="feature-num">03</span><span class="feature-text">Pairs well with ambitious briefs.</span></div>
+    <div class="feature-line"><span class="feature-num">04</span><span class="feature-text">Battery: curiosity-powered, never runs out.</span></div>
   </div>
 
-  <!-- SCENE 6: CTA copy — visible 65–100% -->
-  <div id="cta-content">
-    <span class="cta-headline">READY TO SHIP.</span>
-    <span class="cta-headline">ONE DESIGNER.</span>
-    <span class="cta-headline">ZERO COMPROMISES.</span>
-    <span class="cta-sub">Available for full-time &amp; freelance.</span>
+  <div id="cta-content" class="scene-content">
+    <p class="label">READY TO SHIP</p>
+    <h2>ADD TO TEAM</h2>
+    <p class="sublabel">Only 1 remaining. · Starting bid: Competitive salary. · Ready to ship to Saratoga Springs, UT.</p>
+    <button id="cta-button">ADD TO TEAM →</button>
+    <a id="checkout-link" href="https://corbinmoffitt.com" target="_blank" rel="noopener noreferrer">PROCEED TO CHECKOUT → corbinmoffitt.com</a>
   </div>
 
-  <!-- Scroll spacers -->
+  <!-- Scroll spacers (empty — content is fixed above) -->
   <main id="scroll-container">
     <div id="scene-entry"     class="scene"></div>
     <div id="scene-hero"      class="scene"></div>
@@ -677,12 +538,6 @@
     <div id="scene-features"  class="scene"></div>
     <div id="scene-cta"       class="scene"></div>
   </main>
-
-  <!-- CTA button -->
-  <div id="cta-overlay">
-    <button type="button" class="btn-primary" id="cta-btn">ADD TO TEAM →</button>
-    <a class="checkout-link" id="checkout-link" href="https://corbinmoffitt.com" target="_blank" rel="noopener noreferrer">PROCEED TO CHECKOUT → corbinmoffitt.com</a>
-  </div>
 
   <div class="marquee-wrap" aria-hidden="true">
     <div class="marquee-inner">
@@ -700,351 +555,285 @@
     window.addEventListener('load', function () {
 
       /* ——— Content div audit ——— */
-      var contentDivs = ['entry-content','hero-content','statement-content','specs-content','features-content','cta-content'];
-      contentDivs.forEach(function(id) {
-        var el = document.getElementById(id);
-        console.log(id, el ? 'FOUND' : 'MISSING');
+      ['entry-content','hero-content','statement-content','specs-content','features-content','cta-content'].forEach(function(id) {
+        console.log(id, document.getElementById(id) ? 'FOUND' : 'MISSING');
       });
 
-      /* ——— Library safety checks ——— */
-      if (typeof gsap === 'undefined') {
-        console.error('GSAP not loaded — check CDN');
-        return;
-      }
-      if (typeof ScrollTrigger === 'undefined') {
-        console.error('ScrollTrigger not loaded — check CDN');
-        return;
-      }
-      if (typeof THREE === 'undefined') {
-        console.error('THREE not loaded — particles disabled');
-        /* non-fatal */
-      }
+      /* ——— Library checks ——— */
+      if (typeof gsap === 'undefined') { console.error('GSAP not loaded'); return; }
+      if (typeof ScrollTrigger === 'undefined') { console.error('ScrollTrigger not loaded'); return; }
+      if (typeof THREE === 'undefined') { console.error('THREE not loaded — particles skipped'); }
 
       /* ——— Image debug ——— */
       var img = document.getElementById('action-figure');
-      console.log('Image src:', img ? img.src : 'element not found');
+      console.log('Image src:', img ? img.src : 'NOT FOUND');
       console.log('Image complete:', img ? img.complete : 'n/a');
-      if (img) {
-        img.addEventListener('error', function () {
-          console.error('Image failed to load:', img.src);
-        });
-      }
+      if (img) img.addEventListener('error', function () { console.error('Image failed:', img.src); });
 
-      /* ——— Register plugin ——— */
-      try {
-        gsap.registerPlugin(ScrollTrigger);
-      } catch (e) {
-        console.error('ScrollTrigger register failed:', e);
-        return;
-      }
+      gsap.registerPlugin(ScrollTrigger);
 
-      var prefersCoarse = window.matchMedia('(pointer: coarse)').matches;
-      var isMobile      = window.matchMedia('(max-width: 768px)').matches;
+      var isMobile = window.matchMedia('(max-width: 768px)').matches;
+      var isCoarse = window.matchMedia('(pointer: coarse)').matches;
 
-      /* ═══════════════════════════════════════════
+      /* ═══════════════════════════════
          THREE.JS PARTICLES
-      ═══════════════════════════════════════════ */
+      ═══════════════════════════════ */
       try {
-        if (typeof THREE !== 'undefined') {
-          function makeCircleTexture() {
-            var c = document.createElement('canvas');
-            c.width = c.height = 64;
-            var ctx = c.getContext('2d');
-            ctx.beginPath();
-            ctx.arc(32, 32, 30, 0, Math.PI * 2);
-            ctx.fillStyle = 'white';
-            ctx.fill();
-            return new THREE.CanvasTexture(c);
-          }
+        if (typeof THREE !== 'undefined' && !isMobile) {
+          var tc = document.createElement('canvas');
+          tc.style.cssText = 'position:fixed;top:0;left:0;width:100%;height:100%;z-index:0;pointer-events:none;';
+          document.body.prepend(tc);
 
-          var threeCanvas = document.createElement('canvas');
-          threeCanvas.style.cssText = 'position:fixed;top:0;left:0;width:100%;height:100%;z-index:0;pointer-events:none;';
-          document.body.prepend(threeCanvas);
-
-          var renderer = new THREE.WebGLRenderer({ canvas: threeCanvas, antialias: false, alpha: true });
+          var renderer = new THREE.WebGLRenderer({ canvas: tc, antialias: false, alpha: true });
           renderer.setPixelRatio(Math.min(window.devicePixelRatio, 1.5));
           renderer.setSize(window.innerWidth, window.innerHeight);
           renderer.setClearColor(0x000000, 0);
 
-          var threeScene  = new THREE.Scene();
-          var threeCamera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 100);
-          threeCamera.position.z = 5;
+          var sc = new THREE.Scene();
+          var cam = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 100);
+          cam.position.z = 5;
 
-          var N = 600, BOUND_Y = 4.5, BOUND_X = 9.0;
-          var positions = new Float32Array(N * 3);
-
+          var N = 600, BY = 4.5, BX = 9.0;
+          var pos = new Float32Array(N * 3);
           for (var i = 0; i < N; i++) {
-            positions[i * 3]     = (Math.random() - 0.5) * BOUND_X * 2;
-            positions[i * 3 + 1] = (Math.random() - 0.5) * BOUND_Y * 2;
-            positions[i * 3 + 2] = 0;
+            pos[i*3]   = (Math.random() - 0.5) * BX * 2;
+            pos[i*3+1] = (Math.random() - 0.5) * BY * 2;
+            pos[i*3+2] = 0;
           }
 
-          var geo     = new THREE.BufferGeometry();
-          var posAttr = new THREE.BufferAttribute(positions, 3);
-          geo.setAttribute('position', posAttr);
+          var geo = new THREE.BufferGeometry();
+          var pa  = new THREE.BufferAttribute(pos, 3);
+          geo.setAttribute('position', pa);
+
+          var cc = document.createElement('canvas');
+          cc.width = cc.height = 64;
+          var cx = cc.getContext('2d');
+          cx.beginPath(); cx.arc(32, 32, 30, 0, Math.PI * 2);
+          cx.fillStyle = 'white'; cx.fill();
 
           var mat = new THREE.PointsMaterial({
-            color: 0xE8441A, size: 1.2,
-            transparent: true, opacity: 0.12,
-            sizeAttenuation: false,
-            map: makeCircleTexture(), alphaTest: 0.1, depthWrite: false,
+            color: 0xE8441A, size: 1.2, transparent: true, opacity: 0.12,
+            sizeAttenuation: false, map: new THREE.CanvasTexture(cc),
+            alphaTest: 0.1, depthWrite: false,
           });
 
-          var points = new THREE.Points(geo, mat);
-          threeScene.add(points);
+          var pts = new THREE.Points(geo, mat);
+          sc.add(pts);
 
-          var mouseWX = 0, mouseWY = 0;
+          var mwx = 0, mwy = 0;
           window.addEventListener('mousemove', function (e) {
-            mouseWX = (e.clientX / window.innerWidth  - 0.5) * BOUND_X * 2;
-            mouseWY = -(e.clientY / window.innerHeight - 0.5) * BOUND_Y * 2;
+            mwx = (e.clientX / window.innerWidth  - 0.5) * BX * 2;
+            mwy = -(e.clientY / window.innerHeight - 0.5) * BY * 2;
           });
           window.addEventListener('resize', function () {
             renderer.setSize(window.innerWidth, window.innerHeight);
-            threeCamera.aspect = window.innerWidth / window.innerHeight;
-            threeCamera.updateProjectionMatrix();
+            cam.aspect = window.innerWidth / window.innerHeight;
+            cam.updateProjectionMatrix();
           });
 
-          (function animateParticles() {
-            requestAnimationFrame(animateParticles);
-            var arr = posAttr.array;
+          (function ap() {
+            requestAnimationFrame(ap);
+            var a = pa.array;
             for (var j = 0; j < N; j++) {
-              var ix = j * 3, iy = ix + 1;
-              arr[iy] += 0.003;
-              if (arr[iy] > BOUND_Y) {
-                arr[iy] = -BOUND_Y;
-                arr[ix] = (Math.random() - 0.5) * BOUND_X * 2;
-              }
-              arr[ix] += (mouseWX - arr[ix]) * 0.0003;
+              var ix = j*3, iy = ix+1;
+              a[iy] += 0.003;
+              if (a[iy] > BY) { a[iy] = -BY; a[ix] = (Math.random()-0.5)*BX*2; }
+              a[ix] += (mwx - a[ix]) * 0.0003;
             }
-            posAttr.needsUpdate = true;
-            renderer.render(threeScene, threeCamera);
+            pa.needsUpdate = true;
+            renderer.render(sc, cam);
           })();
         }
-      } catch (e) {
-        console.error('Three.js particle init failed:', e);
-      }
+      } catch (e) { console.error('Particles failed:', e); }
 
-      /* ═══════════════════════════════════════════
-         CUSTOM CURSOR
-      ═══════════════════════════════════════════ */
+      /* ═══════════════════════════════
+         CURSOR
+      ═══════════════════════════════ */
       try {
         var cursor = document.getElementById('custom-cursor');
-        if (!prefersCoarse && !isMobile && cursor) {
+        if (!isCoarse && !isMobile && cursor) {
+          /* Start invisible — reveal only on first real mousemove */
+          gsap.set(cursor, { xPercent: -50, yPercent: -50, opacity: 0 });
+
           var xTo = gsap.quickTo(cursor, 'x', { duration: 0.45, ease: 'power3.out' });
           var yTo = gsap.quickTo(cursor, 'y', { duration: 0.45, ease: 'power3.out' });
+
           window.addEventListener('mousemove', function (e) { xTo(e.clientX); yTo(e.clientY); });
-          var clickableSel = "a[href], button, [role='button']";
-          var hoveringClickable = false;
-          document.addEventListener('mousemove', function (e) {
-            var el  = document.elementFromPoint(e.clientX, e.clientY);
-            var hit = el && el.closest && el.closest(clickableSel);
-            if (hit && !hoveringClickable) {
-              hoveringClickable = true;
-              gsap.to(cursor, { scale: 2, duration: 0.25, ease: 'power2.out' });
-            } else if (!hit && hoveringClickable) {
-              hoveringClickable = false;
-              gsap.to(cursor, { scale: 1, duration: 0.25, ease: 'power2.out' });
+
+          window.addEventListener('mousemove', function () {
+            gsap.set(cursor, { opacity: 1 });
+          }, { once: true });
+
+          var hovering = false;
+          document.addEventListener('mouseover', function (e) {
+            if (e.target.closest('a,button') && !hovering) {
+              hovering = true;
+              gsap.to(cursor, { scale: 2, duration: 0.2, ease: 'power2.out' });
             }
           });
-          gsap.set(cursor, { x: window.innerWidth / 2, y: window.innerHeight / 2, xPercent: -50, yPercent: -50 });
+          document.addEventListener('mouseout', function (e) {
+            if (e.target.closest('a,button') && hovering) {
+              hovering = false;
+              gsap.to(cursor, { scale: 1, duration: 0.2, ease: 'power2.out' });
+            }
+          });
         }
-      } catch (e) {
-        console.error('Cursor init failed:', e);
-      }
+      } catch (e) { console.error('Cursor failed:', e); }
 
-      /* ═══════════════════════════════════════════
-         GSAP SCROLL
-      ═══════════════════════════════════════════ */
+      /* ═══════════════════════════════
+         SIMPLE SCROLL SYSTEM
+      ═══════════════════════════════ */
       try {
-        var productFigure    = document.getElementById('product-figure');
-        var entryContent     = document.getElementById('entry-content');
-        var heroContent      = document.getElementById('hero-content');
-        var statementContent = document.getElementById('statement-content');
-        var specsContent     = document.getElementById('specs-content');
-        var featuresContent  = document.getElementById('features-content');
-        var ctaContent       = document.getElementById('cta-content');
-        var ctaOverlay       = document.getElementById('cta-overlay');
-        var toastEl          = document.getElementById('toast');
+        if (isMobile) {
+          /* Mobile: everything visible, no scroll animations */
+          gsap.set('#figure-shell', { opacity: 1, xPercent: 0, yPercent: 0, x: 0, y: 0 });
+          return;
+        }
 
-        if (!productFigure) throw new Error('#product-figure not found');
-        if (!entryContent)  throw new Error('#entry-content not found');
-        if (!heroContent)   throw new Error('#hero-content not found');
+        /* Center figure and set initial state */
+        gsap.set('#figure-shell', { xPercent: -50, yPercent: -50, opacity: 0, scale: 0.85 });
 
-        gsap.set(toastEl, { x: 120, opacity: 0, visibility: 'hidden' });
-
-        if (!isMobile) {
-
-          /* — Initial GSAP states (CSS has opacity:1, GSAP overrides here) — */
-          gsap.set(productFigure,    { opacity: 0, scale: 0.8, x: 0, rotation: 0 });
-          gsap.set(entryContent,     { opacity: 1 });
-          gsap.set(heroContent,      { opacity: 0 });
-          gsap.set(statementContent, { opacity: 0 });
-          gsap.set(specsContent,     { opacity: 0 });
-          gsap.set(featuresContent,  { opacity: 0 });
-          gsap.set(ctaContent,       { opacity: 0 });
-
-          function maxS() { return ScrollTrigger.maxScroll(window); }
-
-          /* Entry: fade out 0–5% */
-          gsap.to(entryContent, {
-            opacity: 0, ease: 'none',
-            scrollTrigger: {
-              trigger: '#scroll-container',
-              start: 'top top',
-              end: function () { return '+=' + maxS() * 0.05; },
-              scrub: true,
-            },
-          });
-
-          /* Hero: fade in 5–12% */
-          ScrollTrigger.create({
-            trigger: '#scroll-container',
-            start: function () { return maxS() * 0.05 + 'px top'; },
-            end:   function () { return maxS() * 0.12 + 'px top'; },
-            scrub: true,
-            onUpdate: function (self) { gsap.set(heroContent, { opacity: self.progress }); },
-          });
-
-          /* Hero: fade out 12–20% */
-          ScrollTrigger.create({
-            trigger: '#scroll-container',
-            start: function () { return maxS() * 0.12 + 'px top'; },
-            end:   function () { return maxS() * 0.20 + 'px top'; },
-            scrub: true,
-            onUpdate: function (self) {
-              gsap.set(heroContent, { opacity: 1 - self.progress, y: self.progress * 30 });
-            },
-          });
-
-          /* Statement: 20–35% */
-          ScrollTrigger.create({
-            trigger: '#scroll-container',
-            start:   function () { return maxS() * 0.20 + 'px top'; },
-            end:     function () { return maxS() * 0.35 + 'px top'; },
-            onEnter:     function () { gsap.to(statementContent, { opacity: 1, duration: 0.5, ease: 'power2.out' }); },
-            onLeave:     function () { gsap.to(statementContent, { opacity: 0, duration: 0.3, ease: 'power2.in' }); },
-            onEnterBack: function () { gsap.to(statementContent, { opacity: 1, duration: 0.5, ease: 'power2.out' }); },
-            onLeaveBack: function () { gsap.to(statementContent, { opacity: 0, duration: 0.3, ease: 'power2.in' }); },
-          });
-
-          /* Specs: 35–50% */
-          ScrollTrigger.create({
-            trigger: '#scroll-container',
-            start:   function () { return maxS() * 0.35 + 'px top'; },
-            end:     function () { return maxS() * 0.50 + 'px top'; },
-            onEnter:     function () { gsap.to(specsContent, { opacity: 1, duration: 0.5, ease: 'power2.out' }); },
-            onLeave:     function () { gsap.to(specsContent, { opacity: 0, duration: 0.3, ease: 'power2.in' }); },
-            onEnterBack: function () { gsap.to(specsContent, { opacity: 1, duration: 0.5, ease: 'power2.out' }); },
-            onLeaveBack: function () { gsap.to(specsContent, { opacity: 0, duration: 0.3, ease: 'power2.in' }); },
-          });
-
-          /* Features: 50–65% */
-          ScrollTrigger.create({
-            trigger: '#scroll-container',
-            start:   function () { return maxS() * 0.50 + 'px top'; },
-            end:     function () { return maxS() * 0.65 + 'px top'; },
-            onEnter:     function () { gsap.to(featuresContent, { opacity: 1, duration: 0.5, ease: 'power2.out' }); },
-            onLeave:     function () { gsap.to(featuresContent, { opacity: 0, duration: 0.3, ease: 'power2.in' }); },
-            onEnterBack: function () { gsap.to(featuresContent, { opacity: 1, duration: 0.5, ease: 'power2.out' }); },
-            onLeaveBack: function () { gsap.to(featuresContent, { opacity: 0, duration: 0.3, ease: 'power2.in' }); },
-          });
-
-          /* CTA content: 65–100% */
-          ScrollTrigger.create({
-            trigger: '#scroll-container',
-            start:   function () { return maxS() * 0.65 + 'px top'; },
-            onEnter:     function () { gsap.to(ctaContent, { opacity: 1, duration: 0.6, ease: 'power2.out' }); },
-            onLeaveBack: function () { gsap.to(ctaContent, { opacity: 0, duration: 0.3, ease: 'power2.in' }); },
-          });
-
-          /* Figure timeline */
-          var figureTl = gsap.timeline();
-          figureTl
-            .to(productFigure, { opacity: 0,   scale: 0.8,  x: 0,       rotation: 0,  duration: 0.05, ease: 'none' }, 0)
-            .to(productFigure, { opacity: 1,   scale: 1,    x: 0,       rotation: 0,  duration: 0.15, ease: 'power3.inOut' }, 0.05)
-            .to(productFigure, { opacity: 0.4, scale: 0.8,  x: 0,       rotation: 0,  duration: 0.15, ease: 'power3.inOut' }, 0.20)
-            .to(productFigure, { opacity: 0.9, scale: 0.75, x: '-22vw', rotation: -4, duration: 0.15, ease: 'power3.inOut' }, 0.35)
-            .to(productFigure, { opacity: 0.9, scale: 0.85, x: '22vw',  rotation: 4,  duration: 0.15, ease: 'power3.inOut' }, 0.50)
-            .to(productFigure, { opacity: 1,   scale: 1.1,  x: 0,       rotation: 0,  duration: 0.35, ease: 'power3.inOut' }, 0.65);
-
-          ScrollTrigger.create({
-            animation: figureTl,
+        /* ── FIGURE: scrubbed timeline across full scroll ── */
+        var figureTl = gsap.timeline({
+          scrollTrigger: {
             trigger: '#scroll-container',
             start: 'top top',
             end: 'bottom bottom',
-            scrub: 2,
-          });
+            scrub: 1.5,
+          }
+        });
+        figureTl
+          .to('#figure-shell', { opacity: 0,   scale: 0.85, duration: 1 })
+          .to('#figure-shell', { opacity: 1,   scale: 1,    x: 0, rotation: 0, duration: 2 })
+          .to('#figure-shell', { opacity: 0.4, scale: 0.82, duration: 2 })
+          .to('#figure-shell', { opacity: 0.9, scale: 0.75, x: '-22vw', rotation: -3, duration: 2 })
+          .to('#figure-shell', { opacity: 0.9, scale: 0.8,  x: '22vw',  rotation: 3,  duration: 2 })
+          .to('#figure-shell', { opacity: 1,   scale: 1.05, x: 0, rotation: 0, duration: 2 });
 
-          /* CTA button overlay */
-          ScrollTrigger.create({
-            trigger: '#scene-cta',
-            start: 'top 60%',
-            end: 'bottom bottom',
-            onEnter: function () {
-              ctaOverlay.classList.add('active');
-              gsap.to(ctaOverlay, { opacity: 1, duration: 0.8, ease: 'power2.inOut' });
-            },
-            onLeaveBack: function () {
-              ctaOverlay.classList.remove('active');
-              gsap.to(ctaOverlay, { opacity: 0, duration: 0.5, ease: 'power2.inOut' });
-            },
-          });
+        /* ── ENTRY ── */
+        gsap.set('#entry-content', { y: 20 });
+        ScrollTrigger.create({
+          trigger: '#scene-entry',
+          start: 'top top',
+          end: 'bottom top',
+          onEnter:     function () { gsap.to('#entry-content', { opacity: 1, y: 0, duration: 0.6 }); },
+          onLeave:     function () { gsap.to('#entry-content', { opacity: 0, duration: 0.4 }); },
+          onEnterBack: function () { gsap.to('#entry-content', { opacity: 1, duration: 0.4 }); },
+          onLeaveBack: function () { gsap.to('#entry-content', { opacity: 0, duration: 0.4 }); },
+        });
 
-        } else {
-          /* Mobile: everything visible, simple fade-up */
-          gsap.set(productFigure, { opacity: 1, scale: 1, x: 0, rotation: 0 });
-        }
+        /* ── HERO ── */
+        gsap.set('#hero-content', { y: 30 });
+        ScrollTrigger.create({
+          trigger: '#scene-hero',
+          start: 'top top',
+          end: 'bottom top',
+          onEnter:     function () { gsap.to('#hero-content', { opacity: 1, y: 0, duration: 0.8, ease: 'power3.out' }); },
+          onLeave:     function () { gsap.to('#hero-content', { opacity: 0, y: -20, duration: 0.4 }); },
+          onEnterBack: function () { gsap.to('#hero-content', { opacity: 1, y: 0, duration: 0.4 }); },
+          onLeaveBack: function () { gsap.to('#hero-content', { opacity: 0, duration: 0.4 }); },
+        });
+
+        /* ── STATEMENT ── */
+        gsap.set('#statement-content', { y: 40 });
+        ScrollTrigger.create({
+          trigger: '#scene-statement',
+          start: 'top top',
+          end: 'bottom top',
+          onEnter:     function () { gsap.to('#statement-content', { opacity: 1, y: 0, duration: 0.8, ease: 'power3.out' }); },
+          onLeave:     function () { gsap.to('#statement-content', { opacity: 0, y: -20, duration: 0.4 }); },
+          onEnterBack: function () { gsap.to('#statement-content', { opacity: 1, y: 0, duration: 0.4 }); },
+          onLeaveBack: function () { gsap.to('#statement-content', { opacity: 0, duration: 0.4 }); },
+        });
+
+        /* ── SPECS ── */
+        gsap.set('#specs-content', { x: 40 });
+        ScrollTrigger.create({
+          trigger: '#scene-specs',
+          start: 'top top',
+          end: 'bottom top',
+          onEnter:     function () { gsap.to('#specs-content', { opacity: 1, x: 0, duration: 0.8, ease: 'power3.out' }); },
+          onLeave:     function () { gsap.to('#specs-content', { opacity: 0, x: -30, duration: 0.4 }); },
+          onEnterBack: function () { gsap.to('#specs-content', { opacity: 1, x: 0, duration: 0.4 }); },
+          onLeaveBack: function () { gsap.to('#specs-content', { opacity: 0, duration: 0.4 }); },
+        });
+
+        /* ── FEATURES ── */
+        gsap.set('#features-content', { x: -40 });
+        ScrollTrigger.create({
+          trigger: '#scene-features',
+          start: 'top top',
+          end: 'bottom top',
+          onEnter:     function () { gsap.to('#features-content', { opacity: 1, x: 0, duration: 0.8, ease: 'power3.out' }); },
+          onLeave:     function () { gsap.to('#features-content', { opacity: 0, x: 30, duration: 0.4 }); },
+          onEnterBack: function () { gsap.to('#features-content', { opacity: 1, x: 0, duration: 0.4 }); },
+          onLeaveBack: function () { gsap.to('#features-content', { opacity: 0, duration: 0.4 }); },
+        });
+
+        /* ── CTA ── */
+        gsap.set('#cta-content', { y: 40 });
+        ScrollTrigger.create({
+          trigger: '#scene-cta',
+          start: 'top top',
+          end: 'bottom bottom',
+          onEnter:     function () { gsap.to('#cta-content', { opacity: 1, y: 0, duration: 0.8, ease: 'power3.out' }); },
+          onLeave:     function () { gsap.to('#cta-content', { opacity: 0, duration: 0.4 }); },
+          onEnterBack: function () { gsap.to('#cta-content', { opacity: 1, y: 0, duration: 0.4 }); },
+          onLeaveBack: function () { gsap.to('#cta-content', { opacity: 0, duration: 0.4 }); },
+        });
 
         ScrollTrigger.refresh();
 
-      } catch (e) {
-        console.error('GSAP scroll init failed:', e);
-      }
+      } catch (e) { console.error('Scroll system failed:', e); }
 
-      /* ═══════════════════════════════════════════
+      /* ═══════════════════════════════
          CTA BUTTON
-      ═══════════════════════════════════════════ */
+      ═══════════════════════════════ */
       try {
-        var ctaBtn     = document.getElementById('cta-btn');
+        var ctaBtn     = document.getElementById('cta-button');
         var checkoutLk = document.getElementById('checkout-link');
-        var toastRef   = document.getElementById('toast');
-        var pFig       = document.getElementById('product-figure');
+        var toastEl    = document.getElementById('toast');
         var added      = false;
 
-        ctaBtn.addEventListener('click', function () {
-          if (added) return;
-          added = true;
-          ctaBtn.textContent = '✓ ADDED TO TEAM';
-          ctaBtn.disabled = true;
+        if (ctaBtn) {
+          ctaBtn.addEventListener('click', function () {
+            if (added) return;
+            added = true;
+            ctaBtn.textContent = '✓ ADDED TO TEAM';
+            ctaBtn.disabled = true;
 
-          gsap.fromTo(toastRef,
-            { x: 120, opacity: 0, visibility: 'visible' },
-            {
-              x: 0, opacity: 1, duration: 0.55, ease: 'power3.out',
-              onComplete: function () {
-                gsap.delayedCall(3.2, function () {
-                  gsap.to(toastRef, {
-                    x: 120, opacity: 0, duration: 0.45, ease: 'power2.in',
-                    onComplete: function () { gsap.set(toastRef, { visibility: 'hidden' }); },
+            /* Toast */
+            gsap.set(toastEl, { visibility: 'visible' });
+            gsap.fromTo(toastEl,
+              { x: 120, opacity: 0 },
+              {
+                x: 0, opacity: 1, duration: 0.55, ease: 'power3.out',
+                onComplete: function () {
+                  gsap.delayedCall(3.2, function () {
+                    gsap.to(toastEl, {
+                      x: 120, opacity: 0, duration: 0.45, ease: 'power2.in',
+                      onComplete: function () { gsap.set(toastEl, { visibility: 'hidden' }); },
+                    });
                   });
-                });
-              },
-            }
-          );
+                },
+              }
+            );
 
-          gsap.timeline({ defaults: { overwrite: 'auto' } })
-            .to(pFig, { scale: 1.25, duration: 0.18, ease: 'power2.out' })
-            .to(pFig, { scale: 1.1,  duration: 0.35, ease: 'elastic.out(1, 0.45)' }, '-=0.12')
-            .to(pFig, { rotation: 6,  duration: 0.08, ease: 'power1.inOut' }, 0.12)
-            .to(pFig, { rotation: -5, duration: 0.10, ease: 'power1.inOut' })
-            .to(pFig, { rotation: 3,  duration: 0.08, ease: 'power1.inOut' })
-            .to(pFig, { rotation: 0,  duration: 0.12, ease: 'power2.out' });
+            /* Figure bounce */
+            gsap.timeline({ defaults: { overwrite: 'auto' } })
+              .to('#figure-shell', { scale: 1.2,  duration: 0.18, ease: 'power2.out' })
+              .to('#figure-shell', { scale: 1.05, duration: 0.4,  ease: 'elastic.out(1, 0.45)' }, '-=0.1')
+              .to('#figure-shell', { rotation: 5,  duration: 0.08 })
+              .to('#figure-shell', { rotation: -4, duration: 0.10 })
+              .to('#figure-shell', { rotation: 0,  duration: 0.12, ease: 'power2.out' });
 
-          gsap.delayedCall(1.5, function () { checkoutLk.classList.add('visible'); });
-        });
-      } catch (e) {
-        console.error('CTA button init failed:', e);
-      }
+            /* Checkout link */
+            gsap.delayedCall(1.2, function () {
+              if (checkoutLk) checkoutLk.style.display = 'block';
+            });
+          });
+        }
+      } catch (e) { console.error('CTA button failed:', e); }
 
     }); /* end window.load */
   </script>
