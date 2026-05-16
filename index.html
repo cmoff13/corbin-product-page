@@ -42,7 +42,7 @@
 
     @media (pointer: coarse) {
       body { cursor: auto; }
-      #custom-cursor { display: none !important; }
+      #cursor-dot, #cursor-ring { display: none !important; }
     }
 
     /* ——— Overlays ——— */
@@ -60,15 +60,28 @@
     }
 
     /* ——— Cursor ——— */
-    #custom-cursor {
-      position: fixed; top: 0; left: 0;
-      width: 12px; height: 12px;
-      border: 1.5px solid var(--accent);
+    #cursor-dot {
+      width: 6px; height: 6px;
+      background: #E8441A;
       border-radius: 50%;
-      pointer-events: none; z-index: 10000;
-      transform: translate(-50%, -50%);
-      will-change: transform;
+      position: fixed;
+      top: 0; left: 0;
+      pointer-events: none;
+      z-index: 9999;
       opacity: 0;
+      mix-blend-mode: difference;
+    }
+
+    #cursor-ring {
+      width: 36px; height: 36px;
+      border: 1.5px solid #E8441A;
+      border-radius: 50%;
+      position: fixed;
+      top: 0; left: 0;
+      pointer-events: none;
+      z-index: 9998;
+      opacity: 0;
+      transform: translate(-50%, -50%);
     }
 
     /* ——— Logo: fixed independently, not relying on header ——— */
@@ -231,6 +244,17 @@
       font-size: clamp(48px, 8vw, 100px);
     }
 
+    /* ——— Text reveal wipe ——— */
+    .reveal-wrap {
+      overflow: hidden;
+      display: block;
+    }
+
+    .reveal-inner {
+      display: block;
+      transform: translateY(100%);
+    }
+
     /* ——— Typography ——— */
     h1, h2 {
       font-family: var(--font-display);
@@ -289,8 +313,25 @@
       display: flex;
       justify-content: space-between;
       align-items: baseline;
-      padding: 10px 0;
       border-bottom: 1px solid rgba(245,240,235,0.08);
+      padding-bottom: 10px;
+      margin-bottom: 10px;
+      position: relative;
+    }
+
+    .spec-row::after {
+      content: '';
+      position: absolute;
+      bottom: 0; left: 0;
+      width: 100%; height: 1px;
+      background: rgba(232,68,26,0.3);
+      transform: scaleX(0);
+      transform-origin: left;
+      transition: transform 0.6s ease;
+    }
+
+    .spec-row.revealed::after {
+      transform: scaleX(1);
     }
 
     .spec-label {
@@ -428,6 +469,26 @@
       to   { transform: translateX(-50%); }
     }
 
+    /* ——— Scroll progress ——— */
+    #scroll-progress {
+      position: fixed;
+      right: 0; top: 0;
+      width: 2px;
+      height: 100vh;
+      background: rgba(232,68,26,0.15);
+      z-index: 200;
+    }
+
+    #scroll-progress-fill {
+      position: fixed;
+      right: 0; top: 0;
+      width: 2px;
+      background: #E8441A;
+      z-index: 201;
+      transform-origin: top;
+      height: 0vh;
+    }
+
     /* ——— Mobile ——— */
     @media (max-width: 768px) {
       body { cursor: auto; }
@@ -460,13 +521,24 @@
         padding: 48px 24px;
         text-align: center;
       }
+
+      .reveal-inner {
+        transform: translateY(0) !important;
+      }
     }
   </style>
 </head>
 <body>
   <div class="vignette" aria-hidden="true"></div>
   <div class="grain" aria-hidden="true"></div>
-  <div id="custom-cursor" aria-hidden="true"></div>
+
+  <!-- Cursor -->
+  <div id="cursor-dot" aria-hidden="true"></div>
+  <div id="cursor-ring" aria-hidden="true"></div>
+
+  <!-- Scroll progress -->
+  <div id="scroll-progress" aria-hidden="true"></div>
+  <div id="scroll-progress-fill" aria-hidden="true"></div>
 
   <!-- Logo: fixed directly, not inside any scrolling container -->
   <a class="logo" href="#">CM™</a>
@@ -487,44 +559,44 @@
 
   <!-- Scene content overlays -->
   <div id="entry-content" class="scene-content">
-    <p class="sublabel">EST. 2017</p>
+    <p class="sublabel"><span class="reveal-wrap"><span class="reveal-inner">EST. 2017</span></span></p>
   </div>
 
   <div id="hero-content" class="scene-content">
-    <p class="label">LIMITED EDITION</p>
-    <h1>CORBIN MOFFITT™</h1>
-    <p class="sublabel">SENIOR DESIGNER — 1 OF 1</p>
+    <p class="label"><span class="reveal-wrap"><span class="reveal-inner">LIMITED EDITION</span></span></p>
+    <h1><span class="reveal-wrap"><span class="reveal-inner">CORBIN MOFFITT™</span></span></h1>
+    <p class="sublabel"><span class="reveal-wrap"><span class="reveal-inner">SENIOR DESIGNER — 1 OF 1</span></span></p>
   </div>
 
   <div id="statement-content" class="scene-content">
-    <h2>SEVEN YEARS.</h2>
-    <h2>ZERO SHORTCUTS.</h2>
+    <h2><span class="reveal-wrap"><span class="reveal-inner">SEVEN YEARS.</span></span></h2>
+    <h2><span class="reveal-wrap"><span class="reveal-inner">ZERO SHORTCUTS.</span></span></h2>
     <div class="rule"></div>
-    <p class="sublabel">Brand · Web · UX · Performance</p>
+    <p class="sublabel"><span class="reveal-wrap"><span class="reveal-inner">Brand · Web · UX · Performance</span></span></p>
   </div>
 
   <div id="specs-content" class="scene-content">
     <p class="specs-header">PRODUCT SPECIFICATIONS</p>
-    <div class="spec-row"><span class="spec-label">MODEL</span><span class="spec-value">Senior Interactive Designer</span></div>
-    <div class="spec-row"><span class="spec-label">VERSION</span><span class="spec-value">2025</span></div>
-    <div class="spec-row"><span class="spec-label">EXPERIENCE</span><span class="spec-value">7+ Years</span></div>
-    <div class="spec-row"><span class="spec-label">STACK</span><span class="spec-value">Figma · Webflow · Cursor · GSAP</span></div>
-    <div class="spec-row"><span class="spec-label">SPECIALTY</span><span class="spec-value">Brand · Web · UX · Performance</span></div>
-    <div class="spec-row"><span class="spec-label">SHIPS</span><span class="spec-value">Saratoga Springs, UT</span></div>
-    <div class="spec-row"><span class="spec-label">WARRANTY</span><span class="spec-value">Results Guaranteed</span></div>
+    <div class="spec-row"><span class="spec-label">MODEL</span><span class="spec-value"><span class="reveal-wrap"><span class="reveal-inner">Senior Interactive Designer</span></span></span></div>
+    <div class="spec-row"><span class="spec-label">VERSION</span><span class="spec-value"><span class="reveal-wrap"><span class="reveal-inner">2025</span></span></span></div>
+    <div class="spec-row"><span class="spec-label">EXPERIENCE</span><span class="spec-value"><span class="reveal-wrap"><span class="reveal-inner">7+ Years</span></span></span></div>
+    <div class="spec-row"><span class="spec-label">STACK</span><span class="spec-value"><span class="reveal-wrap"><span class="reveal-inner">Figma · Webflow · Cursor · GSAP</span></span></span></div>
+    <div class="spec-row"><span class="spec-label">SPECIALTY</span><span class="spec-value"><span class="reveal-wrap"><span class="reveal-inner">Brand · Web · UX · Performance</span></span></span></div>
+    <div class="spec-row"><span class="spec-label">SHIPS</span><span class="spec-value"><span class="reveal-wrap"><span class="reveal-inner">Saratoga Springs, UT</span></span></span></div>
+    <div class="spec-row"><span class="spec-label">WARRANTY</span><span class="spec-value"><span class="reveal-wrap"><span class="reveal-inner">Results Guaranteed</span></span></span></div>
   </div>
 
   <div id="features-content" class="scene-content">
-    <div class="feature-line"><span class="feature-num">01</span><span class="feature-text">Ships with 7+ years of craft.</span></div>
-    <div class="feature-line"><span class="feature-num">02</span><span class="feature-text">No assembly required.</span></div>
-    <div class="feature-line"><span class="feature-num">03</span><span class="feature-text">Pairs well with ambitious briefs.</span></div>
-    <div class="feature-line"><span class="feature-num">04</span><span class="feature-text">Battery: curiosity-powered, never runs out.</span></div>
+    <div class="feature-line"><span class="feature-num">01</span><span class="feature-text"><span class="reveal-wrap"><span class="reveal-inner">Ships with 7+ years of craft.</span></span></span></div>
+    <div class="feature-line"><span class="feature-num">02</span><span class="feature-text"><span class="reveal-wrap"><span class="reveal-inner">No assembly required.</span></span></span></div>
+    <div class="feature-line"><span class="feature-num">03</span><span class="feature-text"><span class="reveal-wrap"><span class="reveal-inner">Pairs well with ambitious briefs.</span></span></span></div>
+    <div class="feature-line"><span class="feature-num">04</span><span class="feature-text"><span class="reveal-wrap"><span class="reveal-inner">Battery: curiosity-powered, never runs out.</span></span></span></div>
   </div>
 
   <div id="cta-content" class="scene-content">
-    <p class="label">READY TO SHIP</p>
-    <h2>ADD TO TEAM</h2>
-    <p class="sublabel">Only 1 remaining. · Starting bid: Competitive salary. · Ready to ship to Saratoga Springs, UT.</p>
+    <p class="label"><span class="reveal-wrap"><span class="reveal-inner">READY TO SHIP</span></span></p>
+    <h2><span class="reveal-wrap"><span class="reveal-inner">ADD TO TEAM</span></span></h2>
+    <p class="sublabel"><span class="reveal-wrap"><span class="reveal-inner">Only 1 remaining. · Starting bid: Competitive salary. · Ready to ship to Saratoga Springs, UT.</span></span></p>
     <button id="cta-button">ADD TO TEAM →</button>
     <a id="checkout-link" href="https://corbinmoffitt.com" target="_blank" rel="noopener noreferrer">PROCEED TO CHECKOUT → corbinmoffitt.com</a>
   </div>
@@ -647,35 +719,40 @@
       } catch (e) { console.error('Particles failed:', e); }
 
       /* ═══════════════════════════════
-         CURSOR
+         CURSOR — COMPLETE REBUILD
       ═══════════════════════════════ */
       try {
-        var cursor = document.getElementById('custom-cursor');
-        if (!isCoarse && !isMobile && cursor) {
-          /* Start invisible — reveal only on first real mousemove */
-          gsap.set(cursor, { xPercent: -50, yPercent: -50, opacity: 0 });
+        if (!isCoarse && !isMobile) {
+          var dot  = document.getElementById('cursor-dot');
+          var ring = document.getElementById('cursor-ring');
 
-          var xTo = gsap.quickTo(cursor, 'x', { duration: 0.45, ease: 'power3.out' });
-          var yTo = gsap.quickTo(cursor, 'y', { duration: 0.45, ease: 'power3.out' });
+          var dotX  = gsap.quickTo(dot,  'x', { duration: 0.1, ease: 'power3' });
+          var dotY  = gsap.quickTo(dot,  'y', { duration: 0.1, ease: 'power3' });
+          var ringX = gsap.quickTo(ring, 'x', { duration: 0.4, ease: 'power3' });
+          var ringY = gsap.quickTo(ring, 'y', { duration: 0.4, ease: 'power3' });
 
-          window.addEventListener('mousemove', function (e) { xTo(e.clientX); yTo(e.clientY); });
-
-          window.addEventListener('mousemove', function () {
-            gsap.set(cursor, { opacity: 1 });
-          }, { once: true });
-
-          var hovering = false;
-          document.addEventListener('mouseover', function (e) {
-            if (e.target.closest('a,button') && !hovering) {
-              hovering = true;
-              gsap.to(cursor, { scale: 2, duration: 0.2, ease: 'power2.out' });
-            }
+          window.addEventListener('mousemove', function (e) {
+            dotX(e.clientX - 3);
+            dotY(e.clientY - 3);
+            ringX(e.clientX);
+            ringY(e.clientY);
+            gsap.to([dot, ring], { opacity: 1, duration: 0.3 });
           });
-          document.addEventListener('mouseout', function (e) {
-            if (e.target.closest('a,button') && hovering) {
-              hovering = false;
-              gsap.to(cursor, { scale: 1, duration: 0.2, ease: 'power2.out' });
-            }
+
+          document.querySelectorAll('button, a, [data-cursor]').forEach(function (el) {
+            el.addEventListener('mouseenter', function () {
+              gsap.to(ring, { scale: 2.5, borderColor: '#E8441A', duration: 0.3 });
+              gsap.to(dot,  { scale: 0, duration: 0.3 });
+            });
+            el.addEventListener('mouseleave', function () {
+              gsap.to(ring, { scale: 1, duration: 0.4, ease: 'elastic.out(1, 0.5)' });
+              gsap.to(dot,  { scale: 1, duration: 0.3 });
+            });
+          });
+
+          document.body.style.cursor = 'none';
+          document.querySelectorAll('a, button').forEach(function (el) {
+            el.style.cursor = 'none';
           });
         }
       } catch (e) { console.error('Cursor failed:', e); }
@@ -684,9 +761,13 @@
          SIMPLE SCROLL SYSTEM
       ═══════════════════════════════ */
       try {
+        /* Set all reveal-inner to hidden state before any triggers fire */
+        gsap.set('.reveal-inner', { yPercent: 100 });
+
         if (isMobile) {
           /* Mobile: everything visible, no scroll animations */
           gsap.set('#figure-shell', { opacity: 1, xPercent: 0, yPercent: 0, x: 0, y: 0 });
+          gsap.set('.reveal-inner', { yPercent: 0 });
           return;
         }
 
@@ -716,10 +797,22 @@
           trigger: '#scene-entry',
           start: 'top top',
           end: 'bottom top',
-          onEnter:     function () { gsap.to('#entry-content', { opacity: 1, y: 0, duration: 0.6 }); },
-          onLeave:     function () { gsap.to('#entry-content', { opacity: 0, duration: 0.4 }); },
-          onEnterBack: function () { gsap.to('#entry-content', { opacity: 1, duration: 0.4 }); },
-          onLeaveBack: function () { gsap.to('#entry-content', { opacity: 0, duration: 0.4 }); },
+          onEnter: function () {
+            gsap.to('#entry-content', { opacity: 1, y: 0, duration: 0.6 });
+            gsap.to('#entry-content .reveal-inner', { yPercent: 0, duration: 0.9, ease: 'expo.out', stagger: 0.08 });
+          },
+          onLeave: function () {
+            gsap.to('#entry-content', { opacity: 0, duration: 0.4 });
+            gsap.set('#entry-content .reveal-inner', { yPercent: 100 });
+          },
+          onEnterBack: function () {
+            gsap.to('#entry-content', { opacity: 1, duration: 0.4 });
+            gsap.to('#entry-content .reveal-inner', { yPercent: 0, duration: 0.9, ease: 'expo.out', stagger: 0.08 });
+          },
+          onLeaveBack: function () {
+            gsap.to('#entry-content', { opacity: 0, duration: 0.4 });
+            gsap.set('#entry-content .reveal-inner', { yPercent: 100 });
+          },
         });
 
         /* ── HERO ── */
@@ -728,10 +821,22 @@
           trigger: '#scene-hero',
           start: 'top top',
           end: 'bottom top',
-          onEnter:     function () { gsap.to('#hero-content', { opacity: 1, y: 0, duration: 0.8, ease: 'power3.out' }); },
-          onLeave:     function () { gsap.to('#hero-content', { opacity: 0, y: -20, duration: 0.4 }); },
-          onEnterBack: function () { gsap.to('#hero-content', { opacity: 1, y: 0, duration: 0.4 }); },
-          onLeaveBack: function () { gsap.to('#hero-content', { opacity: 0, duration: 0.4 }); },
+          onEnter: function () {
+            gsap.to('#hero-content', { opacity: 1, y: 0, duration: 0.8, ease: 'power3.out' });
+            gsap.to('#hero-content .reveal-inner', { yPercent: 0, duration: 0.9, ease: 'expo.out', stagger: 0.08 });
+          },
+          onLeave: function () {
+            gsap.to('#hero-content', { opacity: 0, y: -20, duration: 0.4 });
+            gsap.set('#hero-content .reveal-inner', { yPercent: 100 });
+          },
+          onEnterBack: function () {
+            gsap.to('#hero-content', { opacity: 1, y: 0, duration: 0.4 });
+            gsap.to('#hero-content .reveal-inner', { yPercent: 0, duration: 0.9, ease: 'expo.out', stagger: 0.08 });
+          },
+          onLeaveBack: function () {
+            gsap.to('#hero-content', { opacity: 0, duration: 0.4 });
+            gsap.set('#hero-content .reveal-inner', { yPercent: 100 });
+          },
         });
 
         /* ── STATEMENT ── */
@@ -740,10 +845,22 @@
           trigger: '#scene-statement',
           start: 'top top',
           end: 'bottom top',
-          onEnter:     function () { gsap.to('#statement-content', { opacity: 1, y: 0, duration: 0.8, ease: 'power3.out' }); },
-          onLeave:     function () { gsap.to('#statement-content', { opacity: 0, y: -20, duration: 0.4 }); },
-          onEnterBack: function () { gsap.to('#statement-content', { opacity: 1, y: 0, duration: 0.4 }); },
-          onLeaveBack: function () { gsap.to('#statement-content', { opacity: 0, duration: 0.4 }); },
+          onEnter: function () {
+            gsap.to('#statement-content', { opacity: 1, y: 0, duration: 0.8, ease: 'power3.out' });
+            gsap.to('#statement-content .reveal-inner', { yPercent: 0, duration: 0.9, ease: 'expo.out', stagger: 0.08 });
+          },
+          onLeave: function () {
+            gsap.to('#statement-content', { opacity: 0, y: -20, duration: 0.4 });
+            gsap.set('#statement-content .reveal-inner', { yPercent: 100 });
+          },
+          onEnterBack: function () {
+            gsap.to('#statement-content', { opacity: 1, y: 0, duration: 0.4 });
+            gsap.to('#statement-content .reveal-inner', { yPercent: 0, duration: 0.9, ease: 'expo.out', stagger: 0.08 });
+          },
+          onLeaveBack: function () {
+            gsap.to('#statement-content', { opacity: 0, duration: 0.4 });
+            gsap.set('#statement-content .reveal-inner', { yPercent: 100 });
+          },
         });
 
         /* ── SPECS ── */
@@ -752,10 +869,34 @@
           trigger: '#scene-specs',
           start: 'top top',
           end: 'bottom top',
-          onEnter:     function () { gsap.to('#specs-content', { opacity: 1, x: 0, duration: 0.8, ease: 'power3.out' }); },
-          onLeave:     function () { gsap.to('#specs-content', { opacity: 0, x: -30, duration: 0.4 }); },
-          onEnterBack: function () { gsap.to('#specs-content', { opacity: 1, x: 0, duration: 0.4 }); },
-          onLeaveBack: function () { gsap.to('#specs-content', { opacity: 0, duration: 0.4 }); },
+          onEnter: function () {
+            gsap.to('#specs-content', { opacity: 1, x: 0, duration: 0.8, ease: 'power3.out' });
+            gsap.to('#specs-content .reveal-inner', { yPercent: 0, duration: 0.9, ease: 'expo.out', stagger: 0.08 });
+            gsap.from('.spec-label', { x: -20, opacity: 0, stagger: 0.08, duration: 0.7, ease: 'power3.out' });
+            gsap.from('.spec-value', { x: 20,  opacity: 0, stagger: 0.08, duration: 0.7, ease: 'power3.out' });
+            document.querySelectorAll('.spec-row').forEach(function (row, i) {
+              setTimeout(function () { row.classList.add('revealed'); }, i * 100);
+            });
+          },
+          onLeave: function () {
+            gsap.to('#specs-content', { opacity: 0, x: -30, duration: 0.4 });
+            gsap.set('#specs-content .reveal-inner', { yPercent: 100 });
+            document.querySelectorAll('.spec-row').forEach(function (row) { row.classList.remove('revealed'); });
+          },
+          onEnterBack: function () {
+            gsap.to('#specs-content', { opacity: 1, x: 0, duration: 0.4 });
+            gsap.to('#specs-content .reveal-inner', { yPercent: 0, duration: 0.9, ease: 'expo.out', stagger: 0.08 });
+            gsap.from('.spec-label', { x: -20, opacity: 0, stagger: 0.08, duration: 0.7, ease: 'power3.out' });
+            gsap.from('.spec-value', { x: 20,  opacity: 0, stagger: 0.08, duration: 0.7, ease: 'power3.out' });
+            document.querySelectorAll('.spec-row').forEach(function (row, i) {
+              setTimeout(function () { row.classList.add('revealed'); }, i * 100);
+            });
+          },
+          onLeaveBack: function () {
+            gsap.to('#specs-content', { opacity: 0, duration: 0.4 });
+            gsap.set('#specs-content .reveal-inner', { yPercent: 100 });
+            document.querySelectorAll('.spec-row').forEach(function (row) { row.classList.remove('revealed'); });
+          },
         });
 
         /* ── FEATURES ── */
@@ -764,10 +905,22 @@
           trigger: '#scene-features',
           start: 'top top',
           end: 'bottom top',
-          onEnter:     function () { gsap.to('#features-content', { opacity: 1, x: 0, duration: 0.8, ease: 'power3.out' }); },
-          onLeave:     function () { gsap.to('#features-content', { opacity: 0, x: 30, duration: 0.4 }); },
-          onEnterBack: function () { gsap.to('#features-content', { opacity: 1, x: 0, duration: 0.4 }); },
-          onLeaveBack: function () { gsap.to('#features-content', { opacity: 0, duration: 0.4 }); },
+          onEnter: function () {
+            gsap.to('#features-content', { opacity: 1, x: 0, duration: 0.8, ease: 'power3.out' });
+            gsap.to('#features-content .reveal-inner', { yPercent: 0, duration: 0.9, ease: 'expo.out', stagger: 0.08 });
+          },
+          onLeave: function () {
+            gsap.to('#features-content', { opacity: 0, x: 30, duration: 0.4 });
+            gsap.set('#features-content .reveal-inner', { yPercent: 100 });
+          },
+          onEnterBack: function () {
+            gsap.to('#features-content', { opacity: 1, x: 0, duration: 0.4 });
+            gsap.to('#features-content .reveal-inner', { yPercent: 0, duration: 0.9, ease: 'expo.out', stagger: 0.08 });
+          },
+          onLeaveBack: function () {
+            gsap.to('#features-content', { opacity: 0, duration: 0.4 });
+            gsap.set('#features-content .reveal-inner', { yPercent: 100 });
+          },
         });
 
         /* ── CTA ── */
@@ -776,10 +929,35 @@
           trigger: '#scene-cta',
           start: 'top top',
           end: 'bottom bottom',
-          onEnter:     function () { gsap.to('#cta-content', { opacity: 1, y: 0, duration: 0.8, ease: 'power3.out' }); },
-          onLeave:     function () { gsap.to('#cta-content', { opacity: 0, duration: 0.4 }); },
-          onEnterBack: function () { gsap.to('#cta-content', { opacity: 1, y: 0, duration: 0.4 }); },
-          onLeaveBack: function () { gsap.to('#cta-content', { opacity: 0, duration: 0.4 }); },
+          onEnter: function () {
+            gsap.to('#cta-content', { opacity: 1, y: 0, duration: 0.8, ease: 'power3.out' });
+            gsap.to('#cta-content .reveal-inner', { yPercent: 0, duration: 0.9, ease: 'expo.out', stagger: 0.08 });
+          },
+          onLeave: function () {
+            gsap.to('#cta-content', { opacity: 0, duration: 0.4 });
+            gsap.set('#cta-content .reveal-inner', { yPercent: 100 });
+          },
+          onEnterBack: function () {
+            gsap.to('#cta-content', { opacity: 1, y: 0, duration: 0.4 });
+            gsap.to('#cta-content .reveal-inner', { yPercent: 0, duration: 0.9, ease: 'expo.out', stagger: 0.08 });
+          },
+          onLeaveBack: function () {
+            gsap.to('#cta-content', { opacity: 0, duration: 0.4 });
+            gsap.set('#cta-content .reveal-inner', { yPercent: 100 });
+          },
+        });
+
+        /* ── SCROLL PROGRESS ── */
+        ScrollTrigger.create({
+          start: 'top top',
+          end: 'bottom bottom',
+          onUpdate: function (self) {
+            gsap.to('#scroll-progress-fill', {
+              height: (self.progress * 100) + 'vh',
+              duration: 0.1,
+              ease: 'none',
+            });
+          },
         });
 
         ScrollTrigger.refresh();
@@ -796,6 +974,24 @@
         var added      = false;
 
         if (ctaBtn) {
+          /* Magnetic effect */
+          ctaBtn.addEventListener('mousemove', function (e) {
+            var rect = ctaBtn.getBoundingClientRect();
+            var dx = e.clientX - (rect.left + rect.width  / 2);
+            var dy = e.clientY - (rect.top  + rect.height / 2);
+            gsap.to(ctaBtn, { x: dx * 0.35, y: dy * 0.35, duration: 0.4, ease: 'power2.out' });
+          });
+          ctaBtn.addEventListener('mouseleave', function () {
+            gsap.to(ctaBtn, { x: 0, y: 0, duration: 0.8, ease: 'elastic.out(1, 0.4)' });
+          });
+          ctaBtn.addEventListener('mousedown', function () {
+            gsap.to(ctaBtn, { scale: 0.95, duration: 0.1 });
+          });
+          ctaBtn.addEventListener('mouseup', function () {
+            gsap.to(ctaBtn, { scale: 1, duration: 0.3, ease: 'elastic.out(1, 0.5)' });
+          });
+
+          /* Click: add to team */
           ctaBtn.addEventListener('click', function () {
             if (added) return;
             added = true;
