@@ -27,12 +27,20 @@
     }
 
     *, *::before, *::after { box-sizing: border-box; }
-    html { scroll-behavior: smooth; scrollbar-width: none; }
+
+    html {
+      background: #0A0908;
+      margin: 0;
+      padding: 0;
+      scroll-behavior: smooth;
+      scrollbar-width: none;
+    }
     html::-webkit-scrollbar { display: none; }
 
     body {
       margin: 0;
-      background: var(--bg);
+      padding: 0;
+      background: #0A0908;
       color: var(--cream);
       font-family: var(--font-mono);
       overflow-x: hidden;
@@ -158,12 +166,14 @@
       height: 600vh;
       position: relative;
       z-index: 10;
+      background: transparent;
     }
 
     .scene {
       height: 100vh;
       width: 100%;
       position: relative;
+      background: transparent;
     }
 
     /* ═══════════════════════════════════════════
