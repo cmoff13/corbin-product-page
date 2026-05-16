@@ -1,14 +1,16 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+  <!-- Fonts first -->
+  <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Space+Mono:wght@400;700&family=DM+Sans:wght@400;500&display=swap" rel="stylesheet">
+
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>CORBIN MOFFITT™ — LIMITED EDITION</title>
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Space+Mono:ital,wght@0,400;0,700;1,400&family=DM+Sans:wght@400;500&display=swap" rel="stylesheet" />
 
-  <!-- Libraries loaded synchronously, in dependency order, no defer/async -->
+  <!-- Libraries: synchronous, no defer/async, dependency order -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/ScrollTrigger.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
@@ -27,10 +29,7 @@
 
     *, *::before, *::after { box-sizing: border-box; }
 
-    html {
-      scroll-behavior: smooth;
-      scrollbar-width: none;
-    }
+    html { scroll-behavior: smooth; scrollbar-width: none; }
     html::-webkit-scrollbar { display: none; }
 
     body {
@@ -71,8 +70,7 @@
     /* ——— Custom cursor ——— */
     #custom-cursor {
       position: fixed;
-      top: 0;
-      left: 0;
+      top: 0; left: 0;
       width: var(--cursor-size);
       height: var(--cursor-size);
       border: 1.5px solid var(--accent);
@@ -93,20 +91,17 @@
       height: auto;
       min-height: 600px;
       pointer-events: none;
-      /* Explicit visibility — never hidden by CSS */
       opacity: 1;
       visibility: visible;
       display: block;
       animation: figureFloat 4s ease-in-out infinite alternate;
     }
 
-    /* centering + float combined in one keyframe to avoid transform conflict */
     @keyframes figureFloat {
       from { transform: translate(-50%, -50%) translateY(0); }
       to   { transform: translate(-50%, -50%) translateY(-10px); }
     }
 
-    /* GSAP scroll target — wraps image naturally, GSAP owns opacity/scale/x/rotation */
     #product-figure {
       position: relative;
       width: 100%;
@@ -124,11 +119,9 @@
 
     #figure-glow {
       position: absolute;
-      top: -20%;
-      left: 50%;
+      top: -20%; left: 50%;
       transform: translateX(-50%);
-      width: 600px;
-      height: 600px;
+      width: 600px; height: 600px;
       background: radial-gradient(circle, rgba(232,68,26,0.06) 0%, transparent 70%);
       border-radius: 50%;
       animation: glowPulse 5s ease-in-out infinite alternate;
@@ -138,11 +131,9 @@
 
     #figure-shadow {
       position: absolute;
-      bottom: -30px;
-      left: 50%;
+      bottom: -30px; left: 50%;
       transform: translateX(-50%);
-      width: 300px;
-      height: 20px;
+      width: 300px; height: 20px;
       background: radial-gradient(ellipse, rgba(0,0,0,0.5) 0%, transparent 70%);
       border-radius: 50%;
       pointer-events: none;
@@ -171,7 +162,7 @@
       pointer-events: auto;
     }
 
-    /* ——— Scroll container: 600vh ——— */
+    /* ——— Scroll container ——— */
     #scroll-container {
       height: 600vh;
       position: relative;
@@ -184,7 +175,232 @@
       position: relative;
     }
 
-    /* ——— CTA overlay ——— */
+    /* ═══════════════════════════════════════
+       CONTENT OVERLAYS — all fixed, z-index 30,
+       opacity:1 in CSS, GSAP sets initial state
+    ═══════════════════════════════════════ */
+
+    /* shared base */
+    #entry-content,
+    #hero-content,
+    #statement-content,
+    #specs-content,
+    #features-content,
+    #cta-content {
+      position: fixed;
+      z-index: 30;
+      opacity: 1;
+      visibility: visible;
+      pointer-events: none;
+    }
+
+    /* ——— Entry ——— */
+    #entry-content {
+      top: 50%; left: 50%;
+      transform: translate(-50%, -50%);
+      text-align: center;
+    }
+
+    #entry-content .entry-logo {
+      font-family: var(--font-display);
+      font-size: 32px;
+      color: var(--accent);
+      letter-spacing: 0.04em;
+      display: block;
+    }
+
+    #entry-content .entry-est {
+      font-family: var(--font-mono);
+      font-size: 10px;
+      letter-spacing: 0.45em;
+      color: var(--muted);
+      text-transform: uppercase;
+      margin-top: 10px;
+      display: block;
+    }
+
+    /* ——— Hero ——— */
+    #hero-content {
+      bottom: 12vh;
+      left: 50%;
+      transform: translateX(-50%);
+      text-align: center;
+      width: 90vw;
+      max-width: 900px;
+      background: rgba(10,9,8,0.6);
+      backdrop-filter: blur(8px);
+      -webkit-backdrop-filter: blur(8px);
+      border-radius: 2px;
+      padding: 12px 32px;
+    }
+
+    #hero-content .hero-eyebrow {
+      font-family: var(--font-mono);
+      font-size: 10px;
+      letter-spacing: 0.45em;
+      color: var(--muted);
+      text-transform: uppercase;
+      margin: 0 0 8px;
+    }
+
+    #hero-content .hero-title {
+      font-family: var(--font-display);
+      font-size: clamp(64px, 10vw, 148px);
+      line-height: 0.92;
+      color: var(--cream);
+      margin: 0;
+      text-transform: uppercase;
+      letter-spacing: 0.02em;
+    }
+
+    #hero-content .hero-sub {
+      font-family: var(--font-mono);
+      font-size: 11px;
+      letter-spacing: 0.22em;
+      color: var(--muted);
+      text-transform: uppercase;
+      margin: 10px 0 0;
+    }
+
+    /* ——— Statement ——— */
+    #statement-content {
+      top: 50%; left: 50%;
+      transform: translate(-50%, -50%);
+      text-align: center;
+      width: 90vw;
+      max-width: 720px;
+    }
+
+    .statement-line {
+      font-family: var(--font-display);
+      font-size: clamp(48px, 7.5vw, 108px);
+      line-height: 1;
+      color: var(--cream);
+      display: block;
+      letter-spacing: 0.04em;
+    }
+
+    .statement-rule {
+      width: 48px;
+      height: 1px;
+      background: var(--accent);
+      margin: 24px auto;
+    }
+
+    .statement-tagline {
+      font-family: var(--font-mono);
+      font-size: 12px;
+      letter-spacing: 0.08em;
+      color: var(--muted);
+      line-height: 1.85;
+    }
+
+    /* ——— Specs ——— */
+    #specs-content {
+      top: 50%;
+      right: 7vw;
+      transform: translateY(-50%);
+      width: 320px;
+    }
+
+    .specs-heading {
+      font-family: var(--font-mono);
+      font-size: 9px;
+      letter-spacing: 0.38em;
+      color: var(--accent);
+      text-transform: uppercase;
+      margin: 0 0 20px;
+    }
+
+    .spec-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: baseline;
+      padding: 10px 0;
+      border-bottom: 1px solid rgba(245,240,235,0.08);
+    }
+
+    .spec-label {
+      font-family: var(--font-mono);
+      font-size: 9px;
+      letter-spacing: 0.3em;
+      color: var(--muted);
+      text-transform: uppercase;
+      flex-shrink: 0;
+      margin-right: 16px;
+    }
+
+    .spec-value {
+      font-family: var(--font-mono);
+      font-size: 11px;
+      color: var(--cream);
+      text-align: right;
+      letter-spacing: 0.03em;
+    }
+
+    /* ——— Features ——— */
+    #features-content {
+      top: 50%;
+      left: 7vw;
+      transform: translateY(-50%);
+      width: 300px;
+    }
+
+    .features-heading {
+      font-family: var(--font-mono);
+      font-size: 9px;
+      letter-spacing: 0.38em;
+      color: var(--accent);
+      text-transform: uppercase;
+      margin: 0 0 20px;
+    }
+
+    .feature-item {
+      font-family: var(--font-mono);
+      font-size: 14px;
+      letter-spacing: 0.06em;
+      color: var(--cream);
+      padding: 11px 0;
+      border-bottom: 1px solid rgba(245,240,235,0.06);
+      line-height: 1;
+    }
+
+    .feature-arrow {
+      color: var(--accent);
+      margin-right: 10px;
+    }
+
+    /* ——— CTA content (copy above button) ——— */
+    #cta-content {
+      bottom: calc(14vh + 110px);
+      left: 50%;
+      transform: translateX(-50%);
+      text-align: center;
+      width: 90vw;
+      max-width: 600px;
+    }
+
+    .cta-headline {
+      font-family: var(--font-display);
+      font-size: clamp(36px, 5vw, 68px);
+      letter-spacing: 0.06em;
+      color: var(--cream);
+      line-height: 1.05;
+      margin: 0;
+      display: block;
+    }
+
+    .cta-sub {
+      font-family: var(--font-mono);
+      font-size: 11px;
+      letter-spacing: 0.2em;
+      color: var(--muted);
+      text-transform: uppercase;
+      margin: 14px 0 0;
+      display: block;
+    }
+
+    /* ——— CTA button overlay ——— */
     #cta-overlay {
       position: fixed;
       bottom: 14vh;
@@ -202,7 +418,6 @@
 
     #cta-overlay.active { pointer-events: auto; }
 
-    /* ——— Button ——— */
     .btn-primary {
       position: relative;
       overflow: hidden;
@@ -219,15 +434,8 @@
     }
 
     @media (pointer: coarse) { .btn-primary { cursor: pointer; } }
-
     .btn-primary:hover { background: transparent; color: var(--accent); }
-
-    .btn-primary:disabled {
-      opacity: 1;
-      cursor: default;
-      background: var(--accent);
-      color: var(--cream);
-    }
+    .btn-primary:disabled { opacity: 1; cursor: default; background: var(--accent); color: var(--cream); }
 
     .checkout-link {
       display: inline-block;
@@ -248,8 +456,7 @@
     /* ——— Toast ——— */
     #toast {
       position: fixed;
-      top: 100px;
-      right: 24px;
+      top: 100px; right: 24px;
       max-width: 320px;
       padding: 18px 20px 18px 22px;
       background: #161210;
@@ -313,86 +520,12 @@
       100% { transform: translateX(-50%); }
     }
 
-    /* ——— Entry content ——— */
-    #entry-content {
-      position: fixed;
-      top: 50%; left: 50%;
-      transform: translate(-50%, -50%);
-      z-index: 30;
-      text-align: center;
-      pointer-events: none;
-    }
-
-    #entry-content .entry-logo {
-      font-family: var(--font-display);
-      font-size: 32px;
-      color: var(--accent);
-      letter-spacing: 0.04em;
-      display: block;
-    }
-
-    #entry-content .entry-est {
-      font-family: var(--font-mono);
-      font-size: 10px;
-      letter-spacing: 0.45em;
-      color: var(--muted);
-      text-transform: uppercase;
-      margin-top: 10px;
-      display: block;
-    }
-
-    /* ——— Hero content ——— */
-    #hero-content {
-      position: fixed;
-      bottom: 15vh;
-      left: 50%;
-      transform: translateX(-50%);
-      z-index: 30;
-      text-align: center;
-      pointer-events: none;
-      background: rgba(10,9,8,0.6);
-      backdrop-filter: blur(8px);
-      -webkit-backdrop-filter: blur(8px);
-      border-radius: 2px;
-      padding: 12px 24px;
-      white-space: nowrap;
-    }
-
-    #hero-content .hero-eyebrow {
-      font-family: var(--font-mono);
-      font-size: 10px;
-      letter-spacing: 0.45em;
-      color: var(--muted);
-      text-transform: uppercase;
-      margin: 0 0 8px;
-    }
-
-    #hero-content .hero-title {
-      font-family: var(--font-display);
-      font-size: clamp(80px, 12vw, 160px);
-      line-height: 0.92;
-      color: var(--cream);
-      margin: 0;
-      text-transform: uppercase;
-      letter-spacing: 0.02em;
-    }
-
-    #hero-content .hero-sub {
-      font-family: var(--font-mono);
-      font-size: 11px;
-      letter-spacing: 0.22em;
-      color: var(--muted);
-      text-transform: uppercase;
-      margin: 10px 0 0;
-    }
-
     /* ——— Mobile ——— */
     @media (max-width: 768px) {
       body { cursor: auto; }
 
       #figure-shell {
-        top: 10vh;
-        left: 50%;
+        top: 10vh; left: 50%;
         transform: translateX(-50%);
         width: 80vw;
         max-width: 380px;
@@ -404,17 +537,40 @@
       #scroll-container { height: auto; }
 
       .scene {
-        height: 100vh;
+        height: auto;
+        min-height: 60vh;
         display: flex;
         align-items: center;
         justify-content: center;
+        padding: 48px 24px;
       }
+
+      /* stack all content overlays as normal flow on mobile */
+      #entry-content,
+      #hero-content,
+      #statement-content,
+      #specs-content,
+      #features-content,
+      #cta-content {
+        position: relative;
+        top: auto; left: auto; right: auto; bottom: auto;
+        transform: none;
+        opacity: 1 !important;
+        visibility: visible;
+        width: 100%;
+        max-width: 100%;
+        padding: 40px 24px;
+        text-align: center;
+      }
+
+      #specs-content { width: 100%; }
+      #features-content { width: 100%; }
 
       #cta-overlay {
         position: relative;
         bottom: auto; left: auto;
         transform: none;
-        opacity: 1;
+        opacity: 1 !important;
         pointer-events: auto;
         padding: 40px 20px;
       }
@@ -430,6 +586,7 @@
     <a class="logo" href="#">CM™</a>
   </header>
 
+  <!-- Figure -->
   <div id="figure-shell" aria-hidden="true">
     <div id="figure-glow"></div>
     <div id="product-figure">
@@ -443,19 +600,75 @@
     <div id="figure-shadow"></div>
   </div>
 
-  <!-- Entry overlay: visible 0–5% scroll -->
-  <div id="entry-content" aria-hidden="true">
+  <!-- SCENE 1: Entry — visible at load, fades out 0–5% -->
+  <div id="entry-content">
     <span class="entry-logo">CM™</span>
     <span class="entry-est">Est. 2017</span>
   </div>
 
-  <!-- Hero overlay: visible 5–20% scroll -->
-  <div id="hero-content" aria-hidden="true">
+  <!-- SCENE 2: Hero — fades in 5–12%, out 12–20% -->
+  <div id="hero-content">
     <p class="hero-eyebrow">Limited Edition</p>
     <h1 class="hero-title">Corbin Moffitt™</h1>
     <p class="hero-sub">Senior Designer — 1 of 1</p>
   </div>
 
+  <!-- SCENE 3: Statement — visible 20–35% -->
+  <div id="statement-content">
+    <span class="statement-line">SEVEN YEARS.</span>
+    <span class="statement-line">ZERO SHORTCUTS.</span>
+    <div class="statement-rule"></div>
+    <p class="statement-tagline">Systems that scale. Details that land.<br>Results you can present.</p>
+  </div>
+
+  <!-- SCENE 4: Specs — visible 35–50% -->
+  <div id="specs-content">
+    <p class="specs-heading">Technical Specs</p>
+    <div class="spec-row">
+      <span class="spec-label">ROLE</span>
+      <span class="spec-value">Senior Designer</span>
+    </div>
+    <div class="spec-row">
+      <span class="spec-label">SINCE</span>
+      <span class="spec-value">2017</span>
+    </div>
+    <div class="spec-row">
+      <span class="spec-label">TOOLS</span>
+      <span class="spec-value">Figma · Webflow · GSAP · Framer</span>
+    </div>
+    <div class="spec-row">
+      <span class="spec-label">SKILLS</span>
+      <span class="spec-value">Brand · Web · UX · Motion</span>
+    </div>
+    <div class="spec-row">
+      <span class="spec-label">LOCATION</span>
+      <span class="spec-value">Saratoga Springs, UT</span>
+    </div>
+    <div class="spec-row">
+      <span class="spec-label">EDITION</span>
+      <span class="spec-value">1 of 1 — Limited</span>
+    </div>
+  </div>
+
+  <!-- SCENE 5: Features — visible 50–65% -->
+  <div id="features-content">
+    <p class="features-heading">Core Features</p>
+    <div class="feature-item"><span class="feature-arrow">→</span>SYSTEMS THINKER</div>
+    <div class="feature-item"><span class="feature-arrow">→</span>PIXEL PERFECT</div>
+    <div class="feature-item"><span class="feature-arrow">→</span>BRAND TO BROWSER</div>
+    <div class="feature-item"><span class="feature-arrow">→</span>MOTION NATIVE</div>
+    <div class="feature-item"><span class="feature-arrow">→</span>SHIPS ON TIME</div>
+  </div>
+
+  <!-- SCENE 6: CTA copy — visible 65–100% -->
+  <div id="cta-content">
+    <span class="cta-headline">READY TO SHIP.</span>
+    <span class="cta-headline">ONE DESIGNER.</span>
+    <span class="cta-headline">ZERO COMPROMISES.</span>
+    <span class="cta-sub">Available for full-time &amp; freelance.</span>
+  </div>
+
+  <!-- Scroll spacers -->
   <main id="scroll-container">
     <div id="scene-entry"     class="scene"></div>
     <div id="scene-hero"      class="scene"></div>
@@ -465,14 +678,14 @@
     <div id="scene-cta"       class="scene"></div>
   </main>
 
-  <!-- CTA overlay -->
+  <!-- CTA button -->
   <div id="cta-overlay">
     <button type="button" class="btn-primary" id="cta-btn">ADD TO TEAM →</button>
     <a class="checkout-link" id="checkout-link" href="https://corbinmoffitt.com" target="_blank" rel="noopener noreferrer">PROCEED TO CHECKOUT → corbinmoffitt.com</a>
   </div>
 
   <div class="marquee-wrap" aria-hidden="true">
-    <div class="marquee-inner" id="marquee-track">
+    <div class="marquee-inner">
       <span>SENIOR DESIGNER <span class="marquee-dot">◆</span> AVAILABLE NOW <span class="marquee-dot">◆</span> SARATOGA SPRINGS UT <span class="marquee-dot">◆</span> FIGMA <span class="marquee-dot">◆</span> WEBFLOW <span class="marquee-dot">◆</span> GSAP <span class="marquee-dot">◆</span> BRAND <span class="marquee-dot">◆</span> WEB <span class="marquee-dot">◆</span> UX <span class="marquee-dot">◆</span> PERFORMANCE <span class="marquee-dot">◆</span> 1 OF 1 <span class="marquee-dot">◆</span> LIMITED EDITION <span class="marquee-dot">◆</span> </span>
       <span>SENIOR DESIGNER <span class="marquee-dot">◆</span> AVAILABLE NOW <span class="marquee-dot">◆</span> SARATOGA SPRINGS UT <span class="marquee-dot">◆</span> FIGMA <span class="marquee-dot">◆</span> WEBFLOW <span class="marquee-dot">◆</span> GSAP <span class="marquee-dot">◆</span> BRAND <span class="marquee-dot">◆</span> WEB <span class="marquee-dot">◆</span> UX <span class="marquee-dot">◆</span> PERFORMANCE <span class="marquee-dot">◆</span> 1 OF 1 <span class="marquee-dot">◆</span> LIMITED EDITION <span class="marquee-dot">◆</span> </span>
     </div>
@@ -486,6 +699,13 @@
   <script>
     window.addEventListener('load', function () {
 
+      /* ——— Content div audit ——— */
+      var contentDivs = ['entry-content','hero-content','statement-content','specs-content','features-content','cta-content'];
+      contentDivs.forEach(function(id) {
+        var el = document.getElementById(id);
+        console.log(id, el ? 'FOUND' : 'MISSING');
+      });
+
       /* ——— Library safety checks ——— */
       if (typeof gsap === 'undefined') {
         console.error('GSAP not loaded — check CDN');
@@ -496,8 +716,8 @@
         return;
       }
       if (typeof THREE === 'undefined') {
-        console.error('THREE not loaded — check CDN');
-        /* non-fatal: particles are decorative, continue without them */
+        console.error('THREE not loaded — particles disabled');
+        /* non-fatal */
       }
 
       /* ——— Image debug ——— */
@@ -518,15 +738,14 @@
         return;
       }
 
-      var prefersCoarse = window.matchMedia("(pointer: coarse)").matches;
-      var isMobile      = window.matchMedia("(max-width: 768px)").matches;
+      var prefersCoarse = window.matchMedia('(pointer: coarse)').matches;
+      var isMobile      = window.matchMedia('(max-width: 768px)').matches;
 
-      /* ═══════════════════════════════════════════════
+      /* ═══════════════════════════════════════════
          THREE.JS PARTICLES
-      ═══════════════════════════════════════════════ */
+      ═══════════════════════════════════════════ */
       try {
         if (typeof THREE !== 'undefined') {
-
           function makeCircleTexture() {
             var c = document.createElement('canvas');
             c.width = c.height = 64;
@@ -551,9 +770,7 @@
           var threeCamera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 100);
           threeCamera.position.z = 5;
 
-          var N = 600;
-          var BOUND_Y = 4.5;
-          var BOUND_X = 9.0;
+          var N = 600, BOUND_Y = 4.5, BOUND_X = 9.0;
           var positions = new Float32Array(N * 3);
 
           for (var i = 0; i < N; i++) {
@@ -567,26 +784,20 @@
           geo.setAttribute('position', posAttr);
 
           var mat = new THREE.PointsMaterial({
-            color:           0xE8441A,
-            size:            1.2,
-            transparent:     true,
-            opacity:         0.12,
+            color: 0xE8441A, size: 1.2,
+            transparent: true, opacity: 0.12,
             sizeAttenuation: false,
-            map:             makeCircleTexture(),
-            alphaTest:       0.1,
-            depthWrite:      false,
+            map: makeCircleTexture(), alphaTest: 0.1, depthWrite: false,
           });
 
           var points = new THREE.Points(geo, mat);
           threeScene.add(points);
 
           var mouseWX = 0, mouseWY = 0;
-
           window.addEventListener('mousemove', function (e) {
             mouseWX = (e.clientX / window.innerWidth  - 0.5) * BOUND_X * 2;
             mouseWY = -(e.clientY / window.innerHeight - 0.5) * BOUND_Y * 2;
           });
-
           window.addEventListener('resize', function () {
             renderer.setSize(window.innerWidth, window.innerHeight);
             threeCamera.aspect = window.innerWidth / window.innerHeight;
@@ -613,24 +824,17 @@
         console.error('Three.js particle init failed:', e);
       }
 
-      /* ═══════════════════════════════════════════════
+      /* ═══════════════════════════════════════════
          CUSTOM CURSOR
-      ═══════════════════════════════════════════════ */
+      ═══════════════════════════════════════════ */
       try {
         var cursor = document.getElementById('custom-cursor');
-
         if (!prefersCoarse && !isMobile && cursor) {
           var xTo = gsap.quickTo(cursor, 'x', { duration: 0.45, ease: 'power3.out' });
           var yTo = gsap.quickTo(cursor, 'y', { duration: 0.45, ease: 'power3.out' });
-
-          window.addEventListener('mousemove', function (e) {
-            xTo(e.clientX);
-            yTo(e.clientY);
-          });
-
-          var clickableSel = "a[href], button, [role='button'], input[type='submit'], label[for]";
+          window.addEventListener('mousemove', function (e) { xTo(e.clientX); yTo(e.clientY); });
+          var clickableSel = "a[href], button, [role='button']";
           var hoveringClickable = false;
-
           document.addEventListener('mousemove', function (e) {
             var el  = document.elementFromPoint(e.clientX, e.clientY);
             var hit = el && el.closest && el.closest(clickableSel);
@@ -642,43 +846,52 @@
               gsap.to(cursor, { scale: 1, duration: 0.25, ease: 'power2.out' });
             }
           });
-
           gsap.set(cursor, { x: window.innerWidth / 2, y: window.innerHeight / 2, xPercent: -50, yPercent: -50 });
         }
       } catch (e) {
         console.error('Cursor init failed:', e);
       }
 
-      /* ═══════════════════════════════════════════════
-         GSAP SCROLL — FIGURE + CONTENT
-      ═══════════════════════════════════════════════ */
+      /* ═══════════════════════════════════════════
+         GSAP SCROLL
+      ═══════════════════════════════════════════ */
       try {
-        var productFigure = document.getElementById('product-figure');
-        var entryContent  = document.getElementById('entry-content');
-        var heroContent   = document.getElementById('hero-content');
-        var ctaOverlay    = document.getElementById('cta-overlay');
-        var toast         = document.getElementById('toast');
+        var productFigure    = document.getElementById('product-figure');
+        var entryContent     = document.getElementById('entry-content');
+        var heroContent      = document.getElementById('hero-content');
+        var statementContent = document.getElementById('statement-content');
+        var specsContent     = document.getElementById('specs-content');
+        var featuresContent  = document.getElementById('features-content');
+        var ctaContent       = document.getElementById('cta-content');
+        var ctaOverlay       = document.getElementById('cta-overlay');
+        var toastEl          = document.getElementById('toast');
 
-        if (!productFigure) { throw new Error('#product-figure not found'); }
-        if (!entryContent)  { throw new Error('#entry-content not found'); }
-        if (!heroContent)   { throw new Error('#hero-content not found'); }
+        if (!productFigure) throw new Error('#product-figure not found');
+        if (!entryContent)  throw new Error('#entry-content not found');
+        if (!heroContent)   throw new Error('#hero-content not found');
 
-        gsap.set(toast, { x: 120, opacity: 0, visibility: 'hidden' });
+        gsap.set(toastEl, { x: 120, opacity: 0, visibility: 'hidden' });
 
         if (!isMobile) {
 
-          gsap.set(productFigure, { opacity: 0, scale: 0.8, x: 0, rotation: 0 });
-          gsap.set(entryContent,  { opacity: 1 });
-          gsap.set(heroContent,   { opacity: 0, y: 0 });
+          /* — Initial GSAP states (CSS has opacity:1, GSAP overrides here) — */
+          gsap.set(productFigure,    { opacity: 0, scale: 0.8, x: 0, rotation: 0 });
+          gsap.set(entryContent,     { opacity: 1 });
+          gsap.set(heroContent,      { opacity: 0 });
+          gsap.set(statementContent, { opacity: 0 });
+          gsap.set(specsContent,     { opacity: 0 });
+          gsap.set(featuresContent,  { opacity: 0 });
+          gsap.set(ctaContent,       { opacity: 0 });
+
+          function maxS() { return ScrollTrigger.maxScroll(window); }
 
           /* Entry: fade out 0–5% */
           gsap.to(entryContent, {
-            opacity: 0,
-            ease: 'none',
+            opacity: 0, ease: 'none',
             scrollTrigger: {
               trigger: '#scroll-container',
               start: 'top top',
-              end: function () { return '+=' + ScrollTrigger.maxScroll(window) * 0.05; },
+              end: function () { return '+=' + maxS() * 0.05; },
               scrub: true,
             },
           });
@@ -686,34 +899,65 @@
           /* Hero: fade in 5–12% */
           ScrollTrigger.create({
             trigger: '#scroll-container',
-            start: function () { return ScrollTrigger.maxScroll(window) * 0.05 + 'px top'; },
-            end:   function () { return ScrollTrigger.maxScroll(window) * 0.12 + 'px top'; },
+            start: function () { return maxS() * 0.05 + 'px top'; },
+            end:   function () { return maxS() * 0.12 + 'px top'; },
             scrub: true,
-            onUpdate: function (self) {
-              gsap.set(heroContent, { opacity: self.progress, y: 0 });
-            },
+            onUpdate: function (self) { gsap.set(heroContent, { opacity: self.progress }); },
           });
 
           /* Hero: fade out 12–20% */
           ScrollTrigger.create({
             trigger: '#scroll-container',
-            start: function () { return ScrollTrigger.maxScroll(window) * 0.12 + 'px top'; },
-            end:   function () { return ScrollTrigger.maxScroll(window) * 0.20 + 'px top'; },
+            start: function () { return maxS() * 0.12 + 'px top'; },
+            end:   function () { return maxS() * 0.20 + 'px top'; },
             scrub: true,
             onUpdate: function (self) {
               gsap.set(heroContent, { opacity: 1 - self.progress, y: self.progress * 30 });
             },
           });
 
-          /*
-           * Figure timeline — full 600vh scroll progress:
-           *  0.00–0.05  entry:     opacity 0,   scale 0.8,  x 0,     rot 0
-           *  0.05–0.20  hero:      opacity 1,   scale 1,    x 0,     rot 0
-           *  0.20–0.35  statement: opacity 0.4, scale 0.8,  x 0,     rot 0
-           *  0.35–0.50  specs:     opacity 0.9, scale 0.75, x –22vw, rot –4
-           *  0.50–0.65  features:  opacity 0.9, scale 0.85, x +22vw, rot +4
-           *  0.65–1.00  cta:       opacity 1,   scale 1.1,  x 0,     rot 0
-           */
+          /* Statement: 20–35% */
+          ScrollTrigger.create({
+            trigger: '#scroll-container',
+            start:   function () { return maxS() * 0.20 + 'px top'; },
+            end:     function () { return maxS() * 0.35 + 'px top'; },
+            onEnter:     function () { gsap.to(statementContent, { opacity: 1, duration: 0.5, ease: 'power2.out' }); },
+            onLeave:     function () { gsap.to(statementContent, { opacity: 0, duration: 0.3, ease: 'power2.in' }); },
+            onEnterBack: function () { gsap.to(statementContent, { opacity: 1, duration: 0.5, ease: 'power2.out' }); },
+            onLeaveBack: function () { gsap.to(statementContent, { opacity: 0, duration: 0.3, ease: 'power2.in' }); },
+          });
+
+          /* Specs: 35–50% */
+          ScrollTrigger.create({
+            trigger: '#scroll-container',
+            start:   function () { return maxS() * 0.35 + 'px top'; },
+            end:     function () { return maxS() * 0.50 + 'px top'; },
+            onEnter:     function () { gsap.to(specsContent, { opacity: 1, duration: 0.5, ease: 'power2.out' }); },
+            onLeave:     function () { gsap.to(specsContent, { opacity: 0, duration: 0.3, ease: 'power2.in' }); },
+            onEnterBack: function () { gsap.to(specsContent, { opacity: 1, duration: 0.5, ease: 'power2.out' }); },
+            onLeaveBack: function () { gsap.to(specsContent, { opacity: 0, duration: 0.3, ease: 'power2.in' }); },
+          });
+
+          /* Features: 50–65% */
+          ScrollTrigger.create({
+            trigger: '#scroll-container',
+            start:   function () { return maxS() * 0.50 + 'px top'; },
+            end:     function () { return maxS() * 0.65 + 'px top'; },
+            onEnter:     function () { gsap.to(featuresContent, { opacity: 1, duration: 0.5, ease: 'power2.out' }); },
+            onLeave:     function () { gsap.to(featuresContent, { opacity: 0, duration: 0.3, ease: 'power2.in' }); },
+            onEnterBack: function () { gsap.to(featuresContent, { opacity: 1, duration: 0.5, ease: 'power2.out' }); },
+            onLeaveBack: function () { gsap.to(featuresContent, { opacity: 0, duration: 0.3, ease: 'power2.in' }); },
+          });
+
+          /* CTA content: 65–100% */
+          ScrollTrigger.create({
+            trigger: '#scroll-container',
+            start:   function () { return maxS() * 0.65 + 'px top'; },
+            onEnter:     function () { gsap.to(ctaContent, { opacity: 1, duration: 0.6, ease: 'power2.out' }); },
+            onLeaveBack: function () { gsap.to(ctaContent, { opacity: 0, duration: 0.3, ease: 'power2.in' }); },
+          });
+
+          /* Figure timeline */
           var figureTl = gsap.timeline();
           figureTl
             .to(productFigure, { opacity: 0,   scale: 0.8,  x: 0,       rotation: 0,  duration: 0.05, ease: 'none' }, 0)
@@ -731,7 +975,7 @@
             scrub: 2,
           });
 
-          /* CTA overlay */
+          /* CTA button overlay */
           ScrollTrigger.create({
             trigger: '#scene-cta',
             start: 'top 60%',
@@ -747,22 +991,8 @@
           });
 
         } else {
-          /* Mobile: show figure, simple fade-up on each scene */
+          /* Mobile: everything visible, simple fade-up */
           gsap.set(productFigure, { opacity: 1, scale: 1, x: 0, rotation: 0 });
-
-          gsap.utils.toArray('.scene').forEach(function (scene) {
-            gsap.from(scene, {
-              opacity: 0,
-              y: 30,
-              duration: 0.8,
-              ease: 'power2.out',
-              scrollTrigger: {
-                trigger: scene,
-                start: 'top 88%',
-                toggleActions: 'play none none reverse',
-              },
-            });
-          });
         }
 
         ScrollTrigger.refresh();
@@ -771,13 +1001,13 @@
         console.error('GSAP scroll init failed:', e);
       }
 
-      /* ═══════════════════════════════════════════════
+      /* ═══════════════════════════════════════════
          CTA BUTTON
-      ═══════════════════════════════════════════════ */
+      ═══════════════════════════════════════════ */
       try {
         var ctaBtn     = document.getElementById('cta-btn');
         var checkoutLk = document.getElementById('checkout-link');
-        var toastEl    = document.getElementById('toast');
+        var toastRef   = document.getElementById('toast');
         var pFig       = document.getElementById('product-figure');
         var added      = false;
 
@@ -787,16 +1017,15 @@
           ctaBtn.textContent = '✓ ADDED TO TEAM';
           ctaBtn.disabled = true;
 
-          gsap.fromTo(
-            toastEl,
+          gsap.fromTo(toastRef,
             { x: 120, opacity: 0, visibility: 'visible' },
             {
               x: 0, opacity: 1, duration: 0.55, ease: 'power3.out',
               onComplete: function () {
                 gsap.delayedCall(3.2, function () {
-                  gsap.to(toastEl, {
+                  gsap.to(toastRef, {
                     x: 120, opacity: 0, duration: 0.45, ease: 'power2.in',
-                    onComplete: function () { gsap.set(toastEl, { visibility: 'hidden' }); },
+                    onComplete: function () { gsap.set(toastRef, { visibility: 'hidden' }); },
                   });
                 });
               },
