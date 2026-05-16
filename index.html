@@ -7,6 +7,12 @@
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Space+Mono:ital,wght@0,400;0,700;1,400&family=DM+Sans:wght@400;500&display=swap" rel="stylesheet" />
+
+  <!-- Libraries loaded synchronously, in dependency order, no defer/async -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/ScrollTrigger.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+
   <style>
     :root {
       --bg: #0A0908;
@@ -19,20 +25,13 @@
       --font-display: "Bebas Neue", sans-serif;
     }
 
-    *,
-    *::before,
-    *::after {
-      box-sizing: border-box;
-    }
+    *, *::before, *::after { box-sizing: border-box; }
 
     html {
       scroll-behavior: smooth;
       scrollbar-width: none;
     }
-
-    html::-webkit-scrollbar {
-      display: none;
-    }
+    html::-webkit-scrollbar { display: none; }
 
     body {
       margin: 0;
@@ -84,7 +83,7 @@
       will-change: transform;
     }
 
-    /* ——— Figure shell: centered via transform so height:auto works ——— */
+    /* ——— Figure shell ——— */
     #figure-shell {
       position: fixed;
       top: 50%;
@@ -94,16 +93,20 @@
       height: auto;
       min-height: 600px;
       pointer-events: none;
+      /* Explicit visibility — never hidden by CSS */
+      opacity: 1;
+      visibility: visible;
+      display: block;
       animation: figureFloat 4s ease-in-out infinite alternate;
     }
 
-    /* Combine centering + float in one keyframe so they don't conflict */
+    /* centering + float combined in one keyframe to avoid transform conflict */
     @keyframes figureFloat {
       from { transform: translate(-50%, -50%) translateY(0); }
       to   { transform: translate(-50%, -50%) translateY(-10px); }
     }
 
-    /* GSAP animates this element — no height so it wraps the image naturally */
+    /* GSAP scroll target — wraps image naturally, GSAP owns opacity/scale/x/rotation */
     #product-figure {
       position: relative;
       width: 100%;
@@ -153,9 +156,7 @@
     /* ——— Header ——— */
     .site-header {
       position: fixed;
-      top: 0;
-      left: 0;
-      right: 0;
+      top: 0; left: 0; right: 0;
       z-index: 100;
       padding: 28px 40px;
       pointer-events: none;
@@ -170,7 +171,7 @@
       pointer-events: auto;
     }
 
-    /* ——— Scroll container: 600vh total ——— */
+    /* ——— Scroll container: 600vh ——— */
     #scroll-container {
       height: 600vh;
       position: relative;
@@ -183,7 +184,7 @@
       position: relative;
     }
 
-    /* ——— CTA overlay: fixed, centered, shown during scene-cta ——— */
+    /* ——— CTA overlay ——— */
     #cta-overlay {
       position: fixed;
       bottom: 14vh;
@@ -199,9 +200,7 @@
       text-align: center;
     }
 
-    #cta-overlay.active {
-      pointer-events: auto;
-    }
+    #cta-overlay.active { pointer-events: auto; }
 
     /* ——— Button ——— */
     .btn-primary {
@@ -219,34 +218,9 @@
       text-transform: uppercase;
     }
 
-    @media (pointer: coarse) {
-      .btn-primary { cursor: pointer; }
-    }
+    @media (pointer: coarse) { .btn-primary { cursor: pointer; } }
 
-    .btn-primary::after {
-      content: '';
-      position: absolute;
-      inset: 0;
-      background: repeating-linear-gradient(
-        0deg,
-        transparent,
-        transparent 3px,
-        rgba(0, 0, 0, 0.1) 3px,
-        rgba(0, 0, 0, 0.1) 4px
-      );
-      opacity: 0;
-      transition: opacity 0.3s ease;
-      pointer-events: none;
-    }
-
-    .btn-primary:hover {
-      background: transparent;
-      color: var(--accent);
-    }
-
-    .btn-primary:hover::after {
-      opacity: 0;
-    }
+    .btn-primary:hover { background: transparent; color: var(--accent); }
 
     .btn-primary:disabled {
       opacity: 1;
@@ -268,11 +242,7 @@
       transition: opacity 0.5s ease;
     }
 
-    .checkout-link.visible {
-      opacity: 1;
-      pointer-events: auto;
-    }
-
+    .checkout-link.visible { opacity: 1; pointer-events: auto; }
     .checkout-link:hover { color: #ff5a2e; }
 
     /* ——— Toast ——— */
@@ -283,7 +253,7 @@
       max-width: 320px;
       padding: 18px 20px 18px 22px;
       background: #161210;
-      border: 1px solid rgba(138, 127, 120, 0.25);
+      border: 1px solid rgba(138,127,120,0.25);
       border-left: 4px solid var(--accent);
       font-family: var(--font-mono);
       font-size: 12px;
@@ -291,7 +261,7 @@
       color: var(--cream);
       z-index: 10100;
       pointer-events: none;
-      box-shadow: 0 16px 48px rgba(0, 0, 0, 0.45);
+      box-shadow: 0 16px 48px rgba(0,0,0,0.45);
       visibility: hidden;
     }
 
@@ -307,12 +277,10 @@
     /* ——— Marquee ——— */
     .marquee-wrap {
       position: fixed;
-      bottom: 0;
-      left: 0;
-      right: 0;
+      bottom: 0; left: 0; right: 0;
       z-index: 200;
       overflow: hidden;
-      background: linear-gradient(180deg, transparent, rgba(10, 9, 8, 0.95));
+      background: linear-gradient(180deg, transparent, rgba(10,9,8,0.95));
       padding: 10px 0 12px;
       pointer-events: none;
     }
@@ -348,8 +316,7 @@
     /* ——— Entry content ——— */
     #entry-content {
       position: fixed;
-      top: 50%;
-      left: 50%;
+      top: 50%; left: 50%;
       transform: translate(-50%, -50%);
       z-index: 30;
       text-align: center;
@@ -383,7 +350,7 @@
       z-index: 30;
       text-align: center;
       pointer-events: none;
-      background: rgba(10, 9, 8, 0.6);
+      background: rgba(10,9,8,0.6);
       backdrop-filter: blur(8px);
       -webkit-backdrop-filter: blur(8px);
       border-radius: 2px;
@@ -433,14 +400,8 @@
         animation: none;
       }
 
-      .site-header {
-        position: relative;
-        padding: 20px;
-      }
-
-      #scroll-container {
-        height: auto;
-      }
+      .site-header { position: relative; padding: 20px; }
+      #scroll-container { height: auto; }
 
       .scene {
         height: 100vh;
@@ -451,8 +412,7 @@
 
       #cta-overlay {
         position: relative;
-        bottom: auto;
-        left: auto;
+        bottom: auto; left: auto;
         transform: none;
         opacity: 1;
         pointer-events: auto;
@@ -477,7 +437,7 @@
         id="action-figure"
         src="assets/action-figure.png"
         alt=""
-        onerror="if(!this.dataset.retry){this.dataset.retry='1';this.src='./assets/action-figure.png';}else{console.log('Action figure failed to load. Tried:',this.src);}"
+        onerror="if(!this.dataset.retry){this.dataset.retry='1';this.src='./assets/action-figure.png';}else{console.error('Image failed to load. Tried:',this.src);}"
       />
     </div>
     <div id="figure-shadow"></div>
@@ -505,7 +465,7 @@
     <div id="scene-cta"       class="scene"></div>
   </main>
 
-  <!-- CTA: fixed overlay, activated during scene-cta -->
+  <!-- CTA overlay -->
   <div id="cta-overlay">
     <button type="button" class="btn-primary" id="cta-btn">ADD TO TEAM →</button>
     <a class="checkout-link" id="checkout-link" href="https://corbinmoffitt.com" target="_blank" rel="noopener noreferrer">PROCEED TO CHECKOUT → corbinmoffitt.com</a>
@@ -523,329 +483,341 @@
     Corbin has been added to your team.
   </div>
 
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
   <script>
-    gsap.registerPlugin(ScrollTrigger);
+    window.addEventListener('load', function () {
 
-    const prefersCoarse = window.matchMedia("(pointer: coarse)").matches;
-    const isMobile      = window.matchMedia("(max-width: 768px)").matches;
-
-    /* ——— Three.js particle field: 600 tiny circular dots floating upward ——— */
-    (function () {
-      if (typeof THREE === "undefined") return;
-
-      /* Build a small circular sprite texture so points render as dots, not squares */
-      function makeCircleTexture() {
-        var c   = document.createElement("canvas");
-        c.width = c.height = 64;
-        var ctx = c.getContext("2d");
-        ctx.beginPath();
-        ctx.arc(32, 32, 30, 0, Math.PI * 2);
-        ctx.fillStyle = "white";
-        ctx.fill();
-        return new THREE.CanvasTexture(c);
+      /* ——— Library safety checks ——— */
+      if (typeof gsap === 'undefined') {
+        console.error('GSAP not loaded — check CDN');
+        return;
+      }
+      if (typeof ScrollTrigger === 'undefined') {
+        console.error('ScrollTrigger not loaded — check CDN');
+        return;
+      }
+      if (typeof THREE === 'undefined') {
+        console.error('THREE not loaded — check CDN');
+        /* non-fatal: particles are decorative, continue without them */
       }
 
-      var canvas = document.createElement("canvas");
-      canvas.style.cssText = "position:fixed;top:0;left:0;width:100%;height:100%;z-index:0;pointer-events:none;";
-      document.body.prepend(canvas);
-
-      var renderer = new THREE.WebGLRenderer({ canvas: canvas, antialias: false, alpha: true });
-      renderer.setPixelRatio(Math.min(window.devicePixelRatio, 1.5));
-      renderer.setSize(window.innerWidth, window.innerHeight);
-      renderer.setClearColor(0x000000, 0);
-
-      var scene  = new THREE.Scene();
-      /* Perspective camera — world units give enough range for gentle upward drift */
-      var camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 100);
-      camera.position.z = 5;
-
-      var N         = 600;
-      var positions = new Float32Array(N * 3);
-      var speeds    = new Float32Array(N);
-
-      /* View bounds at z=0 for FOV=75, camera z=5:
-         half-height ≈ tan(37.5°) * 5 ≈ 3.83   → use BOUND_Y = 4.5
-         half-width  ≈ 3.83 * aspect (≈1.78)    → use BOUND_X = 9  */
-      var BOUND_Y = 4.5;
-      var BOUND_X = 9.0;
-
-      for (var i = 0; i < N; i++) {
-        positions[i * 3]     = (Math.random() - 0.5) * BOUND_X * 2;
-        positions[i * 3 + 1] = (Math.random() - 0.5) * BOUND_Y * 2;
-        positions[i * 3 + 2] = 0;
-        speeds[i] = 0; /* per-particle speed unused — uniform drift per spec */
+      /* ——— Image debug ——— */
+      var img = document.getElementById('action-figure');
+      console.log('Image src:', img ? img.src : 'element not found');
+      console.log('Image complete:', img ? img.complete : 'n/a');
+      if (img) {
+        img.addEventListener('error', function () {
+          console.error('Image failed to load:', img.src);
+        });
       }
 
-      var geo     = new THREE.BufferGeometry();
-      var posAttr = new THREE.BufferAttribute(positions, 3);
-      geo.setAttribute("position", posAttr);
+      /* ——— Register plugin ——— */
+      try {
+        gsap.registerPlugin(ScrollTrigger);
+      } catch (e) {
+        console.error('ScrollTrigger register failed:', e);
+        return;
+      }
 
-      var mat = new THREE.PointsMaterial({
-        color:          0xE8441A,
-        size:           1.2,
-        transparent:    true,
-        opacity:        0.12,
-        sizeAttenuation: false,      /* screen-space pixels — stays constant regardless of depth */
-        map:            makeCircleTexture(),
-        alphaTest:      0.1,
-        depthWrite:     false,
-      });
+      var prefersCoarse = window.matchMedia("(pointer: coarse)").matches;
+      var isMobile      = window.matchMedia("(max-width: 768px)").matches;
 
-      var points = new THREE.Points(geo, mat);
-      scene.add(points);
+      /* ═══════════════════════════════════════════════
+         THREE.JS PARTICLES
+      ═══════════════════════════════════════════════ */
+      try {
+        if (typeof THREE !== 'undefined') {
 
-      /* Track mouse in normalised world coords */
-      var mouseWX = 0, mouseWY = 0;
-
-      window.addEventListener("mousemove", function (e) {
-        mouseWX = (e.clientX / window.innerWidth  - 0.5) * BOUND_X * 2;
-        mouseWY = -(e.clientY / window.innerHeight - 0.5) * BOUND_Y * 2;
-      });
-
-      window.addEventListener("resize", function () {
-        renderer.setSize(window.innerWidth, window.innerHeight);
-        camera.aspect = window.innerWidth / window.innerHeight;
-        camera.updateProjectionMatrix();
-      });
-
-      (function animate() {
-        requestAnimationFrame(animate);
-
-        var arr = posAttr.array;
-        for (var i = 0; i < N; i++) {
-          var ix = i * 3, iy = ix + 1;
-
-          /* Float upward */
-          arr[iy] += 0.003;
-
-          /* Reset to bottom with fresh random x when crossing the top bound */
-          if (arr[iy] > BOUND_Y) {
-            arr[iy] = -BOUND_Y;
-            arr[ix] = (Math.random() - 0.5) * BOUND_X * 2;
+          function makeCircleTexture() {
+            var c = document.createElement('canvas');
+            c.width = c.height = 64;
+            var ctx = c.getContext('2d');
+            ctx.beginPath();
+            ctx.arc(32, 32, 30, 0, Math.PI * 2);
+            ctx.fillStyle = 'white';
+            ctx.fill();
+            return new THREE.CanvasTexture(c);
           }
 
-          /* Subtle per-particle mouse influence — max coefficient 0.0003 */
-          arr[ix] += (mouseWX - arr[ix]) * 0.0003;
+          var threeCanvas = document.createElement('canvas');
+          threeCanvas.style.cssText = 'position:fixed;top:0;left:0;width:100%;height:100%;z-index:0;pointer-events:none;';
+          document.body.prepend(threeCanvas);
+
+          var renderer = new THREE.WebGLRenderer({ canvas: threeCanvas, antialias: false, alpha: true });
+          renderer.setPixelRatio(Math.min(window.devicePixelRatio, 1.5));
+          renderer.setSize(window.innerWidth, window.innerHeight);
+          renderer.setClearColor(0x000000, 0);
+
+          var threeScene  = new THREE.Scene();
+          var threeCamera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 100);
+          threeCamera.position.z = 5;
+
+          var N = 600;
+          var BOUND_Y = 4.5;
+          var BOUND_X = 9.0;
+          var positions = new Float32Array(N * 3);
+
+          for (var i = 0; i < N; i++) {
+            positions[i * 3]     = (Math.random() - 0.5) * BOUND_X * 2;
+            positions[i * 3 + 1] = (Math.random() - 0.5) * BOUND_Y * 2;
+            positions[i * 3 + 2] = 0;
+          }
+
+          var geo     = new THREE.BufferGeometry();
+          var posAttr = new THREE.BufferAttribute(positions, 3);
+          geo.setAttribute('position', posAttr);
+
+          var mat = new THREE.PointsMaterial({
+            color:           0xE8441A,
+            size:            1.2,
+            transparent:     true,
+            opacity:         0.12,
+            sizeAttenuation: false,
+            map:             makeCircleTexture(),
+            alphaTest:       0.1,
+            depthWrite:      false,
+          });
+
+          var points = new THREE.Points(geo, mat);
+          threeScene.add(points);
+
+          var mouseWX = 0, mouseWY = 0;
+
+          window.addEventListener('mousemove', function (e) {
+            mouseWX = (e.clientX / window.innerWidth  - 0.5) * BOUND_X * 2;
+            mouseWY = -(e.clientY / window.innerHeight - 0.5) * BOUND_Y * 2;
+          });
+
+          window.addEventListener('resize', function () {
+            renderer.setSize(window.innerWidth, window.innerHeight);
+            threeCamera.aspect = window.innerWidth / window.innerHeight;
+            threeCamera.updateProjectionMatrix();
+          });
+
+          (function animateParticles() {
+            requestAnimationFrame(animateParticles);
+            var arr = posAttr.array;
+            for (var j = 0; j < N; j++) {
+              var ix = j * 3, iy = ix + 1;
+              arr[iy] += 0.003;
+              if (arr[iy] > BOUND_Y) {
+                arr[iy] = -BOUND_Y;
+                arr[ix] = (Math.random() - 0.5) * BOUND_X * 2;
+              }
+              arr[ix] += (mouseWX - arr[ix]) * 0.0003;
+            }
+            posAttr.needsUpdate = true;
+            renderer.render(threeScene, threeCamera);
+          })();
         }
-        posAttr.needsUpdate = true;
+      } catch (e) {
+        console.error('Three.js particle init failed:', e);
+      }
 
-        renderer.render(scene, camera);
-      })();
-    })();
+      /* ═══════════════════════════════════════════════
+         CUSTOM CURSOR
+      ═══════════════════════════════════════════════ */
+      try {
+        var cursor = document.getElementById('custom-cursor');
 
-    /* ——— Custom cursor ——— */
-    const cursor = document.getElementById("custom-cursor");
+        if (!prefersCoarse && !isMobile && cursor) {
+          var xTo = gsap.quickTo(cursor, 'x', { duration: 0.45, ease: 'power3.out' });
+          var yTo = gsap.quickTo(cursor, 'y', { duration: 0.45, ease: 'power3.out' });
 
-    if (!prefersCoarse && !isMobile && cursor) {
-      const xTo = gsap.quickTo(cursor, "x", { duration: 0.45, ease: "power3.out" });
-      const yTo = gsap.quickTo(cursor, "y", { duration: 0.45, ease: "power3.out" });
+          window.addEventListener('mousemove', function (e) {
+            xTo(e.clientX);
+            yTo(e.clientY);
+          });
 
-      window.addEventListener("mousemove", (e) => {
-        xTo(e.clientX);
-        yTo(e.clientY);
-      });
+          var clickableSel = "a[href], button, [role='button'], input[type='submit'], label[for]";
+          var hoveringClickable = false;
 
-      const clickableSel = "a[href], button, [role='button'], input[type='submit'], label[for]";
-      let hoveringClickable = false;
+          document.addEventListener('mousemove', function (e) {
+            var el  = document.elementFromPoint(e.clientX, e.clientY);
+            var hit = el && el.closest && el.closest(clickableSel);
+            if (hit && !hoveringClickable) {
+              hoveringClickable = true;
+              gsap.to(cursor, { scale: 2, duration: 0.25, ease: 'power2.out' });
+            } else if (!hit && hoveringClickable) {
+              hoveringClickable = false;
+              gsap.to(cursor, { scale: 1, duration: 0.25, ease: 'power2.out' });
+            }
+          });
 
-      document.addEventListener("mousemove", (e) => {
-        const el  = document.elementFromPoint(e.clientX, e.clientY);
-        const hit = el && el.closest && el.closest(clickableSel);
-        if (hit && !hoveringClickable) {
-          hoveringClickable = true;
-          gsap.to(cursor, { scale: 2, duration: 0.25, ease: "power2.out" });
-        } else if (!hit && hoveringClickable) {
-          hoveringClickable = false;
-          gsap.to(cursor, { scale: 1, duration: 0.25, ease: "power2.out" });
+          gsap.set(cursor, { x: window.innerWidth / 2, y: window.innerHeight / 2, xPercent: -50, yPercent: -50 });
         }
-      });
+      } catch (e) {
+        console.error('Cursor init failed:', e);
+      }
 
-      gsap.set(cursor, { x: innerWidth / 2, y: innerHeight / 2, xPercent: -50, yPercent: -50 });
-    }
+      /* ═══════════════════════════════════════════════
+         GSAP SCROLL — FIGURE + CONTENT
+      ═══════════════════════════════════════════════ */
+      try {
+        var productFigure = document.getElementById('product-figure');
+        var entryContent  = document.getElementById('entry-content');
+        var heroContent   = document.getElementById('hero-content');
+        var ctaOverlay    = document.getElementById('cta-overlay');
+        var toast         = document.getElementById('toast');
 
-    const productFigure = document.getElementById("product-figure");
-    const entryContent  = document.getElementById("entry-content");
-    const heroContent   = document.getElementById("hero-content");
-    const ctaBtn        = document.getElementById("cta-btn");
-    const ctaOverlay    = document.getElementById("cta-overlay");
-    const checkoutLink  = document.getElementById("checkout-link");
-    const toast         = document.getElementById("toast");
+        if (!productFigure) { throw new Error('#product-figure not found'); }
+        if (!entryContent)  { throw new Error('#entry-content not found'); }
+        if (!heroContent)   { throw new Error('#hero-content not found'); }
 
-    gsap.set(toast, { x: 120, opacity: 0, visibility: "hidden" });
+        gsap.set(toast, { x: 120, opacity: 0, visibility: 'hidden' });
 
-    if (!isMobile) {
-      /* ——— Set initial figure state: entry — invisible ——— */
-      gsap.set(productFigure, { opacity: 0, scale: 0.8, x: 0, rotation: 0 });
+        if (!isMobile) {
 
-      /* ——— Entry content: fade out over first 5% of scroll ——— */
-      gsap.set(entryContent, { opacity: 1 });
-      gsap.to(entryContent, {
-        opacity: 0,
-        ease: "none",
-        scrollTrigger: {
-          trigger: "#scroll-container",
-          start: "top top",
-          end: () => "+=" + ScrollTrigger.maxScroll(window) * 0.05,
-          scrub: true,
-        },
-      });
+          gsap.set(productFigure, { opacity: 0, scale: 0.8, x: 0, rotation: 0 });
+          gsap.set(entryContent,  { opacity: 1 });
+          gsap.set(heroContent,   { opacity: 0, y: 0 });
 
-      /* ——— Hero content: fade in at 5%, fade out at 20% ——— */
-      gsap.set(heroContent, { opacity: 0, y: 0 });
+          /* Entry: fade out 0–5% */
+          gsap.to(entryContent, {
+            opacity: 0,
+            ease: 'none',
+            scrollTrigger: {
+              trigger: '#scroll-container',
+              start: 'top top',
+              end: function () { return '+=' + ScrollTrigger.maxScroll(window) * 0.05; },
+              scrub: true,
+            },
+          });
 
-      ScrollTrigger.create({
-        trigger: "#scroll-container",
-        start: () => ScrollTrigger.maxScroll(window) * 0.05 + "px top",
-        end:   () => ScrollTrigger.maxScroll(window) * 0.12 + "px top",
-        scrub: true,
-        onUpdate: (self) => {
-          gsap.set(heroContent, { opacity: self.progress, y: 0 });
-        },
-      });
+          /* Hero: fade in 5–12% */
+          ScrollTrigger.create({
+            trigger: '#scroll-container',
+            start: function () { return ScrollTrigger.maxScroll(window) * 0.05 + 'px top'; },
+            end:   function () { return ScrollTrigger.maxScroll(window) * 0.12 + 'px top'; },
+            scrub: true,
+            onUpdate: function (self) {
+              gsap.set(heroContent, { opacity: self.progress, y: 0 });
+            },
+          });
 
-      ScrollTrigger.create({
-        trigger: "#scroll-container",
-        start: () => ScrollTrigger.maxScroll(window) * 0.12 + "px top",
-        end:   () => ScrollTrigger.maxScroll(window) * 0.20 + "px top",
-        scrub: true,
-        onUpdate: (self) => {
-          gsap.set(heroContent, { opacity: 1 - self.progress, y: self.progress * 30 });
-        },
-      });
+          /* Hero: fade out 12–20% */
+          ScrollTrigger.create({
+            trigger: '#scroll-container',
+            start: function () { return ScrollTrigger.maxScroll(window) * 0.12 + 'px top'; },
+            end:   function () { return ScrollTrigger.maxScroll(window) * 0.20 + 'px top'; },
+            scrub: true,
+            onUpdate: function (self) {
+              gsap.set(heroContent, { opacity: 1 - self.progress, y: self.progress * 30 });
+            },
+          });
 
-      /*
-       * Figure timeline mapped to full 600vh scroll progress.
-       * Keyframe positions (0–1) correspond to scroll percentages:
-       *   0.00 – 0.05  scene-entry:     opacity 0,   scale 0.8,  x 0,      rot 0
-       *   0.05 – 0.20  scene-hero:      opacity 1,   scale 1,    x 0,      rot 0
-       *   0.20 – 0.35  scene-statement: opacity 0.4, scale 0.8,  x 0,      rot 0
-       *   0.35 – 0.50  scene-specs:     opacity 0.9, scale 0.75, x –22vw,  rot –4
-       *   0.50 – 0.65  scene-features:  opacity 0.9, scale 0.85, x +22vw,  rot +4
-       *   0.65 – 1.00  scene-cta:       opacity 1,   scale 1.1,  x 0,      rot 0
-       */
-      const figureTl = gsap.timeline();
+          /*
+           * Figure timeline — full 600vh scroll progress:
+           *  0.00–0.05  entry:     opacity 0,   scale 0.8,  x 0,     rot 0
+           *  0.05–0.20  hero:      opacity 1,   scale 1,    x 0,     rot 0
+           *  0.20–0.35  statement: opacity 0.4, scale 0.8,  x 0,     rot 0
+           *  0.35–0.50  specs:     opacity 0.9, scale 0.75, x –22vw, rot –4
+           *  0.50–0.65  features:  opacity 0.9, scale 0.85, x +22vw, rot +4
+           *  0.65–1.00  cta:       opacity 1,   scale 1.1,  x 0,     rot 0
+           */
+          var figureTl = gsap.timeline();
+          figureTl
+            .to(productFigure, { opacity: 0,   scale: 0.8,  x: 0,       rotation: 0,  duration: 0.05, ease: 'none' }, 0)
+            .to(productFigure, { opacity: 1,   scale: 1,    x: 0,       rotation: 0,  duration: 0.15, ease: 'power3.inOut' }, 0.05)
+            .to(productFigure, { opacity: 0.4, scale: 0.8,  x: 0,       rotation: 0,  duration: 0.15, ease: 'power3.inOut' }, 0.20)
+            .to(productFigure, { opacity: 0.9, scale: 0.75, x: '-22vw', rotation: -4, duration: 0.15, ease: 'power3.inOut' }, 0.35)
+            .to(productFigure, { opacity: 0.9, scale: 0.85, x: '22vw',  rotation: 4,  duration: 0.15, ease: 'power3.inOut' }, 0.50)
+            .to(productFigure, { opacity: 1,   scale: 1.1,  x: 0,       rotation: 0,  duration: 0.35, ease: 'power3.inOut' }, 0.65);
 
-      figureTl
-        /* Entry: hold invisible */
-        .to(productFigure,
-          { opacity: 0, scale: 0.8, x: 0, rotation: 0, duration: 0.05, ease: "none" },
-          0)
-        /* Hero: fade in full */
-        .to(productFigure,
-          { opacity: 1, scale: 1, x: 0, rotation: 0, duration: 0.15, ease: "power3.inOut" },
-          0.05)
-        /* Statement: ghost back */
-        .to(productFigure,
-          { opacity: 0.4, scale: 0.8, x: 0, rotation: 0, duration: 0.15, ease: "power3.inOut" },
-          0.20)
-        /* Specs: drift left */
-        .to(productFigure,
-          { opacity: 0.9, scale: 0.75, x: "-22vw", rotation: -4, duration: 0.15, ease: "power3.inOut" },
-          0.35)
-        /* Features: drift right */
-        .to(productFigure,
-          { opacity: 0.9, scale: 0.85, x: "22vw", rotation: 4, duration: 0.15, ease: "power3.inOut" },
-          0.50)
-        /* CTA: return center, slightly oversized */
-        .to(productFigure,
-          { opacity: 1, scale: 1.1, x: 0, rotation: 0, duration: 0.35, ease: "power3.inOut" },
-          0.65);
+          ScrollTrigger.create({
+            animation: figureTl,
+            trigger: '#scroll-container',
+            start: 'top top',
+            end: 'bottom bottom',
+            scrub: 2,
+          });
 
-      /* Attach timeline to scroll — scrub: 2 for heavy weighted feel */
-      ScrollTrigger.create({
-        animation: figureTl,
-        trigger: "#scroll-container",
-        start: "top top",
-        end: "bottom bottom",
-        scrub: 2,
-      });
+          /* CTA overlay */
+          ScrollTrigger.create({
+            trigger: '#scene-cta',
+            start: 'top 60%',
+            end: 'bottom bottom',
+            onEnter: function () {
+              ctaOverlay.classList.add('active');
+              gsap.to(ctaOverlay, { opacity: 1, duration: 0.8, ease: 'power2.inOut' });
+            },
+            onLeaveBack: function () {
+              ctaOverlay.classList.remove('active');
+              gsap.to(ctaOverlay, { opacity: 0, duration: 0.5, ease: 'power2.inOut' });
+            },
+          });
 
-      /* ——— CTA overlay: fade in when scene-cta enters view ——— */
-      ScrollTrigger.create({
-        trigger: "#scene-cta",
-        start: "top 60%",
-        end: "bottom bottom",
-        onEnter: () => {
-          ctaOverlay.classList.add("active");
-          gsap.to(ctaOverlay, { opacity: 1, duration: 0.8, ease: "power2.inOut" });
-        },
-        onLeaveBack: () => {
-          ctaOverlay.classList.remove("active");
-          gsap.to(ctaOverlay, { opacity: 0, duration: 0.5, ease: "power2.inOut" });
-        },
-      });
+        } else {
+          /* Mobile: show figure, simple fade-up on each scene */
+          gsap.set(productFigure, { opacity: 1, scale: 1, x: 0, rotation: 0 });
 
-    } else {
-      /* ——— Mobile: figure visible, no scroll reactions ——— */
-      gsap.set(productFigure, { opacity: 1, scale: 1, x: 0, rotation: 0 });
-
-      /* Simple fade-up per scene */
-      gsap.utils.toArray(".scene").forEach((scene) => {
-        gsap.from(scene, {
-          opacity: 0,
-          y: 30,
-          duration: 0.8,
-          ease: "power2.out",
-          scrollTrigger: {
-            trigger: scene,
-            start: "top 88%",
-            toggleActions: "play none none reverse",
-          },
-        });
-      });
-    }
-
-    /* ——— CTA button click ——— */
-    let added = false;
-    ctaBtn.addEventListener("click", () => {
-      if (added) return;
-      added = true;
-      ctaBtn.textContent = "✓ ADDED TO TEAM";
-      ctaBtn.disabled = true;
-
-      /* Toast slide in */
-      gsap.fromTo(
-        toast,
-        { x: 120, opacity: 0, visibility: "visible" },
-        {
-          x: 0,
-          opacity: 1,
-          duration: 0.55,
-          ease: "power3.out",
-          onComplete: () => {
-            gsap.delayedCall(3.2, () => {
-              gsap.to(toast, {
-                x: 120,
-                opacity: 0,
-                duration: 0.45,
-                ease: "power2.in",
-                onComplete: () => gsap.set(toast, { visibility: "hidden" }),
-              });
+          gsap.utils.toArray('.scene').forEach(function (scene) {
+            gsap.from(scene, {
+              opacity: 0,
+              y: 30,
+              duration: 0.8,
+              ease: 'power2.out',
+              scrollTrigger: {
+                trigger: scene,
+                start: 'top 88%',
+                toggleActions: 'play none none reverse',
+              },
             });
-          },
+          });
         }
-      );
 
-      /* Figure celebration */
-      gsap
-        .timeline({ defaults: { overwrite: "auto" } })
-        .to(productFigure, { scale: 1.25, duration: 0.18, ease: "power2.out" })
-        .to(productFigure, { scale: 1.1,  duration: 0.35, ease: "elastic.out(1, 0.45)" }, "-=0.12")
-        .to(productFigure, { rotation: 6,  duration: 0.08, ease: "power1.inOut" }, 0.12)
-        .to(productFigure, { rotation: -5, duration: 0.10, ease: "power1.inOut" })
-        .to(productFigure, { rotation: 3,  duration: 0.08, ease: "power1.inOut" })
-        .to(productFigure, { rotation: 0,  duration: 0.12, ease: "power2.out" });
+        ScrollTrigger.refresh();
 
-      /* Checkout link */
-      gsap.delayedCall(1.5, () => {
-        checkoutLink.classList.add("visible");
-      });
-    });
+      } catch (e) {
+        console.error('GSAP scroll init failed:', e);
+      }
 
-    window.addEventListener("load", () => ScrollTrigger.refresh());
+      /* ═══════════════════════════════════════════════
+         CTA BUTTON
+      ═══════════════════════════════════════════════ */
+      try {
+        var ctaBtn     = document.getElementById('cta-btn');
+        var checkoutLk = document.getElementById('checkout-link');
+        var toastEl    = document.getElementById('toast');
+        var pFig       = document.getElementById('product-figure');
+        var added      = false;
+
+        ctaBtn.addEventListener('click', function () {
+          if (added) return;
+          added = true;
+          ctaBtn.textContent = '✓ ADDED TO TEAM';
+          ctaBtn.disabled = true;
+
+          gsap.fromTo(
+            toastEl,
+            { x: 120, opacity: 0, visibility: 'visible' },
+            {
+              x: 0, opacity: 1, duration: 0.55, ease: 'power3.out',
+              onComplete: function () {
+                gsap.delayedCall(3.2, function () {
+                  gsap.to(toastEl, {
+                    x: 120, opacity: 0, duration: 0.45, ease: 'power2.in',
+                    onComplete: function () { gsap.set(toastEl, { visibility: 'hidden' }); },
+                  });
+                });
+              },
+            }
+          );
+
+          gsap.timeline({ defaults: { overwrite: 'auto' } })
+            .to(pFig, { scale: 1.25, duration: 0.18, ease: 'power2.out' })
+            .to(pFig, { scale: 1.1,  duration: 0.35, ease: 'elastic.out(1, 0.45)' }, '-=0.12')
+            .to(pFig, { rotation: 6,  duration: 0.08, ease: 'power1.inOut' }, 0.12)
+            .to(pFig, { rotation: -5, duration: 0.10, ease: 'power1.inOut' })
+            .to(pFig, { rotation: 3,  duration: 0.08, ease: 'power1.inOut' })
+            .to(pFig, { rotation: 0,  duration: 0.12, ease: 'power2.out' });
+
+          gsap.delayedCall(1.5, function () { checkoutLk.classList.add('visible'); });
+        });
+      } catch (e) {
+        console.error('CTA button init failed:', e);
+      }
+
+    }); /* end window.load */
   </script>
 </body>
 </html>
