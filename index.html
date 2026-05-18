@@ -6,7 +6,7 @@
   <title>CORBIN MOFFITT™ — LIMITED EDITION</title>
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700&family=Libre+Caslon+Text:ital,wght@0,400;1,400&display=swap" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Libre+Caslon+Text:ital,wght@0,400;0,700;1,400&display=swap" rel="stylesheet" />
   <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/ScrollTrigger.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/@studio-freight/lenis@1.0.42/dist/lenis.min.js"></script>
@@ -35,6 +35,78 @@
     ::-webkit-scrollbar { display: none; }
     * { scrollbar-width: none; }
 
+    /* ——— Loader ——— */
+    #loader {
+      position: fixed; inset: 0; z-index: 1000;
+      pointer-events: all; overflow: hidden;
+    }
+
+    .loader-panel {
+      position: absolute; left: 0; width: 100%;
+      background: #141414;
+    }
+
+    #loader-top { top: 0; height: 50vh; }
+    #loader-bot { bottom: 0; height: calc(50vh + 2px); }
+
+    #loader-inner {
+      position: absolute; inset: 0; z-index: 2;
+      display: flex; align-items: center;
+      justify-content: center;
+      pointer-events: none;
+    }
+
+    #loader-brand {
+      position: absolute;
+      top: calc(50% - 137px);
+      left: calc(50% - 483px);
+      font-family: 'Inter', sans-serif;
+      font-weight: 700; font-size: 16px;
+      color: #C6FB50; letter-spacing: 0.32px;
+      margin: 0; opacity: 0;
+    }
+
+    #loader-tag {
+      position: absolute;
+      bottom: calc(50% - 125px);
+      right: calc(50% - 483px);
+      font-family: 'Inter', sans-serif;
+      font-weight: 700; font-size: 16px;
+      color: #C6FB50; letter-spacing: 0.32px;
+      margin: 0; text-align: right; opacity: 0;
+    }
+
+    #loader-headline {
+      display: flex; align-items: baseline;
+      position: relative;
+    }
+
+    #loader-senior {
+      font-family: 'Inter', sans-serif;
+      font-weight: 500;
+      font-size: clamp(72px, 9vw, 128px);
+      background: linear-gradient(85deg,
+        rgba(140,141,143,0.92) 0%,
+        rgba(240,242,245,0.92) 58%,
+        rgba(157,157,157,0.92) 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      letter-spacing: -0.03em;
+      line-height: 1; opacity: 0;
+    }
+
+    #loader-designer {
+      font-family: 'Libre Caslon Text', serif;
+      font-style: italic; font-weight: 400;
+      font-size: clamp(82px, 10.5vw, 146px);
+      color: #C6FB50;
+      letter-spacing: -0.03em;
+      line-height: 1;
+      margin-left: -4px; opacity: 0;
+    }
+
+    /* ——— Page wrapper ——— */
     #page-wrapper {
       width: 100%;
       overflow-x: hidden;
@@ -89,6 +161,74 @@
       pointer-events: none;
     }
 
+    /* ——— Hero scene typography ——— */
+    #hero-text {
+      position: absolute;
+      left: 7vw; top: 50%;
+      transform: translateY(-50%);
+      z-index: 10;
+    }
+
+    .hero-type-block {
+      display: flex; align-items: baseline;
+      gap: 0;
+    }
+
+    .clip-wrap {
+      overflow: hidden; display: block;
+    }
+
+    .hero-senior {
+      display: block;
+      font-family: 'Inter', sans-serif;
+      font-weight: 500;
+      font-size: clamp(72px, 9vw, 128px);
+      background: linear-gradient(85deg,
+        rgba(140,141,143,0.92) 0%,
+        rgba(240,242,245,0.92) 58%,
+        rgba(157,157,157,0.92) 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      letter-spacing: -0.03em;
+      line-height: 1;
+      transform: translateY(110%);
+    }
+
+    .hero-designer {
+      display: block;
+      font-family: 'Libre Caslon Text', serif;
+      font-style: italic; font-weight: 400;
+      font-size: clamp(82px, 10.5vw, 146px);
+      color: #C6FB50;
+      letter-spacing: -0.03em;
+      line-height: 1;
+      margin-left: -4px;
+      transform: translateY(110%);
+    }
+
+    .hero-tag {
+      font-family: 'Inter', sans-serif;
+      font-weight: 700; font-size: 14px;
+      color: #C6FB50; letter-spacing: 0.02em;
+      margin-top: 32px; opacity: 0;
+    }
+
+    #hero-figure {
+      position: absolute;
+      right: 8vw; top: 50%;
+      transform: translateY(-50%);
+      height: 85vh; z-index: 5;
+    }
+
+    #action-figure {
+      height: 100%; width: auto;
+      display: block;
+      filter: drop-shadow(0 40px 80px rgba(0,0,0,0.9));
+      opacity: 0;
+    }
+
+    /* ——— Chrome ——— */
     #logo {
       position: fixed;
       top: 24px; left: 28px;
@@ -177,6 +317,20 @@
 </head>
 <body>
 
+  <!-- Loader — first child -->
+  <div id="loader">
+    <div class="loader-panel" id="loader-top"></div>
+    <div class="loader-panel" id="loader-bot"></div>
+    <div id="loader-inner">
+      <p id="loader-brand">CORBIN MOFFITT™</p>
+      <div id="loader-headline">
+        <span id="loader-senior">SENIOR</span>
+        <span id="loader-designer">Designer</span>
+      </div>
+      <p id="loader-tag">NEW DROP · LIMITED EDITION · 1 OF 1</p>
+    </div>
+  </div>
+
   <div id="grain"></div>
   <div id="vignette"></div>
   <div id="cursor-dot"></div>
@@ -195,18 +349,38 @@
 
     <div id="horizontal-track-wrapper">
       <div id="horizontal-track">
-        <div class="h-scene" id="h-scene-loader" style="background:#141414">
-          <span class="scene-label">LOADER</span>
-        </div>
+
+        <!-- Scene 1: Loader (empty — full-screen loader overlay handles this) -->
+        <div class="h-scene" id="h-scene-loader" style="background:#141414"></div>
+
+        <!-- Scene 2: Hero -->
         <div class="h-scene" id="h-scene-hero" style="background:#141414">
-          <span class="scene-label">HERO</span>
+          <div id="hero-text">
+            <div class="hero-type-block">
+              <div class="clip-wrap">
+                <span class="hero-senior">SENIOR</span>
+              </div>
+              <div class="clip-wrap">
+                <span class="hero-designer">Designer</span>
+              </div>
+            </div>
+            <p class="hero-tag">NEW DROP · LIMITED EDITION · 1 OF 1</p>
+          </div>
+          <div id="hero-figure">
+            <img src="assets/action-figure.png" alt="Corbin Moffitt" id="action-figure" />
+          </div>
         </div>
+
+        <!-- Scene 3: Statement -->
         <div class="h-scene" id="h-scene-statement" style="background:#FFFFFF">
           <span class="scene-label" style="color:#141414">STATEMENT</span>
         </div>
+
+        <!-- Scene 4: Specs -->
         <div class="h-scene" id="h-scene-specs" style="background:#141414">
           <span class="scene-label">SPECS</span>
         </div>
+
       </div>
     </div>
 
@@ -228,7 +402,7 @@
     window.addEventListener('load', () => {
       gsap.registerPlugin(ScrollTrigger);
 
-      // Lenis smooth scroll
+      // ——— Lenis smooth scroll ———
       const lenis = new Lenis({
         duration: 1.6,
         easing: (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t)),
@@ -244,7 +418,7 @@
       gsap.ticker.add((time) => { lenis.raf(time * 1000); });
       gsap.ticker.lagSmoothing(0);
 
-      // Horizontal scroll
+      // ——— Horizontal scroll ———
       gsap.to("#horizontal-track", {
         x: () => -(document.getElementById('horizontal-track')
           .scrollWidth - window.innerWidth),
@@ -258,7 +432,7 @@
         }
       });
 
-      // Progress bar
+      // ——— Progress bar ———
       ScrollTrigger.create({
         start: "top top",
         end: "bottom bottom",
@@ -268,7 +442,7 @@
         }
       });
 
-      // Cursor
+      // ——— Cursor ———
       const dot = document.getElementById('cursor-dot');
       const ring = document.getElementById('cursor-ring');
       const xDot = gsap.quickTo(dot, "x", {duration:0.1, ease:"power3"});
@@ -293,7 +467,76 @@
         });
       });
 
-      console.log('Phase 1 engine running');
+      // ——— Hero reveal ———
+      function revealHero() {
+        const heroTl = gsap.timeline();
+        heroTl
+          .to('.hero-senior', {
+            y: 0, duration: 1,
+            ease: 'expo.out'
+          })
+          .to('.hero-designer', {
+            y: 0, duration: 1,
+            ease: 'expo.out'
+          }, '-=0.7')
+          .to('.hero-tag', {
+            opacity: 1, duration: 0.6,
+            ease: 'power3.out'
+          }, '-=0.4')
+          .to('#action-figure', {
+            opacity: 1, duration: 0.8,
+            ease: 'power3.out'
+          }, '-=0.6');
+      }
+
+      // ——— Loader ———
+      gsap.set(['#loader-senior', '#loader-designer',
+        '#loader-brand', '#loader-tag'],
+        {y: 20});
+
+      gsap.set('#loader', {pointerEvents: 'all'});
+
+      const loaderTl = gsap.timeline({
+        onComplete: () => {
+          gsap.set('#loader', {pointerEvents: 'none'});
+          gsap.to('#loader', {
+            opacity: 0, duration: 0.3,
+            onComplete: () => {
+              document.getElementById('loader').style.display = 'none';
+              revealHero();
+            }
+          });
+        }
+      });
+
+      loaderTl
+        .to('#loader-brand', {
+          opacity: 1, y: 0, duration: 0.5,
+          ease: 'power3.out'
+        })
+        .to('#loader-senior', {
+          opacity: 1, y: 0, duration: 0.7,
+          ease: 'expo.out'
+        }, '-=0.2')
+        .to('#loader-designer', {
+          opacity: 1, y: 0, duration: 0.7,
+          ease: 'expo.out'
+        }, '-=0.5')
+        .to('#loader-tag', {
+          opacity: 1, duration: 0.4,
+          ease: 'power3.out'
+        }, '-=0.3')
+        .to({}, {duration: 0.8})
+        .to('#loader-top', {
+          yPercent: -100, duration: 0.9,
+          ease: 'expo.inOut'
+        }, 'split')
+        .to('#loader-bot', {
+          yPercent: 100, duration: 0.9,
+          ease: 'expo.inOut'
+        }, 'split');
+
+      console.log('Phase 2 running');
     });
   </script>
 
