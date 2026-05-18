@@ -85,6 +85,7 @@
       transform: translateY(-50%);
       z-index: 30; opacity: 0;
       max-width: 40vw;
+      visibility: hidden;
     }
     .eyebrow {
       font-family: var(--font-body);
@@ -267,12 +268,13 @@
     <p class="scroll-hint">SCROLL TO EXPLORE ↓</p>
   </div>
 
-  <!-- Statement -->
+  <!-- Statement: hidden by default -->
   <div id="statement-content" style="
     position:fixed; top:50%; left:50%;
     transform:translate(-50%,-50%);
     z-index:30; text-align:center;
-    width:90vw; opacity:0; pointer-events:none;">
+    width:90vw; opacity:0; pointer-events:none;
+    visibility:hidden;">
     <h2 style="
       font-family:'Sora',sans-serif;
       font-weight:800;
@@ -289,12 +291,13 @@
     </p>
   </div>
 
-  <!-- Specs -->
+  <!-- Specs: hidden by default -->
   <div id="specs-content" style="
     position:fixed; top:50%; right:7vw;
     transform:translateY(-50%);
     z-index:30; width:400px;
-    opacity:0; pointer-events:none;">
+    opacity:0; pointer-events:none;
+    visibility:hidden;">
     <p style="font-family:'DM Sans',sans-serif;
       font-size:10px; color:#E8441A;
       letter-spacing:0.45em; margin-bottom:20px;">
@@ -330,12 +333,13 @@
     </div>
   </div>
 
-  <!-- Features -->
+  <!-- Features: hidden by default -->
   <div id="features-content" style="
     position:fixed; top:50%; left:7vw;
     transform:translateY(-50%);
     z-index:30; width:460px;
-    opacity:0; pointer-events:none;">
+    opacity:0; pointer-events:none;
+    visibility:hidden;">
     <div class="feature-line">
       <span class="feature-num">01</span>
       <span class="feature-text">Ships with 7+ years of craft.</span>
@@ -354,12 +358,13 @@
     </div>
   </div>
 
-  <!-- CTA -->
+  <!-- CTA: hidden by default -->
   <div id="cta-content" style="
     position:fixed; bottom:10vh; left:50%;
     transform:translateX(-50%);
     z-index:30; text-align:center;
-    width:600px; opacity:0; pointer-events:none;">
+    width:600px; opacity:0; pointer-events:none;
+    visibility:hidden;">
     <p style="font-family:'DM Sans',sans-serif;
       font-size:10px; color:#555555;
       letter-spacing:0.5em; margin-bottom:12px;">
@@ -461,10 +466,10 @@
         });
       });
 
-      // Center figure via GSAP (replaces CSS translate so scroll anim works)
-      gsap.set('#action-figure', { xPercent: -50, yPercent: -50 });
+      // Center figure via GSAP + push to right for hero layout
+      gsap.set('#action-figure', { xPercent: -50, yPercent: -50, x: '12vw' });
 
-      // Figure scroll animation
+      // Figure scroll animation — hero starts right, then various positions
       const figureTl = gsap.timeline({
         scrollTrigger: {
           trigger: '#scroll-container',
@@ -474,8 +479,8 @@
         }
       });
       figureTl
-        .to('#action-figure', { scale: 1,    x: 0,       opacity: 1,   duration: 2 })
-        .to('#action-figure', { scale: 0.75, opacity: 0.2,              duration: 2 })
+        .to('#action-figure', { scale: 1,    x: '12vw',  opacity: 1,   duration: 2 })
+        .to('#action-figure', { scale: 0.75, x: 0,       opacity: 0.2, duration: 2 })
         .to('#action-figure', { scale: 0.7,  x: '-20vw', opacity: 0.9, rotation: -3, duration: 2 })
         .to('#action-figure', { scale: 0.75, x: '20vw',  opacity: 0.9, rotation: 3,  duration: 2 })
         .to('#action-figure', { scale: 0.65, x: 0,       opacity: 0.6, rotation: 0,  duration: 2 })
@@ -486,10 +491,29 @@
       ScrollTrigger.create({
         trigger: '#scene-statement',
         start: 'top top', end: 'bottom top',
-        onEnter:     () => gsap.to('#statement-content', { opacity: 1, y: 0, duration: 0.8, ease: 'power3.out', overwrite: true }),
-        onLeave:     () => gsap.to('#statement-content', { opacity: 0, duration: 0.4, overwrite: true }),
-        onEnterBack: () => gsap.to('#statement-content', { opacity: 1, duration: 0.4, overwrite: true }),
-        onLeaveBack: () => gsap.to('#statement-content', { opacity: 0, duration: 0.3, overwrite: true })
+        onEnter: () => {
+          document.getElementById('statement-content').style.visibility = 'visible';
+          gsap.to('#statement-content', { opacity: 1, y: 0, duration: 0.8, ease: 'power3.out', overwrite: true });
+          gsap.to('#hero-content', { opacity: 0, duration: 0.4, overwrite: true,
+            onComplete: () => { document.getElementById('hero-content').style.visibility = 'hidden'; }
+          });
+        },
+        onLeave: () => {
+          gsap.to('#statement-content', { opacity: 0, duration: 0.4, overwrite: true,
+            onComplete: () => { document.getElementById('statement-content').style.visibility = 'hidden'; }
+          });
+        },
+        onEnterBack: () => {
+          document.getElementById('statement-content').style.visibility = 'visible';
+          gsap.to('#statement-content', { opacity: 1, duration: 0.4, overwrite: true });
+        },
+        onLeaveBack: () => {
+          gsap.to('#statement-content', { opacity: 0, duration: 0.3, overwrite: true,
+            onComplete: () => { document.getElementById('statement-content').style.visibility = 'hidden'; }
+          });
+          document.getElementById('hero-content').style.visibility = 'visible';
+          gsap.to('#hero-content', { opacity: 1, duration: 0.4, overwrite: true });
+        }
       });
 
       // Specs
@@ -497,12 +521,24 @@
         trigger: '#scene-specs',
         start: 'top top', end: 'bottom top',
         onEnter: () => {
+          document.getElementById('specs-content').style.visibility = 'visible';
           gsap.to('#specs-content', { opacity: 1, duration: 0.5, overwrite: true });
           gsap.from('.spec-row', { opacity: 0, x: 20, stagger: 0.08, duration: 0.6, ease: 'power3.out', overwrite: true });
         },
-        onLeave:     () => gsap.to('#specs-content', { opacity: 0, duration: 0.4, overwrite: true }),
-        onEnterBack: () => gsap.to('#specs-content', { opacity: 1, duration: 0.3, overwrite: true }),
-        onLeaveBack: () => gsap.to('#specs-content', { opacity: 0, duration: 0.3, overwrite: true })
+        onLeave: () => {
+          gsap.to('#specs-content', { opacity: 0, duration: 0.4, overwrite: true,
+            onComplete: () => { document.getElementById('specs-content').style.visibility = 'hidden'; }
+          });
+        },
+        onEnterBack: () => {
+          document.getElementById('specs-content').style.visibility = 'visible';
+          gsap.to('#specs-content', { opacity: 1, duration: 0.3, overwrite: true });
+        },
+        onLeaveBack: () => {
+          gsap.to('#specs-content', { opacity: 0, duration: 0.3, overwrite: true,
+            onComplete: () => { document.getElementById('specs-content').style.visibility = 'hidden'; }
+          });
+        }
       });
 
       // Features
@@ -510,6 +546,7 @@
         trigger: '#scene-features',
         start: 'top top', end: 'bottom top',
         onEnter: () => {
+          document.getElementById('features-content').style.visibility = 'visible';
           gsap.to('#features-content', { opacity: 1, duration: 0.5, overwrite: true });
           const lines = document.querySelectorAll('.feature-line');
           lines.forEach((line, i) => {
@@ -519,9 +556,20 @@
             }, i * 500);
           });
         },
-        onLeave:     () => gsap.to('#features-content', { opacity: 0, duration: 0.4, overwrite: true }),
-        onEnterBack: () => gsap.to('#features-content', { opacity: 1, duration: 0.3, overwrite: true }),
-        onLeaveBack: () => gsap.to('#features-content', { opacity: 0, duration: 0.3, overwrite: true })
+        onLeave: () => {
+          gsap.to('#features-content', { opacity: 0, duration: 0.4, overwrite: true,
+            onComplete: () => { document.getElementById('features-content').style.visibility = 'hidden'; }
+          });
+        },
+        onEnterBack: () => {
+          document.getElementById('features-content').style.visibility = 'visible';
+          gsap.to('#features-content', { opacity: 1, duration: 0.3, overwrite: true });
+        },
+        onLeaveBack: () => {
+          gsap.to('#features-content', { opacity: 0, duration: 0.3, overwrite: true,
+            onComplete: () => { document.getElementById('features-content').style.visibility = 'hidden'; }
+          });
+        }
       });
 
       // CTA
@@ -530,12 +578,24 @@
         trigger: '#scene-cta',
         start: 'top top', end: 'bottom bottom',
         onEnter: () => {
+          document.getElementById('cta-content').style.visibility = 'visible';
           gsap.to('#cta-content', { opacity: 1, duration: 0.5, overwrite: true });
           gsap.to('#cta-button', { opacity: 1, y: 0, duration: 0.6, delay: 0.4, ease: 'power3.out', overwrite: true });
         },
-        onLeave:     () => gsap.to('#cta-content', { opacity: 0, duration: 0.4, overwrite: true }),
-        onEnterBack: () => gsap.to('#cta-content', { opacity: 1, duration: 0.3, overwrite: true }),
-        onLeaveBack: () => gsap.to('#cta-content', { opacity: 0, duration: 0.3, overwrite: true })
+        onLeave: () => {
+          gsap.to('#cta-content', { opacity: 0, duration: 0.4, overwrite: true,
+            onComplete: () => { document.getElementById('cta-content').style.visibility = 'hidden'; }
+          });
+        },
+        onEnterBack: () => {
+          document.getElementById('cta-content').style.visibility = 'visible';
+          gsap.to('#cta-content', { opacity: 1, duration: 0.3, overwrite: true });
+        },
+        onLeaveBack: () => {
+          gsap.to('#cta-content', { opacity: 0, duration: 0.3, overwrite: true,
+            onComplete: () => { document.getElementById('cta-content').style.visibility = 'hidden'; }
+          });
+        }
       });
 
       // Magnetic button + click
@@ -589,7 +649,8 @@
           opacity: 0, duration: 0.4
         }, 'split+=0.5')
         .to('#hero-content', {
-          opacity: 1, y: 0, duration: 0.8, ease: 'power3.out'
+          opacity: 1, duration: 0.8, ease: 'power3.out',
+          onStart: () => { document.getElementById('hero-content').style.visibility = 'visible'; }
         }, 'split+=0.6');
     });
   </script>
