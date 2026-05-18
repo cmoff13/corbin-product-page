@@ -6,134 +6,101 @@
   <title>CORBIN MOFFITT™ — LIMITED EDITION</title>
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=Sora:wght@400;600;700;800&family=DM+Sans:ital,opsz,wght@0,9..40,400;0,9..40,500;0,9..40,600;1,9..40,400&display=swap" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700&family=Libre+Caslon+Text:ital,wght@0,400;1,400&display=swap" rel="stylesheet" />
   <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/ScrollTrigger.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/@studio-freight/lenis@1.0.42/dist/lenis.min.js"></script>
   <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
     :root {
-      --bg: #0C0C0C;
-      --accent: #E8441A;
+      --bg-dark: #141414;
+      --bg-lime: #C6FB50;
+      --bg-white: #FFFFFF;
+      --accent: #C6FB50;
       --primary: #F0F0F0;
-      --muted: #555555;
-      --font-heading: 'Sora', sans-serif;
-      --font-body: 'DM Sans', sans-serif;
+      --muted: rgba(198,251,80,0.4);
+      --font-sans: 'Inter', sans-serif;
+      --font-serif: 'Libre Caslon Text', serif;
     }
-    * { box-sizing: border-box; margin: 0; padding: 0; }
-    body {
-      background: #0C0C0C;
-      font-family: var(--font-body);
+
+    html, body {
+      background: #141414;
+      margin: 0; padding: 0;
+      overflow-x: hidden;
       cursor: none;
+      font-family: var(--font-sans);
     }
+
+    ::-webkit-scrollbar { display: none; }
+    * { scrollbar-width: none; }
+
+    #page-wrapper {
+      width: 100%;
+      overflow-x: hidden;
+    }
+
+    #horizontal-track-wrapper {
+      position: relative;
+      height: 500vh;
+    }
+
+    #horizontal-track {
+      position: sticky;
+      top: 0;
+      display: flex;
+      flex-direction: row;
+      width: 400vw;
+      height: 100vh;
+      will-change: transform;
+    }
+
+    .h-scene {
+      width: 100vw;
+      height: 100vh;
+      flex-shrink: 0;
+      position: relative;
+      overflow: hidden;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    #vertical-section-wrapper {
+      position: relative;
+      width: 100%;
+    }
+
+    .v-section {
+      width: 100%;
+      min-height: 100vh;
+      position: relative;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .scene-label {
+      font-family: var(--font-sans);
+      font-weight: 700;
+      font-size: 48px;
+      color: #C6FB50;
+      letter-spacing: -0.02em;
+      pointer-events: none;
+    }
+
     #logo {
       position: fixed;
       top: 24px; left: 28px;
       z-index: 100;
-      font-family: var(--font-heading);
-      font-weight: 800;
-      font-size: 20px;
-      color: #E8441A;
+      font-family: var(--font-sans);
+      font-weight: 700;
+      font-size: 16px;
+      color: #C6FB50;
       text-decoration: none;
-    }
-    #action-figure {
-      position: fixed;
-      top: 50%; left: 50%;
-      width: 480px;
-      z-index: 50;
-      filter: drop-shadow(0 40px 80px rgba(0,0,0,0.95));
-    }
-    #scroll-container {
-      height: 900vh;
+      letter-spacing: 0.02em;
     }
 
-    /* ——— Loader ——— */
-    #loader {
-      position: fixed; inset: 0; z-index: 1000;
-      pointer-events: none;
-    }
-    #loader-top {
-      position: absolute; top: 0; left: 0;
-      width: 100%; height: 50vh;
-      background: #0C0C0C;
-    }
-    #loader-bot {
-      position: absolute; bottom: 0; left: 0;
-      width: 100%; height: 50vh;
-      background: #0C0C0C;
-    }
-    #loader-text {
-      position: absolute; top: 50%; left: 50%;
-      transform: translate(-50%, -50%);
-      text-align: center; z-index: 2;
-    }
-    #loader-eyebrow {
-      font-family: var(--font-body);
-      font-size: 11px; color: var(--muted);
-      letter-spacing: 0.5em; margin-bottom: 12px;
-    }
-    #loader-title {
-      font-family: var(--font-heading);
-      font-weight: 800;
-      font-size: clamp(60px, 10vw, 120px);
-      color: var(--primary); margin: 0;
-      line-height: 1;
-    }
-
-    /* ——— Hero ——— */
-    #hero-content {
-      position: fixed; top: 50%; left: 7vw;
-      transform: translateY(-50%);
-      z-index: 30; opacity: 0;
-      max-width: 40vw;
-      visibility: hidden;
-    }
-    .eyebrow {
-      font-family: var(--font-body);
-      font-size: 10px; color: var(--muted);
-      letter-spacing: 0.5em; margin-bottom: 16px;
-    }
-    .hero-name {
-      font-family: var(--font-heading);
-      font-weight: 800;
-      font-size: clamp(56px, 8vw, 110px);
-      color: var(--primary);
-      line-height: 0.95; margin: 0 0 20px;
-    }
-    .hero-sub {
-      font-family: var(--font-body);
-      font-size: 13px; color: var(--muted);
-      letter-spacing: 0.1em;
-    }
-    .scroll-hint {
-      font-family: var(--font-body);
-      font-size: 10px; color: #333;
-      letter-spacing: 0.3em; margin-top: 32px;
-      animation: hintPulse 2s ease-in-out infinite;
-    }
-    @keyframes hintPulse {
-      0%, 100% { opacity: 0.3; }
-      50%       { opacity: 0.8; }
-    }
-
-    /* ——— Cursor ——— */
-    #cursor-dot {
-      width: 5px; height: 5px;
-      background: var(--accent);
-      border-radius: 50%;
-      position: fixed; top: 0; left: 0;
-      pointer-events: none; z-index: 9999;
-      opacity: 0;
-    }
-    #cursor-ring {
-      width: 32px; height: 32px;
-      border: 1px solid var(--accent);
-      border-radius: 50%;
-      position: fixed; top: 0; left: 0;
-      pointer-events: none; z-index: 9998;
-      opacity: 0;
-    }
-
-    /* ——— Grain ——— */
     #grain {
       position: fixed; inset: 0;
       z-index: 999; pointer-events: none;
@@ -142,104 +109,80 @@
       background-size: 200px 200px;
     }
 
-    /* ——— Vignette ——— */
     #vignette {
       position: fixed; inset: 0;
       z-index: 998; pointer-events: none;
       background: radial-gradient(ellipse at center,
-        transparent 35%, rgba(12,12,12,0.9) 100%);
+        transparent 35%, rgba(20,20,20,0.85) 100%);
     }
 
-    /* ——— Scroll progress ——— */
+    #cursor-dot {
+      width: 5px; height: 5px;
+      background: #C6FB50;
+      border-radius: 50%;
+      position: fixed; top: 0; left: 0;
+      pointer-events: none; z-index: 9999;
+      opacity: 0;
+    }
+
+    #cursor-ring {
+      width: 32px; height: 32px;
+      border: 1px solid #C6FB50;
+      border-radius: 50%;
+      position: fixed; top: 0; left: 0;
+      pointer-events: none; z-index: 9998;
+      opacity: 0;
+    }
+
     #progress-track {
       position: fixed; right: 0; top: 0;
       width: 3px; height: 100vh;
-      background: rgba(255,255,255,0.06);
+      background: rgba(198,251,80,0.1);
       z-index: 200;
     }
+
     #progress-fill {
       width: 100%; height: 0%;
-      background: var(--accent);
-      box-shadow: 0 0 8px rgba(232,68,26,0.6);
+      background: #C6FB50;
+      box-shadow: 0 0 8px rgba(198,251,80,0.5);
     }
 
-    /* ——— Marquee ——— */
     #marquee {
       position: fixed; bottom: 0; left: 0;
       width: 100%; z-index: 100;
       overflow: hidden; padding: 10px 0;
-      border-top: 1px solid #1A1A1A;
-      background: rgba(12,12,12,0.85);
+      border-top: 1px solid rgba(198,251,80,0.1);
+      background: rgba(20,20,20,0.85);
+      backdrop-filter: blur(10px);
     }
+
     .marquee-track {
       display: flex; width: max-content;
       animation: marqueeScroll 40s linear infinite;
     }
+
     .marquee-content {
-      font-family: var(--font-body);
-      font-size: 10px; color: var(--muted);
-      letter-spacing: 0.2em; white-space: nowrap;
-      padding-right: 0;
+      font-family: var(--font-sans);
+      font-size: 10px;
+      color: rgba(198,251,80,0.4);
+      letter-spacing: 0.2em;
+      white-space: nowrap;
     }
+
     @keyframes marqueeScroll {
       from { transform: translateX(0); }
-      to   { transform: translateX(-50%); }
-    }
-
-    /* ——— Specs ——— */
-    .spec-row {
-      display: flex;
-      justify-content: space-between;
-      align-items: baseline;
-      padding: 10px 0;
-      border-bottom: 1px solid #1A1A1A;
-    }
-    .spec-label {
-      font-family: 'DM Sans', sans-serif;
-      font-size: 10px;
-      color: #555555;
-      letter-spacing: 0.2em;
-    }
-    .spec-value {
-      font-family: 'DM Sans', sans-serif;
-      font-size: 12px;
-      color: #F0F0F0;
-      text-align: right;
-    }
-
-    /* ——— Features ——— */
-    .feature-line {
-      display: flex;
-      align-items: baseline;
-      gap: 16px;
-      margin-bottom: 24px;
-      opacity: 0.3;
-      transition: opacity 0.4s ease;
-    }
-    .feature-line.active { opacity: 1; }
-    .feature-num {
-      font-family: 'DM Sans', sans-serif;
-      font-size: 11px;
-      color: #E8441A;
-      letter-spacing: 0.3em;
-      flex-shrink: 0;
-    }
-    .feature-text {
-      font-family: 'Sora', sans-serif;
-      font-weight: 700;
-      font-size: clamp(28px, 3.5vw, 48px);
-      color: #F0F0F0;
-      line-height: 1.1;
+      to { transform: translateX(-50%); }
     }
   </style>
 </head>
 <body>
 
-  <div id="cursor-dot"></div>
-  <div id="cursor-ring"></div>
   <div id="grain"></div>
   <div id="vignette"></div>
+  <div id="cursor-dot"></div>
+  <div id="cursor-ring"></div>
   <div id="progress-track"><div id="progress-fill"></div></div>
+  <a id="logo" href="#">CM™</a>
 
   <div id="marquee">
     <div class="marquee-track">
@@ -248,179 +191,49 @@
     </div>
   </div>
 
-  <div id="logo">CM™</div>
+  <div id="page-wrapper">
 
-  <img id="action-figure" src="assets/action-figure.png" alt="Corbin Moffitt" />
+    <div id="horizontal-track-wrapper">
+      <div id="horizontal-track">
+        <div class="h-scene" id="h-scene-loader" style="background:#141414">
+          <span class="scene-label">LOADER</span>
+        </div>
+        <div class="h-scene" id="h-scene-hero" style="background:#141414">
+          <span class="scene-label">HERO</span>
+        </div>
+        <div class="h-scene" id="h-scene-statement" style="background:#FFFFFF">
+          <span class="scene-label" style="color:#141414">STATEMENT</span>
+        </div>
+        <div class="h-scene" id="h-scene-specs" style="background:#141414">
+          <span class="scene-label">SPECS</span>
+        </div>
+      </div>
+    </div>
 
-  <div id="loader">
-    <div id="loader-top"></div>
-    <div id="loader-bot"></div>
-    <div id="loader-text">
-      <p id="loader-eyebrow">LIMITED EDITION</p>
-      <h1 id="loader-title">1 OF 1</h1>
+    <div id="vertical-section-wrapper">
+      <div class="v-section" id="v-whats-included" style="background:#C6FB50">
+        <span class="scene-label" style="color:#141414">WHAT'S INCLUDED</span>
+      </div>
+      <div class="v-section" id="v-testimonials" style="background:#141414">
+        <span class="scene-label">TESTIMONIALS</span>
+      </div>
+      <div class="v-section" id="v-cta" style="background:#141414">
+        <span class="scene-label">ADD TO TEAM</span>
+      </div>
     </div>
-  </div>
 
-  <div id="hero-content">
-    <p class="eyebrow">SENIOR DESIGNER</p>
-    <h2 class="hero-name">CORBIN<br>MOFFITT™</h2>
-    <p class="hero-sub">7+ Years · Brand · Web · UX</p>
-    <p class="scroll-hint">SCROLL TO EXPLORE ↓</p>
-  </div>
-
-  <!-- Statement: hidden by default -->
-  <div id="statement-content" style="
-    position:fixed; top:50%; left:50%;
-    transform:translate(-50%,-50%);
-    z-index:30; text-align:center;
-    width:90vw; opacity:0; pointer-events:none;
-    visibility:hidden;">
-    <h2 style="
-      font-family:'Sora',sans-serif;
-      font-weight:800;
-      font-size:clamp(64px,10vw,140px);
-      color:#FFFFFF; line-height:0.92;
-      margin:0 0 24px;">
-      SEVEN YEARS.<br>ZERO SHORTCUTS.
-    </h2>
-    <p style="
-      font-family:'DM Sans',sans-serif;
-      font-size:13px; color:#555555;
-      letter-spacing:0.3em;">
-      Brand · Web · UX · Performance
-    </p>
-  </div>
-
-  <!-- Specs: hidden by default -->
-  <div id="specs-content" style="
-    position:fixed; top:50%; right:7vw;
-    transform:translateY(-50%);
-    z-index:30; width:400px;
-    opacity:0; pointer-events:none;
-    visibility:hidden;">
-    <p style="font-family:'DM Sans',sans-serif;
-      font-size:10px; color:#E8441A;
-      letter-spacing:0.45em; margin-bottom:20px;">
-      PRODUCT SPECIFICATIONS
-    </p>
-    <div class="spec-row">
-      <span class="spec-label">MODEL</span>
-      <span class="spec-value">Senior Interactive Designer</span>
-    </div>
-    <div class="spec-row">
-      <span class="spec-label">VERSION</span>
-      <span class="spec-value">2025</span>
-    </div>
-    <div class="spec-row">
-      <span class="spec-label">EXPERIENCE</span>
-      <span class="spec-value">7+ Years</span>
-    </div>
-    <div class="spec-row">
-      <span class="spec-label">STACK</span>
-      <span class="spec-value">Figma · Webflow · Cursor · GSAP</span>
-    </div>
-    <div class="spec-row">
-      <span class="spec-label">SPECIALTY</span>
-      <span class="spec-value">Brand · Web · UX · Performance</span>
-    </div>
-    <div class="spec-row">
-      <span class="spec-label">SHIPS</span>
-      <span class="spec-value">Saratoga Springs, UT</span>
-    </div>
-    <div class="spec-row">
-      <span class="spec-label">WARRANTY</span>
-      <span class="spec-value">Results Guaranteed</span>
-    </div>
-  </div>
-
-  <!-- Features: hidden by default -->
-  <div id="features-content" style="
-    position:fixed; top:50%; left:7vw;
-    transform:translateY(-50%);
-    z-index:30; width:460px;
-    opacity:0; pointer-events:none;
-    visibility:hidden;">
-    <div class="feature-line">
-      <span class="feature-num">01</span>
-      <span class="feature-text">Ships with 7+ years of craft.</span>
-    </div>
-    <div class="feature-line">
-      <span class="feature-num">02</span>
-      <span class="feature-text">No assembly required.</span>
-    </div>
-    <div class="feature-line">
-      <span class="feature-num">03</span>
-      <span class="feature-text">Pairs well with ambitious briefs.</span>
-    </div>
-    <div class="feature-line">
-      <span class="feature-num">04</span>
-      <span class="feature-text">Curiosity-powered, never runs out.</span>
-    </div>
-  </div>
-
-  <!-- CTA: hidden by default -->
-  <div id="cta-content" style="
-    position:fixed; bottom:10vh; left:50%;
-    transform:translateX(-50%);
-    z-index:30; text-align:center;
-    width:600px; opacity:0; pointer-events:none;
-    visibility:hidden;">
-    <p style="font-family:'DM Sans',sans-serif;
-      font-size:10px; color:#555555;
-      letter-spacing:0.5em; margin-bottom:12px;">
-      READY TO SHIP
-    </p>
-    <h2 style="font-family:'Sora',sans-serif;
-      font-weight:800;
-      font-size:clamp(56px,8vw,100px);
-      color:#FFFFFF; line-height:0.92;
-      margin:0 0 16px;">
-      ADD TO TEAM
-    </h2>
-    <p style="font-family:'DM Sans',sans-serif;
-      font-size:11px; color:#555555;
-      letter-spacing:0.1em; margin-bottom:32px;">
-      Only 1 remaining · Starting bid: Competitive salary · Ready to ship to Saratoga Springs, UT
-    </p>
-    <button id="cta-button" style="
-      font-family:'DM Sans',sans-serif;
-      font-size:14px; font-weight:600;
-      letter-spacing:0.15em;
-      padding:16px 52px;
-      background:#E8441A; color:#FFFFFF;
-      border:1px solid #E8441A;
-      border-radius:0; cursor:none;">
-      ADD TO TEAM →
-    </button>
-    <a id="checkout-link" href="https://www.cmoffitt.com/"
-      target="_blank" rel="noopener noreferrer"
-      style="display:none; margin-top:16px;
-      font-family:'DM Sans',sans-serif;
-      font-size:11px; color:#E8441A;
-      letter-spacing:0.2em; text-decoration:none;">
-      PROCEED TO CHECKOUT → cmoffitt.com
-    </a>
-  </div>
-
-  <div id="scroll-container">
-    <div class="scene" id="scene-hero"      style="height:150vh"></div>
-    <div class="scene" id="scene-statement" style="height:150vh"></div>
-    <div class="scene" id="scene-specs"     style="height:150vh"></div>
-    <div class="scene" id="scene-features"  style="height:150vh"></div>
-    <div class="scene" id="scene-reviews"   style="height:150vh"></div>
-    <div class="scene" id="scene-cta"       style="height:150vh"></div>
   </div>
 
   <script>
-    window.addEventListener('load', function () {
-      console.log('page loaded');
-
+    window.addEventListener('load', () => {
       gsap.registerPlugin(ScrollTrigger);
 
       // Lenis smooth scroll
       const lenis = new Lenis({
-        duration: 1.4,
-        easing: (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t))
+        duration: 1.6,
+        easing: (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t)),
+        orientation: 'vertical',
+        smoothWheel: true
       });
       function raf(time) {
         lenis.raf(time);
@@ -431,227 +244,56 @@
       gsap.ticker.add((time) => { lenis.raf(time * 1000); });
       gsap.ticker.lagSmoothing(0);
 
-      // Scroll progress
-      ScrollTrigger.create({
-        start: 'top top',
-        end: 'bottom bottom',
-        onUpdate: (self) => {
-          document.getElementById('progress-fill').style.height =
-            (self.progress * 100) + '%';
+      // Horizontal scroll
+      gsap.to("#horizontal-track", {
+        x: () => -(document.getElementById('horizontal-track')
+          .scrollWidth - window.innerWidth),
+        ease: "none",
+        scrollTrigger: {
+          trigger: "#horizontal-track-wrapper",
+          start: "top top",
+          end: "bottom bottom",
+          scrub: 1,
+          invalidateOnRefresh: true
         }
       });
 
-      // Custom cursor
-      const dot  = document.getElementById('cursor-dot');
+      // Progress bar
+      ScrollTrigger.create({
+        start: "top top",
+        end: "bottom bottom",
+        onUpdate: (self) => {
+          document.getElementById('progress-fill')
+            .style.height = (self.progress * 100) + '%';
+        }
+      });
+
+      // Cursor
+      const dot = document.getElementById('cursor-dot');
       const ring = document.getElementById('cursor-ring');
-      const xDot  = gsap.quickTo(dot,  'x', { duration: 0.1,  ease: 'power3' });
-      const yDot  = gsap.quickTo(dot,  'y', { duration: 0.1,  ease: 'power3' });
-      const xRing = gsap.quickTo(ring, 'x', { duration: 0.35, ease: 'power3' });
-      const yRing = gsap.quickTo(ring, 'y', { duration: 0.35, ease: 'power3' });
+      const xDot = gsap.quickTo(dot, "x", {duration:0.1, ease:"power3"});
+      const yDot = gsap.quickTo(dot, "y", {duration:0.1, ease:"power3"});
+      const xRing = gsap.quickTo(ring, "x", {duration:0.35, ease:"power3"});
+      const yRing = gsap.quickTo(ring, "y", {duration:0.35, ease:"power3"});
       window.addEventListener('mousemove', (e) => {
         xDot(e.clientX - 2.5);
         yDot(e.clientY - 2.5);
         xRing(e.clientX - 16);
         yRing(e.clientY - 16);
-        gsap.to([dot, ring], { opacity: 1, duration: 0.3 });
+        gsap.to([dot, ring], {opacity:1, duration:0.3});
       });
       document.querySelectorAll('a, button').forEach(el => {
         el.addEventListener('mouseenter', () => {
-          gsap.to(ring, { scale: 2.5, duration: 0.3, ease: 'power2.out' });
-          gsap.to(dot,  { scale: 0,   duration: 0.2 });
+          gsap.to(ring, {scale:2.5, duration:0.3, ease:"power2.out"});
+          gsap.to(dot, {scale:0, duration:0.2});
         });
         el.addEventListener('mouseleave', () => {
-          gsap.to(ring, { scale: 1, duration: 0.5, ease: 'elastic.out(1,0.5)' });
-          gsap.to(dot,  { scale: 1, duration: 0.3 });
+          gsap.to(ring, {scale:1, duration:0.5, ease:"elastic.out(1,0.5)"});
+          gsap.to(dot, {scale:1, duration:0.3});
         });
       });
 
-      // Center figure via GSAP + push to right for hero layout
-      gsap.set('#action-figure', { xPercent: -50, yPercent: -50, x: '12vw' });
-
-      // Figure scroll animation — hero starts right, then various positions
-      const figureTl = gsap.timeline({
-        scrollTrigger: {
-          trigger: '#scroll-container',
-          start: 'top top',
-          end: 'bottom bottom',
-          scrub: 2
-        }
-      });
-      figureTl
-        .to('#action-figure', { scale: 1,    x: '12vw',  opacity: 1,   duration: 2 })
-        .to('#action-figure', { scale: 0.75, x: 0,       opacity: 0.2, duration: 2 })
-        .to('#action-figure', { scale: 0.7,  x: '-20vw', opacity: 0.9, rotation: -3, duration: 2 })
-        .to('#action-figure', { scale: 0.75, x: '20vw',  opacity: 0.9, rotation: 3,  duration: 2 })
-        .to('#action-figure', { scale: 0.65, x: 0,       opacity: 0.6, rotation: 0,  duration: 2 })
-        .to('#action-figure', { scale: 1.05, x: 0,       opacity: 1,   rotation: 0,  duration: 2 });
-
-      // Statement
-      gsap.set('#statement-content', { y: 30 });
-      ScrollTrigger.create({
-        trigger: '#scene-statement',
-        start: 'top top', end: 'bottom top',
-        onEnter: () => {
-          document.getElementById('statement-content').style.visibility = 'visible';
-          gsap.to('#statement-content', { opacity: 1, y: 0, duration: 0.8, ease: 'power3.out', overwrite: true });
-          gsap.to('#hero-content', { opacity: 0, duration: 0.4, overwrite: true,
-            onComplete: () => { document.getElementById('hero-content').style.visibility = 'hidden'; }
-          });
-        },
-        onLeave: () => {
-          gsap.to('#statement-content', { opacity: 0, duration: 0.4, overwrite: true,
-            onComplete: () => { document.getElementById('statement-content').style.visibility = 'hidden'; }
-          });
-        },
-        onEnterBack: () => {
-          document.getElementById('statement-content').style.visibility = 'visible';
-          gsap.to('#statement-content', { opacity: 1, duration: 0.4, overwrite: true });
-        },
-        onLeaveBack: () => {
-          gsap.to('#statement-content', { opacity: 0, duration: 0.3, overwrite: true,
-            onComplete: () => { document.getElementById('statement-content').style.visibility = 'hidden'; }
-          });
-          document.getElementById('hero-content').style.visibility = 'visible';
-          gsap.to('#hero-content', { opacity: 1, duration: 0.4, overwrite: true });
-        }
-      });
-
-      // Specs
-      ScrollTrigger.create({
-        trigger: '#scene-specs',
-        start: 'top top', end: 'bottom top',
-        onEnter: () => {
-          document.getElementById('specs-content').style.visibility = 'visible';
-          gsap.to('#specs-content', { opacity: 1, duration: 0.5, overwrite: true });
-          gsap.from('.spec-row', { opacity: 0, x: 20, stagger: 0.08, duration: 0.6, ease: 'power3.out', overwrite: true });
-        },
-        onLeave: () => {
-          gsap.to('#specs-content', { opacity: 0, duration: 0.4, overwrite: true,
-            onComplete: () => { document.getElementById('specs-content').style.visibility = 'hidden'; }
-          });
-        },
-        onEnterBack: () => {
-          document.getElementById('specs-content').style.visibility = 'visible';
-          gsap.to('#specs-content', { opacity: 1, duration: 0.3, overwrite: true });
-        },
-        onLeaveBack: () => {
-          gsap.to('#specs-content', { opacity: 0, duration: 0.3, overwrite: true,
-            onComplete: () => { document.getElementById('specs-content').style.visibility = 'hidden'; }
-          });
-        }
-      });
-
-      // Features
-      ScrollTrigger.create({
-        trigger: '#scene-features',
-        start: 'top top', end: 'bottom top',
-        onEnter: () => {
-          document.getElementById('features-content').style.visibility = 'visible';
-          gsap.to('#features-content', { opacity: 1, duration: 0.5, overwrite: true });
-          const lines = document.querySelectorAll('.feature-line');
-          lines.forEach((line, i) => {
-            setTimeout(() => {
-              lines.forEach(l => l.classList.remove('active'));
-              line.classList.add('active');
-            }, i * 500);
-          });
-        },
-        onLeave: () => {
-          gsap.to('#features-content', { opacity: 0, duration: 0.4, overwrite: true,
-            onComplete: () => { document.getElementById('features-content').style.visibility = 'hidden'; }
-          });
-        },
-        onEnterBack: () => {
-          document.getElementById('features-content').style.visibility = 'visible';
-          gsap.to('#features-content', { opacity: 1, duration: 0.3, overwrite: true });
-        },
-        onLeaveBack: () => {
-          gsap.to('#features-content', { opacity: 0, duration: 0.3, overwrite: true,
-            onComplete: () => { document.getElementById('features-content').style.visibility = 'hidden'; }
-          });
-        }
-      });
-
-      // CTA
-      gsap.set('#cta-button', { opacity: 0, y: 20 });
-      ScrollTrigger.create({
-        trigger: '#scene-cta',
-        start: 'top top', end: 'bottom bottom',
-        onEnter: () => {
-          document.getElementById('cta-content').style.visibility = 'visible';
-          gsap.to('#cta-content', { opacity: 1, duration: 0.5, overwrite: true });
-          gsap.to('#cta-button', { opacity: 1, y: 0, duration: 0.6, delay: 0.4, ease: 'power3.out', overwrite: true });
-        },
-        onLeave: () => {
-          gsap.to('#cta-content', { opacity: 0, duration: 0.4, overwrite: true,
-            onComplete: () => { document.getElementById('cta-content').style.visibility = 'hidden'; }
-          });
-        },
-        onEnterBack: () => {
-          document.getElementById('cta-content').style.visibility = 'visible';
-          gsap.to('#cta-content', { opacity: 1, duration: 0.3, overwrite: true });
-        },
-        onLeaveBack: () => {
-          gsap.to('#cta-content', { opacity: 0, duration: 0.3, overwrite: true,
-            onComplete: () => { document.getElementById('cta-content').style.visibility = 'hidden'; }
-          });
-        }
-      });
-
-      // Magnetic button + click
-      const btn = document.getElementById('cta-button');
-      btn.addEventListener('mousemove', (e) => {
-        const rect = btn.getBoundingClientRect();
-        const dx = e.clientX - (rect.left + rect.width  / 2);
-        const dy = e.clientY - (rect.top  + rect.height / 2);
-        gsap.to(btn, { x: dx * 0.3, y: dy * 0.3, duration: 0.4, ease: 'power2.out' });
-      });
-      btn.addEventListener('mouseleave', () => {
-        gsap.to(btn, { x: 0, y: 0, duration: 0.8, ease: 'elastic.out(1,0.4)' });
-      });
-      btn.addEventListener('click', () => {
-        if (btn.disabled) return;
-        btn.textContent = '✓ ADDED TO TEAM';
-        btn.disabled = true;
-        const toast = document.createElement('div');
-        toast.innerHTML = '<strong>✓ Nice choice.</strong><br>Corbin has been added to your team.';
-        toast.style.cssText = 'position:fixed;top:24px;right:24px;background:rgba(20,20,20,0.98);border-left:3px solid #E8441A;padding:20px 24px;font-family:DM Sans,sans-serif;font-size:11px;color:#F0F0F0;line-height:1.6;z-index:9999;max-width:280px;backdrop-filter:blur(20px);';
-        document.body.appendChild(toast);
-        gsap.from(toast, { x: 120, opacity: 0, duration: 0.5, ease: 'power3.out' });
-        setTimeout(() => gsap.to(toast, { x: 120, opacity: 0, duration: 0.4, onComplete: () => toast.remove() }), 4000);
-        gsap.to('#action-figure', { scale: 1.15, duration: 0.2, yoyo: true, repeat: 1 });
-        setTimeout(() => {
-          const link = document.getElementById('checkout-link');
-          link.style.display = 'block';
-          gsap.from(link, { opacity: 0, y: 10, duration: 0.6 });
-        }, 1500);
-      });
-
-      const loaderTl = gsap.timeline();
-      loaderTl
-        .from('#loader-eyebrow', {
-          opacity: 0, y: 10, duration: 0.5, ease: 'power3.out'
-        })
-        .from('#loader-title', {
-          opacity: 0, y: 30, duration: 0.7, ease: 'expo.out'
-        }, '-=0.2')
-        .to({}, { duration: 0.8 })
-        .to('#loader-top', {
-          yPercent: -100, duration: 0.8, ease: 'expo.inOut'
-        }, 'split')
-        .to('#loader-bot', {
-          yPercent: 100, duration: 0.8, ease: 'expo.inOut'
-        }, 'split')
-        .from('#action-figure', {
-          opacity: 0, scale: 0.9, duration: 0.8, ease: 'expo.out'
-        }, 'split+=0.3')
-        .from('#logo', {
-          opacity: 0, duration: 0.4
-        }, 'split+=0.5')
-        .to('#hero-content', {
-          opacity: 1, duration: 0.8, ease: 'power3.out',
-          onStart: () => { document.getElementById('hero-content').style.visibility = 'visible'; }
-        }, 'split+=0.6');
+      console.log('Phase 1 engine running');
     });
   </script>
 
