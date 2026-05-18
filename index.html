@@ -81,6 +81,12 @@
       position: relative;
     }
 
+    #loader-headline .clip-wrap {
+      overflow: hidden;
+      display: inline-block;
+      vertical-align: bottom;
+    }
+
     #loader-senior {
       font-family: 'Inter', sans-serif;
       font-weight: 500;
@@ -93,7 +99,7 @@
       -webkit-text-fill-color: transparent;
       background-clip: text;
       letter-spacing: -0.03em;
-      line-height: 1; opacity: 0;
+      line-height: 1;
     }
 
     #loader-designer {
@@ -103,7 +109,7 @@
       color: #C6FB50;
       letter-spacing: -0.03em;
       line-height: 1;
-      margin-left: -4px; opacity: 0;
+      margin-left: -4px;
     }
 
     /* ——— Page wrapper ——— */
@@ -115,16 +121,19 @@
     #horizontal-track-wrapper {
       position: relative;
       height: 500vh;
+      width: 100%;
     }
 
     #horizontal-track {
       position: sticky;
       top: 0;
+      left: 0;
       display: flex;
       flex-direction: row;
       width: 400vw;
       height: 100vh;
       will-change: transform;
+      overflow: hidden;
     }
 
     .h-scene {
@@ -324,8 +333,12 @@
     <div id="loader-inner">
       <p id="loader-brand">CORBIN MOFFITT™</p>
       <div id="loader-headline">
-        <span id="loader-senior">SENIOR</span>
-        <span id="loader-designer">Designer</span>
+        <div class="clip-wrap">
+          <span id="loader-senior">SENIOR</span>
+        </div>
+        <div class="clip-wrap">
+          <span id="loader-designer">Designer</span>
+        </div>
       </div>
       <p id="loader-tag">NEW DROP · LIMITED EDITION · 1 OF 1</p>
     </div>
@@ -419,16 +432,20 @@
       gsap.ticker.lagSmoothing(0);
 
       // ——— Horizontal scroll ———
-      gsap.to("#horizontal-track", {
-        x: () => -(document.getElementById('horizontal-track')
-          .scrollWidth - window.innerWidth),
+      const track = document.getElementById('horizontal-track');
+      const trackWidth = track.scrollWidth;
+      const viewportWidth = window.innerWidth;
+
+      gsap.to(track, {
+        x: -(trackWidth - viewportWidth),
         ease: "none",
         scrollTrigger: {
           trigger: "#horizontal-track-wrapper",
           start: "top top",
           end: "bottom bottom",
           scrub: 1,
-          invalidateOnRefresh: true
+          invalidateOnRefresh: true,
+          onRefresh: (self) => self.kill(false, true)
         }
       });
 
@@ -489,11 +506,29 @@
           }, '-=0.6');
       }
 
-      // ——— Loader ———
-      gsap.set(['#loader-senior', '#loader-designer',
-        '#loader-brand', '#loader-tag'],
-        {y: 20});
+      // ——— Loader char split ———
+      function splitIntoChars(el) {
+        const text = el.textContent;
+        el.textContent = '';
+        text.split('').forEach(char => {
+          const wrap = document.createElement('span');
+          wrap.style.cssText = 'display:inline-block; overflow:hidden; vertical-align:bottom;';
+          const inner = document.createElement('span');
+          inner.style.cssText = 'display:inline-block; transform:translateY(110%);';
+          inner.textContent = char === ' ' ? '\u00A0' : char;
+          wrap.appendChild(inner);
+          el.appendChild(wrap);
+        });
+        return el.querySelectorAll('span > span');
+      }
 
+      const seniorChars = splitIntoChars(
+        document.getElementById('loader-senior'));
+      const designerChars = splitIntoChars(
+        document.getElementById('loader-designer'));
+
+      gsap.set('#loader-brand', {opacity: 0, y: 10});
+      gsap.set('#loader-tag', {opacity: 0, y: 10});
       gsap.set('#loader', {pointerEvents: 'all'});
 
       const loaderTl = gsap.timeline({
@@ -514,16 +549,18 @@
           opacity: 1, y: 0, duration: 0.5,
           ease: 'power3.out'
         })
-        .to('#loader-senior', {
-          opacity: 1, y: 0, duration: 0.7,
-          ease: 'expo.out'
+        .to(seniorChars, {
+          y: 0, duration: 0.8,
+          ease: 'expo.out',
+          stagger: 0.04
         }, '-=0.2')
-        .to('#loader-designer', {
-          opacity: 1, y: 0, duration: 0.7,
-          ease: 'expo.out'
+        .to(designerChars, {
+          y: 0, duration: 0.8,
+          ease: 'expo.out',
+          stagger: 0.04
         }, '-=0.5')
         .to('#loader-tag', {
-          opacity: 1, duration: 0.4,
+          opacity: 1, y: 0, duration: 0.5,
           ease: 'power3.out'
         }, '-=0.3')
         .to({}, {duration: 0.8})
