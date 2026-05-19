@@ -178,59 +178,6 @@
     }
     body[data-theme="light"] #bottom-pct { color: rgba(0,0,0,0.35); }
 
-    /* ── Loader ─────────────────────────────────────── */
-    #loader {
-      position: fixed; inset: 0; z-index: 1000;
-      pointer-events: all; overflow: visible;
-    }
-    .loader-panel {
-      position: absolute; left: 0; width: 100%;
-      background: #141414;
-    }
-    #loader-top { top: 0; height: 50vh; }
-    #loader-bot { bottom: 0; height: calc(50vh + 2px); }
-    #loader-inner {
-      position: absolute; inset: 0; z-index: 2;
-      display: flex; align-items: center;
-      justify-content: center;
-      pointer-events: none;
-      overflow: visible;
-    }
-    #loader-brand {
-      position: absolute;
-      top: calc(50% - 137px);
-      left: calc(50% - 483px);
-      font-weight: 700; font-size: 16px;
-      color: #C6FB50; letter-spacing: 0.32px;
-      opacity: 0;
-    }
-    #loader-tag {
-      position: absolute;
-      bottom: calc(50% - 125px);
-      right: calc(50% - 483px);
-      font-weight: 700; font-size: 16px;
-      color: #C6FB50; letter-spacing: 0.32px;
-      text-align: right; opacity: 0;
-    }
-    #loader-headline {
-      display: flex; align-items: baseline;
-      overflow: visible;
-      padding-bottom: 0.35em;
-    }
-    #loader-senior {
-      font-weight: 500;
-      font-size: clamp(72px, 9vw, 128px);
-      letter-spacing: -0.03em; line-height: 1;
-      display: inline;
-    }
-    #loader-designer {
-      font-family: 'Libre Caslon Text', serif;
-      font-style: italic; font-weight: 400;
-      font-size: clamp(82px, 10.5vw, 146px);
-      color: #C6FB50; letter-spacing: -0.03em;
-      line-height: 1; display: inline; margin-left: -0.02em;
-    }
-
     /* ── Sections base ──────────────────────────────── */
     section, footer {
       position: relative; z-index: 1;
@@ -238,62 +185,88 @@
     }
 
     /* ── HERO ───────────────────────────────────────── */
-    #hero {
-      width: 100%; height: 100vh;
-      display: flex; align-items: center;
-      overflow: visible; position: relative;
+    #hero-section {
+      position: relative;
+      width: 100%;
+      height: 100vh;
+      background: #141414;
+      display: flex;
+      align-items: center;
+      overflow: hidden;
     }
+
+    #hero-brand {
+      position: absolute;
+      top: 28px;
+      left: 28px;
+      font-family: 'Inter', sans-serif;
+      font-weight: 700;
+      font-size: 14px;
+      color: #C6FB50;
+      letter-spacing: 0.02em;
+      margin: 0;
+    }
+
     #hero-text {
-      position: relative; z-index: 10;
-      padding: 0 0 0 7vw;
+      position: absolute;
+      left: 7vw;
+      top: 50%;
+      transform: translateY(-50%);
+      z-index: 10;
     }
-    #hero-type-line {
-      display: flex; align-items: baseline;
-      overflow: visible;
-      padding-bottom: 0.35em;
-    }
+
     #hero-senior {
+      font-family: 'Inter', sans-serif;
       font-weight: 500;
-      font-size: clamp(72px, 9vw, 128px);
-      letter-spacing: -0.03em; line-height: 1;
-      display: inline;
+      font-size: clamp(64px, 9vw, 128px);
+      background: linear-gradient(85deg,
+        rgba(140,141,143,0.92) 0%,
+        rgba(240,242,245,0.92) 58%,
+        rgba(157,157,157,0.92) 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      letter-spacing: -0.03em;
+      line-height: 1;
+      margin: 0;
+      display: block;
     }
+
     #hero-designer {
       font-family: 'Libre Caslon Text', serif;
-      font-style: italic; font-weight: 400;
-      font-size: clamp(82px, 10.5vw, 146px);
-      color: #C6FB50; letter-spacing: -0.03em;
-      line-height: 1; display: inline; margin-left: -0.02em;
+      font-style: italic;
+      font-weight: 400;
+      font-size: clamp(72px, 12vw, 171px);
+      color: #C6FB50;
+      letter-spacing: -0.03em;
+      line-height: 0.95;
+      margin: 0;
+      display: block;
     }
+
     #hero-tag {
-      font-weight: 700; font-size: 13px;
-      color: #C6FB50; letter-spacing: 0.12em;
-      text-transform: uppercase; margin-top: 28px;
-      opacity: 0;
+      font-family: 'Inter', sans-serif;
+      font-weight: 700;
+      font-size: 14px;
+      color: #C6FB50;
+      letter-spacing: 0.02em;
+      margin: 24px 0 0;
     }
-    #hero-scroll-hint {
-      position: absolute;
-      bottom: 48px; left: 7vw;
-      font-size: 10px; font-weight: 600;
-      color: rgba(255,255,255,0.25);
-      letter-spacing: 0.2em; text-transform: uppercase;
-      opacity: 0;
-      display: flex; align-items: center; gap: 12px;
-    }
-    #hero-scroll-hint::after {
-      content: '';
-      display: block; width: 36px; height: 1px;
-      background: rgba(255,255,255,0.18);
-    }
+
     #hero-figure {
-      position: absolute; right: 8vw; top: 50%;
+      position: absolute;
+      right: 0;
+      top: 50%;
       transform: translateY(-50%);
-      height: 85vh; z-index: 5;
+      height: 92vh;
+      z-index: 5;
     }
-    #hero-figure img {
-      height: 100%; width: auto; display: block;
-      filter: drop-shadow(0 40px 80px rgba(0,0,0,0.8));
-      opacity: 0;
+
+    #action-figure {
+      height: 100%;
+      width: auto;
+      display: block;
+      filter: drop-shadow(0 40px 80px rgba(0,0,0,0.9));
     }
 
     /* ── PRODUCT REVEAL ─────────────────────────────── */
@@ -489,76 +462,8 @@
       color: rgba(255,255,255,0.15);
     }
 
-    /* ── PROJECTS ───────────────────────────────────── */
-    #projects {
-      padding: 100px 7vw 130px;
-      min-height: 100vh;
-      display: flex; flex-direction: column; justify-content: center;
-    }
-    #projects-header {
-      display: flex; align-items: flex-end;
-      justify-content: space-between;
-      margin-bottom: 48px;
-    }
-    #projects-header h2 {
-      font-weight: 700;
-      font-size: clamp(40px, 5vw, 72px);
-      color: #ffffff; letter-spacing: -0.04em; line-height: 0.9;
-    }
-    #projects-count {
-      font-size: 10px; font-weight: 600;
-      color: rgba(255,255,255,0.22);
-      letter-spacing: 0.18em; text-transform: uppercase;
-      padding-bottom: 8px;
-    }
-    .project-grid {
-      display: grid;
-      grid-template-columns: repeat(3, 1fr);
-      gap: 16px;
-    }
-    .project-card {
-      border: 1px solid rgba(255,255,255,0.06);
-      border-radius: 16px; overflow: hidden;
-      aspect-ratio: 3/4;
-      display: flex; flex-direction: column;
-      cursor: none;
-      opacity: 0; transform: translateY(50px);
-      transition: border-color 0.4s;
-    }
-    .project-card:hover { border-color: rgba(198,251,80,0.22); }
-    .project-num {
-      font-size: 10px; font-weight: 600;
-      color: rgba(255,255,255,0.15);
-      letter-spacing: 0.18em;
-      padding: 24px 24px 0;
-    }
-    .project-card-swatch {
-      flex: 1; margin: 16px 24px; border-radius: 10px;
-      min-height: 120px;
-    }
-    .project-card-info {
-      padding: 0 24px 28px;
-    }
-    .project-tag {
-      display: inline-block;
-      font-size: 9px; font-weight: 700;
-      letter-spacing: 0.15em; text-transform: uppercase;
-      background: #C6FB50; color: #000000;
-      padding: 4px 10px; border-radius: 100px;
-      margin-bottom: 10px;
-    }
-    .project-title {
-      font-weight: 700;
-      font-size: clamp(20px, 2vw, 28px);
-      color: #ffffff; letter-spacing: -0.03em; line-height: 1;
-    }
-    .project-desc {
-      font-size: 13px; color: rgba(255,255,255,0.32);
-      line-height: 1.55; margin-top: 6px;
-    }
-
     /* ── STATS ──────────────────────────────────────── */
-    #stats {
+    #stats-section {
       padding: 110px 7vw 130px;
       min-height: 100vh;
       display: flex; flex-direction: column; justify-content: center;
@@ -588,10 +493,22 @@
       border-radius: 16px; padding: 40px 32px;
       opacity: 0; transform: translateY(30px);
     }
-    .stat-number {
+    .stat-number-wrap {
       font-weight: 700;
       font-size: clamp(52px, 5vw, 80px);
       color: #141414; letter-spacing: -0.04em; line-height: 1;
+    }
+    .stat-number {
+      font-weight: 700;
+      font-size: inherit;
+      color: #141414;
+      letter-spacing: -0.04em;
+      line-height: 1;
+    }
+    .stat-suffix {
+      font-weight: 700;
+      font-size: inherit;
+      color: #141414;
     }
     .stat-label {
       font-size: 13px;
@@ -639,51 +556,105 @@
 
     /* ── CTA SECTION ────────────────────────────────── */
     #cta-section {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
       min-height: 100vh;
-      display: flex; flex-direction: column;
-      align-items: center; justify-content: center;
-      text-align: center;
-      padding: 100px 7vw;
-      overflow: hidden; position: relative;
+      background: #141414;
+      padding: 0 8vw;
+      gap: 60px;
     }
+
+    #cta-content {
+      flex: 1;
+      max-width: 520px;
+    }
+
     #cta-eyebrow {
-      font-size: 10px; font-weight: 600;
-      letter-spacing: 0.28em; text-transform: uppercase;
-      color: rgba(255,255,255,0.22);
-      margin-bottom: 40px;
-      opacity: 0; transform: translateY(20px);
+      font-family: 'Inter', sans-serif;
+      font-size: 11px;
+      color: #C6FB50;
+      letter-spacing: 0.4em;
+      margin: 0 0 20px;
+      text-transform: uppercase;
     }
-    #cta-heading {
+
+    #cta-headline {
+      font-family: 'Inter', sans-serif;
       font-weight: 700;
-      font-size: clamp(60px, 10vw, 150px);
-      color: #ffffff; letter-spacing: -0.05em; line-height: 0.88;
-      opacity: 0; transform: translateY(60px);
+      font-size: clamp(56px, 8vw, 110px);
+      color: #F0F0F0;
+      line-height: 0.92;
+      letter-spacing: -0.03em;
+      margin: 0 0 32px;
     }
-    #cta-heading em {
-      font-family: 'Libre Caslon Text', serif;
-      font-style: italic; color: #C6FB50;
+
+    #cta-details {
+      margin: 0 0 20px;
     }
-    #cta-actions {
-      display: flex; align-items: center; gap: 24px;
-      margin-top: 64px;
-      opacity: 0; transform: translateY(30px);
+
+    #cta-details p {
+      font-family: 'Inter', sans-serif;
+      font-size: 14px;
+      color: #666;
+      margin: 0 0 8px;
+      letter-spacing: 0.01em;
     }
-    #cta-btn {
-      display: inline-flex; align-items: center; gap: 10px;
-      background: #C6FB50; color: #000000;
-      font-weight: 700; font-size: 13px;
-      letter-spacing: 0.08em; text-transform: uppercase;
-      padding: 18px 44px; border-radius: 100px;
-      text-decoration: none; cursor: none;
+
+    #cta-details span {
+      color: #C6FB50;
     }
-    #cta-email {
-      font-size: 13px; font-weight: 500;
-      color: rgba(255,255,255,0.32);
-      letter-spacing: 0.03em;
+
+    #cta-urgency {
+      font-family: 'Inter', sans-serif;
+      font-size: 13px;
+      color: rgba(198,251,80,0.6);
+      margin: 0 0 32px;
+    }
+
+    #cta-button {
+      display: inline-block;
+      font-family: 'Inter', sans-serif;
+      font-weight: 700;
+      font-size: 14px;
+      letter-spacing: 0.1em;
+      background: #C6FB50;
+      color: #141414;
+      border: none;
+      padding: 16px 48px;
+      cursor: none;
+      margin-bottom: 20px;
+      transition: opacity 0.2s;
+    }
+
+    #cta-button:hover { opacity: 0.85; }
+
+    #cta-link {
+      display: none;
+      font-family: 'Inter', sans-serif;
+      font-size: 12px;
+      color: #C6FB50;
+      letter-spacing: 0.15em;
       text-decoration: none;
-      transition: color 0.3s;
+      text-transform: uppercase;
+      margin-top: 12px;
     }
-    #cta-email:hover { color: rgba(255,255,255,0.65); }
+
+    #cta-link:hover { text-decoration: underline; }
+
+    #cta-figure {
+      flex-shrink: 0;
+      height: 85vh;
+      display: flex;
+      align-items: center;
+    }
+
+    #cta-figure img {
+      height: 100%;
+      width: auto;
+      display: block;
+      filter: drop-shadow(0 40px 80px rgba(0,0,0,0.9));
+    }
 
     /* ── Fixed floating figure + callouts ───────────── */
     #fixed-figure {
@@ -776,7 +747,7 @@
   <div id="cursor-dot"></div>
   <div id="cursor-ring"></div>
 
-  <!-- Fixed figure with callouts — persists across hero / product-reveal / specs -->
+  <!-- Fixed figure with callouts — shows during product-reveal, fades out at specs -->
   <div id="fixed-figure">
     <div id="callouts">
       <div class="callout">
@@ -825,19 +796,6 @@
     <img id="figure-img" src="assets/action-figure.png" alt="Corbin Moffitt" />
   </div>
 
-  <!-- Loader -->
-  <div id="loader">
-    <div class="loader-panel" id="loader-top"></div>
-    <div class="loader-panel" id="loader-bot"></div>
-    <div id="loader-inner">
-      <p id="loader-brand">CORBIN MOFFITT™</p>
-      <div id="loader-headline">
-        <span id="loader-senior">SENIOR</span><span id="loader-designer">Designer</span>
-      </div>
-      <p id="loader-tag">NEW DROP · LIMITED EDITION · 1 OF 1</p>
-    </div>
-  </div>
-
   <!-- Fixed chrome -->
   <nav id="nav">
     <a id="nav-logo" href="#">CM™</a>
@@ -863,14 +821,18 @@
   <main id="main">
 
     <!-- ── HERO ──────────────────────────────── -->
-    <section id="hero" data-bg="#141414" data-theme="dark">
+    <section id="hero-section" data-bg="#141414" data-theme="dark">
+      <p id="hero-brand">CORBIN MOFFITT™</p>
+
       <div id="hero-text">
-        <div id="hero-type-line">
-          <span id="hero-senior"></span><span id="hero-designer">Designer</span>
-        </div>
+        <p id="hero-senior">SENIOR</p>
+        <p id="hero-designer">Designer</p>
         <p id="hero-tag">NEW DROP · LIMITED EDITION · 1 OF 1</p>
       </div>
-      <div id="hero-scroll-hint">SCROLL TO EXPLORE</div>
+
+      <div id="hero-figure">
+        <img src="assets/action-figure.png" id="action-figure" alt="Corbin Moffitt" />
+      </div>
     </section>
 
     <!-- ── PRODUCT REVEAL ────────────────────── -->
@@ -880,7 +842,7 @@
       </div>
     </section>
 
-    <!-- ── SPECS ────────────────────────────────────── -->
+    <!-- ── SPECS ─────────────────────────────── -->
     <section id="specs-section" data-bg="#141414" data-theme="dark">
       <div id="specs-sticky">
 
@@ -937,72 +899,41 @@
       <span id="craft-year">© 2025</span>
     </section>
 
-    <!-- ── PROJECTS ───────────────────────────── -->
-    <section id="projects" data-bg="#0F0F0F" data-theme="dark">
-      <div id="projects-header">
-        <h2>WHAT'S IN<br>THE BOX</h2>
-        <span id="projects-count">03 Items</span>
-      </div>
-      <div class="project-grid">
-
-        <div class="project-card" style="background:linear-gradient(145deg,#0d1800 0%,#1a2a00 100%)">
-          <div class="project-num">01</div>
-          <div class="project-card-swatch" style="background:linear-gradient(135deg,#C6FB50 0%,#8ab030 100%)"></div>
-          <div class="project-card-info">
-            <span class="project-tag">Brand Identity</span>
-            <div class="project-title">BRAND IDENTITY</div>
-            <div class="project-desc">Full brand systems from zero. Logos, guidelines, the whole kit.</div>
-          </div>
-        </div>
-
-        <div class="project-card" style="background:linear-gradient(145deg,#080d1c 0%,#0d1535 100%)">
-          <div class="project-num">02</div>
-          <div class="project-card-swatch" style="background:linear-gradient(135deg,#4a6cf7 0%,#7c3aed 100%)"></div>
-          <div class="project-card-info">
-            <span class="project-tag">Web &amp; Digital</span>
-            <div class="project-title">WEB &amp; DIGITAL</div>
-            <div class="project-desc">Performance marketing that actually performs.</div>
-          </div>
-        </div>
-
-        <div class="project-card" style="background:linear-gradient(145deg,#160d1c 0%,#260f2a 100%)">
-          <div class="project-num">03</div>
-          <div class="project-card-swatch" style="background:linear-gradient(135deg,#9b59b6 0%,#1a1a2e 100%)"></div>
-          <div class="project-card-info">
-            <span class="project-tag">UX &amp; Product</span>
-            <div class="project-title">UX &amp; PRODUCT</div>
-            <div class="project-desc">End-to-end product design. From zero to shipped.</div>
-          </div>
-        </div>
-
-      </div>
-    </section>
-
     <!-- ── STATS ──────────────────────────────── -->
-    <section id="stats" data-bg="#F5F5F5" data-theme="light">
+    <section id="stats-section" data-bg="#F5F5F5" data-theme="light">
       <div id="stats-header">
         <h2>PERFORMANCE<br>SPECS</h2>
         <span>Measured. Verified. Repeatable.</span>
       </div>
       <div class="stats-grid">
         <div class="stat-cell">
-          <div class="stat-number">7+</div>
+          <div class="stat-number-wrap">
+            <span class="stat-number" data-target="7">0</span><span class="stat-suffix">+</span>
+          </div>
           <div class="stat-label">Years designing digital products</div>
         </div>
         <div class="stat-cell">
-          <div class="stat-number">50+</div>
+          <div class="stat-number-wrap">
+            <span class="stat-number" data-target="50">0</span><span class="stat-suffix">+</span>
+          </div>
           <div class="stat-label">Projects shipped to production</div>
         </div>
         <div class="stat-cell">
-          <div class="stat-number">63%</div>
+          <div class="stat-number-wrap">
+            <span class="stat-number" data-target="63">0</span><span class="stat-suffix">%</span>
+          </div>
           <div class="stat-label">CVR lift at Linear Design</div>
         </div>
         <div class="stat-cell">
-          <div class="stat-number">$1M+</div>
+          <div class="stat-number-wrap">
+            $<span class="stat-number" data-target="1">0</span><span class="stat-suffix">M+</span>
+          </div>
           <div class="stat-label">Revenue helped generate at Disruptive</div>
         </div>
         <div class="stat-cell" style="grid-column:1/-1">
-          <div class="stat-number">∞</div>
+          <div class="stat-number-wrap">
+            <span class="stat-number stat-number--infinity">∞</span>
+          </div>
           <div class="stat-label">Cups of coffee consumed in service of craft</div>
         </div>
       </div>
@@ -1034,16 +965,24 @@
     </section>
 
     <!-- ── CTA ───────────────────────────────── -->
-    <section id="cta-section" data-bg="#0F0F0F" data-theme="dark">
-      <p id="cta-eyebrow">ONLY 1 LEFT IN STOCK</p>
-      <h2 id="cta-heading">ADD ME<br>TO YOUR<br><em>TEAM.</em></h2>
-      <p style="font-size:13px;color:rgba(255,255,255,0.3);letter-spacing:0.04em;margin-top:28px;line-height:1.6;">Condition: Available Now · Ships to: Saratoga Springs, UT · Starting bid: Competitive salary</p>
-      <p style="font-size:12px;color:#C6FB50;letter-spacing:0.08em;font-weight:600;margin-top:14px;">⚡ 3 agencies viewing this right now.</p>
-      <div id="cta-actions">
-        <a id="cta-btn" href="mailto:corbin@corbinmoffitt.com">→ GET IN TOUCH</a>
-        <a id="cta-email" href="mailto:corbin@corbinmoffitt.com">corbin@corbinmoffitt.com</a>
+    <section id="cta-section" data-bg="#141414" data-theme="dark">
+      <div id="cta-content">
+        <p id="cta-eyebrow">ONLY 1 LEFT IN STOCK</p>
+        <h2 id="cta-headline">ADD TO<br>TEAM</h2>
+        <div id="cta-details">
+          <p><span>Condition:</span> Available Now</p>
+          <p><span>Ships to:</span> Saratoga Springs, UT</p>
+          <p><span>Starting bid:</span> Competitive salary</p>
+        </div>
+        <p id="cta-urgency">⚡ 3 agencies viewing this right now.</p>
+        <button id="cta-button">ADD TO TEAM →</button>
+        <a id="cta-link" href="https://cmoffitt.com" target="_blank" rel="noopener noreferrer">
+          VIEW FULL PORTFOLIO → cmoffitt.com
+        </a>
       </div>
-      <p style="font-size:11px;color:rgba(255,255,255,0.18);letter-spacing:0.08em;margin-top:20px;">Results guaranteed or your money back.</p>
+      <div id="cta-figure">
+        <img src="assets/action-figure.png" alt="" />
+      </div>
     </section>
 
     <!-- ── FOOTER ─────────────────────────────── -->
@@ -1089,7 +1028,7 @@
         xRing(e.clientX - 16); yRing(e.clientY - 16);
         gsap.to([dot, ring], {opacity: 1, duration: 0.3});
       });
-      document.querySelectorAll('a, button, .project-card').forEach(el => {
+      document.querySelectorAll('a, button').forEach(el => {
         el.addEventListener('mouseenter', () => {
           gsap.to(ring, {scale: 2.5, duration: 0.3, ease: 'power2.out'});
           gsap.to(dot,  {scale: 0,   duration: 0.2});
@@ -1100,88 +1039,13 @@
         });
       });
 
-      // ── splitIntoChars ────────────────────────────
-      // No mask spans, no per-char overflow:hidden.
-      // The parent container (#loader-headline / #hero-type-line) clips
-      // the whole line — characters themselves have overflow:visible so
-      // descenders and ascenders are never cut off.
-      function splitIntoChars(el, options = {}) {
-        const { isGradient = false } = options;
-        const text = el.textContent.trim();
-        el.innerHTML = '';
-        el.style.display = 'inline-flex';
-        el.style.alignItems = 'baseline';
-        el.style.overflow = 'visible';
-
-        const chars = [];
-
-        [...text].forEach(char => {
-          const inner = document.createElement('span');
-          inner.style.display = 'inline-block';
-          inner.style.transform = 'translateY(105%)';
-          inner.style.willChange = 'transform';
-          inner.style.overflow = 'visible';
-          inner.textContent = char === ' ' ? '\u00A0' : char;
-
-          if (isGradient) {
-            inner.style.backgroundImage = 'linear-gradient(85deg, rgba(140,141,143,0.92) 0%, rgba(240,242,245,0.92) 58%, rgba(157,157,157,0.92) 100%)';
-            inner.style.webkitBackgroundClip = 'text';
-            inner.style.backgroundClip = 'text';
-            inner.style.webkitTextFillColor = 'transparent';
-            inner.style.color = 'transparent';
-          }
-
-          el.appendChild(inner);
-          chars.push(inner);
-        });
-
-        return chars;
-      }
-
-      // ── Hero splits (before revealHero is defined) ─
-      document.getElementById('hero-senior').textContent = 'SENIOR';
-      const heroSeniorChars   = splitIntoChars(document.getElementById('hero-senior'),  {isGradient: true});
-      const heroDesignerChars = splitIntoChars(document.getElementById('hero-designer'), {isGradient: false});
-
-      function revealHero() {
-        const tl = gsap.timeline();
-        tl
-          .to(heroSeniorChars,   {y: 0, duration: 1.1, ease: 'expo.out', stagger: 0.04})
-          .to(heroDesignerChars, {y: 0, duration: 1.1, ease: 'expo.out', stagger: 0.03}, '-=0.85')
-          .to('#hero-tag',         {opacity: 1, duration: 0.6, ease: 'power3.out'}, '-=0.5')
-          .to('#fixed-figure',     {opacity: 1, duration: 0.9, ease: 'power3.out'}, '-=0.7')
-          .to('#hero-scroll-hint', {opacity: 1, duration: 0.6, ease: 'power3.out'}, '-=0.4')
-          .to(['#nav', '#cta-pill', '#bottom-bar'], {opacity: 1, duration: 0.7, ease: 'power3.out', stagger: 0.08}, '-=0.3');
-      }
-
-      // ── Loader ────────────────────────────────────
-      const seniorChars   = splitIntoChars(document.getElementById('loader-senior'),   {isGradient: true});
-      const designerChars = splitIntoChars(document.getElementById('loader-designer'),  {isGradient: false});
-
-      gsap.set('#loader-brand', {opacity: 0, y: 10});
-      gsap.set('#loader-tag',   {opacity: 0, y: 10});
-
-      const loaderTl = gsap.timeline({
-        onComplete: () => {
-          gsap.set('#loader', {pointerEvents: 'none'});
-          gsap.to('#loader', {
-            opacity: 0, duration: 0.3,
-            onComplete: () => {
-              document.getElementById('loader').style.display = 'none';
-              revealHero();
-            }
-          });
-        }
+      // ── Hero reveal — simple fade in ──────────────
+      gsap.from('#hero-section, #hero-text, #action-figure', {
+        opacity: 0, duration: 0.8, ease: 'power3.out', stagger: 0.15
       });
-
-      loaderTl
-        .to('#loader-brand',  {opacity: 1, y: 0, duration: 0.5, ease: 'power3.out'})
-        .to(seniorChars,      {y: 0, duration: 0.8, ease: 'expo.out', stagger: 0.04}, '-=0.2')
-        .to(designerChars,    {y: 0, duration: 0.8, ease: 'expo.out', stagger: 0.04}, '-=0.5')
-        .to('#loader-tag',    {opacity: 1, y: 0, duration: 0.5, ease: 'power3.out'}, '-=0.3')
-        .to({}, {duration: 0.8})
-        .to('#loader-top', {yPercent: -100, duration: 0.9, ease: 'expo.inOut'}, 'split')
-        .to('#loader-bot', {yPercent:  100, duration: 0.9, ease: 'expo.inOut'}, 'split');
+      gsap.to(['#nav', '#cta-pill', '#bottom-bar'], {
+        opacity: 1, duration: 0.8, ease: 'power3.out', delay: 0.3
+      });
 
       // ── Background color morphing ──────────────────
       function applyTheme(bg, theme) {
@@ -1216,7 +1080,7 @@
         }
       });
 
-      // ── Product reveal — label/edition fade via scrub ─
+      // ── Product reveal — label fade via scrub ──────
       gsap.timeline({
         scrollTrigger: {
           trigger: '#product-reveal',
@@ -1228,7 +1092,15 @@
       .fromTo('#product-label-top', {opacity: 0, y: -10}, {opacity: 0.8, y: 0}, 0)
       .fromTo('#product-edition',   {opacity: 0, y: 24},  {opacity: 1,   y: 0}, 0.2);
 
-      // ── Callouts — staggered scrub reveal ─────────────
+      // ── Fixed figure fades in with product reveal ──
+      ScrollTrigger.create({
+        trigger: '#product-reveal',
+        start: 'top 60%',
+        onEnter:     () => gsap.to('#fixed-figure', {opacity: 1, duration: 0.6}),
+        onLeaveBack: () => gsap.to('#fixed-figure', {opacity: 0, duration: 0.4}),
+      });
+
+      // ── Callouts — staggered scrub reveal ─────────
       gsap.to('.callout', {
         opacity: 1, x: 0,
         stagger: 0.14,
@@ -1241,7 +1113,7 @@
         }
       });
 
-      // ── Callouts fade out entering specs-section ──────────
+      // ── Callouts fade out entering specs-section ───
       ScrollTrigger.create({
         trigger: '#specs-section',
         start: 'top 60%',
@@ -1249,7 +1121,7 @@
         onLeaveBack: () => gsap.to('.callout', {opacity: 1, x: 0,  stagger: 0.05, duration: 0.4}),
       });
 
-      // ── Fixed figure fades out as specs-section enters ────
+      // ── Fixed figure fades out as specs-section enters
       ScrollTrigger.create({
         trigger: '#specs-section',
         start: 'top 80%',
@@ -1257,13 +1129,13 @@
         onLeaveBack: () => gsap.to('#fixed-figure', {opacity: 1, x: 0,  duration: 0.5}),
       });
 
-      // ── Specs section — init hidden ───────────────────────
-      gsap.set('.spec-row',                  {opacity: 0, y: 20});
-      gsap.set('.spec-line',                 {scaleX: 0});
-      gsap.set('#specs-product-watermark',   {opacity: 0});
-      gsap.set('#specs-details-watermark',   {opacity: 0});
+      // ── Specs section — init hidden ────────────────
+      gsap.set('.spec-row',                {opacity: 0, y: 20});
+      gsap.set('.spec-line',               {scaleX: 0});
+      gsap.set('#specs-product-watermark', {opacity: 0});
+      gsap.set('#specs-details-watermark', {opacity: 0});
 
-      // ── Specs rows — sequential reveal as you scroll ──────
+      // ── Specs rows — sequential reveal ────────────
       document.querySelectorAll('.spec-row').forEach((row, i) => {
         ScrollTrigger.create({
           trigger: '#specs-section',
@@ -1286,7 +1158,7 @@
         });
       });
 
-      // ── Specs watermarks fade in ───────────────────────────
+      // ── Specs watermarks fade in ───────────────────
       ScrollTrigger.create({
         trigger: '#specs-section',
         start: 'top bottom',
@@ -1296,7 +1168,7 @@
         }
       });
 
-      // ── Craft — bg text scroll-driven + content reveal
+      // ── Craft — bg text scroll-driven + reveal ─────
       gsap.to('#craft-bg-text', {
         x: '-18%',
         ease: 'none',
@@ -1317,18 +1189,6 @@
         }
       });
 
-      // ── Project cards stagger ──────────────────────
-      gsap.to('.project-card', {
-        opacity: 1, y: 0,
-        duration: 1, ease: 'expo.out',
-        stagger: 0.14,
-        scrollTrigger: {
-          trigger: '.project-grid',
-          start: 'top 78%',
-          toggleActions: 'play none none reverse'
-        }
-      });
-
       // ── Stats cells stagger ────────────────────────
       gsap.to('.stat-cell', {
         opacity: 1, y: 0,
@@ -1339,6 +1199,41 @@
           start: 'top 78%',
           toggleActions: 'play none none reverse'
         }
+      });
+
+      // ── Animated stat counters ─────────────────────
+      function animateStats() {
+        const stats = document.querySelectorAll('.stat-number');
+        stats.forEach((stat, i) => {
+          if (stat.classList.contains('stat-number--infinity')) return;
+          const target = parseFloat(stat.dataset.target) || 0;
+
+          setTimeout(() => {
+            const duration = 1200;
+            const startTime = performance.now();
+
+            function update(currentTime) {
+              const elapsed = currentTime - startTime;
+              const progress = Math.min(elapsed / duration, 1);
+              const eased = 1 - Math.pow(1 - progress, 3);
+              const current = Math.round(eased * target);
+              stat.textContent = current;
+              if (progress < 1) {
+                requestAnimationFrame(update);
+              } else {
+                stat.textContent = target;
+              }
+            }
+            requestAnimationFrame(update);
+          }, i * 200);
+        });
+      }
+
+      ScrollTrigger.create({
+        trigger: '#stats-section',
+        start: 'top 70%',
+        once: true,
+        onEnter: animateStats
       });
 
       // ── Testimonials stagger ───────────────────────
@@ -1353,21 +1248,45 @@
         }
       });
 
-      // ── CTA section reveals ────────────────────────
-      gsap.to('#cta-eyebrow', {
-        opacity: 1, y: 0,
-        duration: 0.7, ease: 'power3.out',
-        scrollTrigger: {trigger: '#cta-section', start: 'top 68%', toggleActions: 'play none none reverse'}
-      });
-      gsap.to('#cta-heading', {
-        opacity: 1, y: 0,
-        duration: 1.1, ease: 'expo.out',
-        scrollTrigger: {trigger: '#cta-section', start: 'top 62%', toggleActions: 'play none none reverse'}
-      });
-      gsap.to('#cta-actions', {
-        opacity: 1, y: 0,
-        duration: 0.9, ease: 'power3.out',
-        scrollTrigger: {trigger: '#cta-section', start: 'top 56%', toggleActions: 'play none none reverse'}
+      // ── CTA button interaction ─────────────────────
+      const ctaBtn  = document.getElementById('cta-button');
+      const ctaLink = document.getElementById('cta-link');
+
+      ctaBtn.addEventListener('click', () => {
+        ctaBtn.textContent = '✓ ADDED TO TEAM';
+        ctaBtn.style.background = 'rgba(198,251,80,0.2)';
+        ctaBtn.style.color = '#C6FB50';
+        ctaBtn.style.border = '1px solid #C6FB50';
+        ctaBtn.disabled = true;
+
+        const toast = document.createElement('div');
+        toast.innerHTML = '<strong>✓ Order confirmed.</strong><br>Corbin has been added to your team. Expect results within 30 days.';
+        toast.style.cssText = `
+          position: fixed;
+          top: 24px; right: 24px;
+          background: rgba(20,20,20,0.98);
+          border-left: 3px solid #C6FB50;
+          padding: 20px 24px;
+          font-family: Inter, sans-serif;
+          font-size: 13px;
+          color: #F0F0F0;
+          line-height: 1.6;
+          z-index: 9999;
+          max-width: 300px;
+          backdrop-filter: blur(20px);
+          border-radius: 2px;
+          box-shadow: 0 20px 60px rgba(0,0,0,0.5);
+        `;
+        document.body.appendChild(toast);
+        gsap.from(toast, {x: 120, opacity: 0, duration: 0.5, ease: 'power3.out'});
+        setTimeout(() => {
+          gsap.to(toast, {x: 120, opacity: 0, duration: 0.4, onComplete: () => toast.remove()});
+        }, 4000);
+
+        setTimeout(() => {
+          ctaLink.style.display = 'block';
+          gsap.from(ctaLink, {opacity: 0, y: 10, duration: 0.5, ease: 'power3.out'});
+        }, 1500);
       });
 
     });
