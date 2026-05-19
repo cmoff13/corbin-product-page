@@ -253,26 +253,6 @@
       margin: 24px 0 0;
     }
 
-    #hero-figure {
-      position: absolute;
-      right: 0;
-      top: 0;
-      height: 100vh;
-      width: auto;
-      display: flex;
-      align-items: center;
-      overflow: hidden;
-      max-width: 55%;
-    }
-
-    #action-figure {
-      height: 100%;
-      width: auto;
-      display: block;
-      object-fit: contain;
-      filter: drop-shadow(0 40px 80px rgba(0,0,0,0.9));
-    }
-
     /* ── PRODUCT REVEAL ─────────────────────────────── */
     #product-reveal {
       height: 250vh;
@@ -471,6 +451,7 @@
       padding: 110px 7vw 130px;
       min-height: 100vh;
       display: flex; flex-direction: column; justify-content: center;
+      border-bottom: 1px solid rgba(0,0,0,0.08);
     }
     #stats-header {
       display: flex; align-items: flex-end; justify-content: space-between;
@@ -834,15 +815,19 @@
         <p id="hero-tag">NEW DROP · LIMITED EDITION · 1 OF 1</p>
       </div>
 
-      <div id="hero-figure">
-        <img src="assets/action-figure.png" id="action-figure" alt="Corbin Moffitt" />
-      </div>
     </section>
 
     <!-- ── PRODUCT REVEAL ────────────────────── -->
     <section id="product-reveal" data-bg="#000000" data-theme="dark">
       <div id="product-reveal-sticky">
         <p id="product-label-top">LIMITED EDITION · SERIES 01</p>
+        <div id="product-fig-wrap">
+          <img src="assets/action-figure.png" alt="" />
+        </div>
+        <div id="product-edition">
+          <div id="product-edition-title">SENIOR DESIGNER</div>
+          <div id="product-edition-sub">1 of 1 — Saratoga Springs, UT</div>
+        </div>
       </div>
     </section>
 
@@ -980,7 +965,7 @@
         </div>
         <p id="cta-urgency">⚡ 3 agencies viewing this right now.</p>
         <button id="cta-button">ADD TO TEAM →</button>
-        <a id="cta-link" href="https://cmoffitt.com" target="_blank" rel="noopener noreferrer">
+        <a id="cta-link" href="https://www.cmoffitt.com/" target="_blank" rel="noopener noreferrer">
           VIEW FULL PORTFOLIO → cmoffitt.com
         </a>
       </div>
@@ -993,10 +978,8 @@
     <footer id="footer" data-bg="#090909" data-theme="dark">
       <span class="footer-logo">CM™</span>
       <ul class="footer-links">
-        <li><a href="#">LinkedIn</a></li>
-        <li><a href="#">Twitter</a></li>
-        <li><a href="#">Dribbble</a></li>
-        <li><a href="#">Read.cv</a></li>
+        <li><a href="https://www.linkedin.com/in/corbinmoffitt" target="_blank" rel="noopener noreferrer">LinkedIn</a></li>
+        <li><a href="https://dribbble.com/corbinmoffitt" target="_blank" rel="noopener noreferrer">Dribbble</a></li>
       </ul>
       <span class="footer-copy">© 2025 CORBIN MOFFITT™</span>
     </footer>
