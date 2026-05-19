@@ -213,7 +213,8 @@
     }
     #loader-headline {
       display: flex; align-items: baseline;
-      overflow: visible;
+      overflow: hidden;
+      padding-bottom: 0.2em;
     }
     #loader-senior {
       font-weight: 500;
@@ -247,7 +248,8 @@
     }
     #hero-type-line {
       display: flex; align-items: baseline;
-      overflow: visible; line-height: 1;
+      overflow: hidden;
+      padding-bottom: 0.2em;
     }
     #hero-senior {
       font-weight: 500;
@@ -982,54 +984,41 @@
       });
 
       // ── splitIntoChars ────────────────────────────
-      // Mask: line-height:1.2 + padding-bottom:0.2em = 1.4em height
-      // Inner: translateY(125%) = 1.5em > 1.4em → fully below clip at start
-      // Gradient: background-size/position measured after DOM insertion
+      // No mask spans, no per-char overflow:hidden.
+      // The parent container (#loader-headline / #hero-type-line) clips
+      // the whole line — characters themselves have overflow:visible so
+      // descenders and ascenders are never cut off.
       function splitIntoChars(el, options = {}) {
         const { isGradient = false } = options;
         const text = el.textContent.trim();
         el.innerHTML = '';
-        const inners = [];
+        el.style.display = 'inline-flex';
+        el.style.alignItems = 'baseline';
+        el.style.overflow = 'visible';
+
+        const chars = [];
+
         [...text].forEach(char => {
-          const mask = document.createElement('span');
-          mask.style.cssText = [
-            'display:inline-block',
-            'overflow:hidden',
-            'vertical-align:bottom',
-            'line-height:1.2',
-            'padding-bottom:0.2em'
-          ].join(';');
           const inner = document.createElement('span');
-          inner.style.cssText = [
-            'display:inline-block',
-            'line-height:1.2',
-            'will-change:transform'
-          ].join(';');
+          inner.style.display = 'inline-block';
+          inner.style.transform = 'translateY(105%)';
+          inner.style.willChange = 'transform';
+          inner.style.overflow = 'visible';
           inner.textContent = char === ' ' ? '\u00A0' : char;
-          mask.appendChild(inner);
-          el.appendChild(mask);
-          inners.push(inner);
-        });
-        if (isGradient) {
-          const elRect = el.getBoundingClientRect();
-          const totalWidth = Math.max(elRect.width, 1);
-          inners.forEach(inner => {
-            const maskRect = inner.parentElement.getBoundingClientRect();
-            const offset = maskRect.left - elRect.left;
-            inner.style.backgroundImage    = 'linear-gradient(to right, rgba(140,141,143,0.92) 0%, rgba(240,242,245,0.92) 58%, rgba(157,157,157,0.92) 100%)';
-            inner.style.backgroundSize     = totalWidth + 'px 100%';
-            inner.style.backgroundPosition = (-offset) + 'px 0';
+
+          if (isGradient) {
+            inner.style.backgroundImage = 'linear-gradient(85deg, rgba(140,141,143,0.92) 0%, rgba(240,242,245,0.92) 58%, rgba(157,157,157,0.92) 100%)';
             inner.style.webkitBackgroundClip = 'text';
-            inner.style.backgroundClip       = 'text';
-            inner.style.webkitTextFillColor  = 'transparent';
-            inner.style.color                = 'transparent';
-          });
-        }
-        // Use GSAP to set the initial hidden position — yPercent is relative to
-        // the element's own height, so GSAP owns the transform from the start
-        // and correctly interpolates to yPercent:0 without unit-mismatch bugs.
-        gsap.set(inners, { yPercent: 125 });
-        return inners;
+            inner.style.backgroundClip = 'text';
+            inner.style.webkitTextFillColor = 'transparent';
+            inner.style.color = 'transparent';
+          }
+
+          el.appendChild(inner);
+          chars.push(inner);
+        });
+
+        return chars;
       }
 
       // ── Hero splits (before revealHero is defined) ─
@@ -1040,8 +1029,8 @@
       function revealHero() {
         const tl = gsap.timeline();
         tl
-          .to(heroSeniorChars,   {yPercent: 0, duration: 1.1, ease: 'expo.out', stagger: 0.04})
-          .to(heroDesignerChars, {yPercent: 0, duration: 1.1, ease: 'expo.out', stagger: 0.03}, '-=0.85')
+          .to(heroSeniorChars,   {y: 0, duration: 1.1, ease: 'expo.out', stagger: 0.04})
+          .to(heroDesignerChars, {y: 0, duration: 1.1, ease: 'expo.out', stagger: 0.03}, '-=0.85')
           .to('#hero-tag',         {opacity: 1, duration: 0.6, ease: 'power3.out'}, '-=0.5')
           .to('#fixed-figure',     {opacity: 1, duration: 0.9, ease: 'power3.out'}, '-=0.7')
           .to('#hero-scroll-hint', {opacity: 1, duration: 0.6, ease: 'power3.out'}, '-=0.4')
@@ -1070,8 +1059,8 @@
 
       loaderTl
         .to('#loader-brand',  {opacity: 1, y: 0, duration: 0.5, ease: 'power3.out'})
-        .to(seniorChars,      {yPercent: 0, duration: 0.8, ease: 'expo.out', stagger: 0.04}, '-=0.2')
-        .to(designerChars,    {yPercent: 0, duration: 0.8, ease: 'expo.out', stagger: 0.04}, '-=0.5')
+        .to(seniorChars,      {y: 0, duration: 0.8, ease: 'expo.out', stagger: 0.04}, '-=0.2')
+        .to(designerChars,    {y: 0, duration: 0.8, ease: 'expo.out', stagger: 0.04}, '-=0.5')
         .to('#loader-tag',    {opacity: 1, y: 0, duration: 0.5, ease: 'power3.out'}, '-=0.3')
         .to({}, {duration: 0.8})
         .to('#loader-top', {yPercent: -100, duration: 0.9, ease: 'expo.inOut'}, 'split')
