@@ -80,7 +80,7 @@
       display: flex;
       align-items: baseline;
       overflow: visible;
-      padding: 0.2em 0;
+      position: relative;
     }
 
     #loader-senior {
@@ -88,17 +88,24 @@
       font-weight: 500;
       font-size: clamp(72px, 9vw, 128px);
       letter-spacing: -0.03em;
-      line-height: 1;
+      line-height: 1.1;
+      display: inline-flex;
+      align-items: baseline;
+      vertical-align: bottom;
     }
 
     #loader-designer {
       font-family: 'Libre Caslon Text', serif;
-      font-style: italic; font-weight: 400;
+      font-style: italic;
+      font-weight: 400;
       font-size: clamp(82px, 10.5vw, 146px);
       color: #C6FB50;
       letter-spacing: -0.03em;
-      line-height: 1;
-      margin-left: -4px;
+      line-height: 1.1;
+      display: inline-flex;
+      align-items: baseline;
+      vertical-align: bottom;
+      margin-left: -0.02em;
     }
 
     /* ——— Page wrapper ——— */
@@ -168,39 +175,46 @@
       z-index: 10;
     }
 
-    .hero-type-block {
+    #hero-type-line {
       display: flex;
       align-items: baseline;
       overflow: visible;
-      line-height: 1;
+      line-height: 1.1;
     }
 
-    .hero-senior {
+    #hero-senior {
       font-family: 'Inter', sans-serif;
       font-weight: 500;
       font-size: clamp(72px, 9vw, 128px);
       letter-spacing: -0.03em;
-      line-height: 1;
-      display: inline-block;
+      line-height: 1.1;
+      display: inline-flex;
+      align-items: baseline;
+      overflow: visible;
     }
 
-    .hero-designer {
+    #hero-designer {
       font-family: 'Libre Caslon Text', serif;
       font-style: italic;
       font-weight: 400;
       font-size: clamp(82px, 10.5vw, 146px);
       color: #C6FB50;
       letter-spacing: -0.03em;
-      line-height: 1;
+      line-height: 1.1;
       margin-left: -0.02em;
-      display: inline-block;
+      display: inline-flex;
+      align-items: baseline;
+      overflow: visible;
     }
 
-    .hero-tag {
+    #hero-tag {
       font-family: 'Inter', sans-serif;
-      font-weight: 700; font-size: 14px;
-      color: #C6FB50; letter-spacing: 0.02em;
-      margin-top: 32px; opacity: 0;
+      font-weight: 700;
+      font-size: 14px;
+      color: #C6FB50;
+      letter-spacing: 0.02em;
+      margin-top: 28px;
+      opacity: 0;
     }
 
     #hero-figure {
@@ -313,7 +327,7 @@
     <div id="loader-inner">
       <p id="loader-brand">CORBIN MOFFITT™</p>
       <div id="loader-headline">
-        <span id="loader-senior" class="gradient-text">SENIOR</span>
+        <span id="loader-senior">SENIOR</span>
         <span id="loader-designer">Designer</span>
       </div>
       <p id="loader-tag">NEW DROP · LIMITED EDITION · 1 OF 1</p>
@@ -345,13 +359,13 @@
         <!-- Scene 2: Hero -->
         <div class="h-scene" id="h-scene-hero" style="background:#141414">
           <div id="hero-text">
-            <div class="hero-type-block">
-              <span class="hero-senior gradient-text">SENIOR</span><span class="hero-designer">Designer</span>
+            <div id="hero-type-line">
+              <span id="hero-senior"></span><span id="hero-designer">Designer</span>
             </div>
-            <p class="hero-tag">NEW DROP · LIMITED EDITION · 1 OF 1</p>
+            <p id="hero-tag">NEW DROP · LIMITED EDITION · 1 OF 1</p>
           </div>
           <div id="hero-figure">
-            <img src="assets/action-figure.png" alt="Corbin Moffitt" id="action-figure" />
+            <img src="assets/action-figure.png" id="action-figure" alt="" />
           </div>
         </div>
 
@@ -456,80 +470,101 @@
         });
       });
 
-      // ——— Char split ———
-      function splitIntoChars(el) {
-        const isGradient = el.classList.contains('gradient-text');
-        const text = el.textContent;
-        el.textContent = '';
-        el.style.display = 'flex';
-        el.style.flexWrap = 'wrap';
-        el.style.overflow = 'visible';
+      // ——— Definitive splitIntoChars ———
+      function splitIntoChars(el, options = {}) {
+        const { isGradient = false } = options;
+        const text = el.textContent.trim();
+        el.innerHTML = '';
 
-        text.split('').forEach(char => {
-          const wrap = document.createElement('span');
-          wrap.style.cssText = `
-            display:inline-block;
-            overflow:hidden;
-            padding-top:0.2em;
-            padding-bottom:0.25em;
-            margin-top:-0.2em;
-            margin-bottom:-0.25em;
-            vertical-align:bottom;
-            line-height:1;
-          `;
+        const chars = [];
+
+        [...text].forEach(char => {
+          // Outer mask — tall enough to never clip
+          const mask = document.createElement('span');
+          mask.style.cssText = [
+            'display:inline-block',
+            'overflow:hidden',
+            'vertical-align:top',
+            'padding-bottom:0.3em',
+            'line-height:1.1'
+          ].join(';');
+
+          // Inner character — starts below mask
           const inner = document.createElement('span');
-          inner.style.cssText = `
-            display:inline-block;
-            transform:translateY(115%);
-            line-height:1;
-          `;
+          inner.style.cssText = [
+            'display:inline-block',
+            'transform:translateY(105%)',
+            'will-change:transform'
+          ].join(';');
+
           inner.textContent = char === ' ' ? '\u00A0' : char;
+
+          // Apply gradient directly to inner span
           if (isGradient) {
-            inner.style.background = 'linear-gradient(85deg, rgba(140,141,143,0.92) 0%, rgba(240,242,245,0.92) 58%, rgba(157,157,157,0.92) 100%)';
+            inner.style.backgroundImage = 'linear-gradient(85deg, rgba(140,141,143,0.92) 0%, rgba(240,242,245,0.92) 58%, rgba(157,157,157,0.92) 100%)';
             inner.style.webkitBackgroundClip = 'text';
-            inner.style.webkitTextFillColor = 'transparent';
             inner.style.backgroundClip = 'text';
+            inner.style.webkitTextFillColor = 'transparent';
+            inner.style.color = 'transparent';
           }
-          wrap.appendChild(inner);
-          el.appendChild(wrap);
+
+          mask.appendChild(inner);
+          el.appendChild(mask);
+          chars.push(inner);
         });
-        return el.querySelectorAll('span > span');
+
+        return chars;
       }
+
+      // ——— Hero — set text and split immediately so chars are in scope ———
+      document.getElementById('hero-senior').textContent = 'SENIOR';
+
+      const heroSeniorChars = splitIntoChars(
+        document.getElementById('hero-senior'),
+        { isGradient: true }
+      );
+      const heroDesignerChars = splitIntoChars(
+        document.getElementById('hero-designer'),
+        { isGradient: false }
+      );
 
       // ——— Hero reveal ———
       function revealHero() {
-        const heroSeniorChars = splitIntoChars(
-          document.querySelector('.hero-senior'));
-        const heroDesignerChars = splitIntoChars(
-          document.querySelector('.hero-designer'));
-
-        const heroTl = gsap.timeline();
-        heroTl
+        const tl = gsap.timeline();
+        tl
           .to(heroSeniorChars, {
-            y: 0, duration: 1,
+            y: 0,
+            duration: 1.1,
             ease: 'expo.out',
-            stagger: 0.03
+            stagger: 0.04
           })
           .to(heroDesignerChars, {
-            y: 0, duration: 1,
+            y: 0,
+            duration: 1.1,
             ease: 'expo.out',
             stagger: 0.03
-          }, '-=0.7')
-          .to('.hero-tag', {
-            opacity: 1, duration: 0.6,
+          }, '-=0.85')
+          .to('#hero-tag', {
+            opacity: 1,
+            duration: 0.6,
             ease: 'power3.out'
-          }, '-=0.4')
+          }, '-=0.5')
           .to('#action-figure', {
-            opacity: 1, duration: 0.8,
+            opacity: 1,
+            duration: 0.9,
             ease: 'power3.out'
-          }, '-=0.6');
+          }, '-=0.7');
       }
 
-      // ——— Loader ———
+      // ——— Loader — split and animate ———
       const seniorChars = splitIntoChars(
-        document.getElementById('loader-senior'));
+        document.getElementById('loader-senior'),
+        { isGradient: true }
+      );
       const designerChars = splitIntoChars(
-        document.getElementById('loader-designer'));
+        document.getElementById('loader-designer'),
+        { isGradient: false }
+      );
 
       gsap.set('#loader-brand', {opacity: 0, y: 10});
       gsap.set('#loader-tag', {opacity: 0, y: 10});
@@ -577,7 +612,7 @@
           ease: 'expo.inOut'
         }, 'split');
 
-      console.log('Phase 2 running');
+      console.log('Phase 2 running — definitive char split');
     });
   </script>
 
