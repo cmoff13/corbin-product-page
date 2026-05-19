@@ -10,6 +10,7 @@
   <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/ScrollTrigger.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/@studio-freight/lenis@1.0.42/dist/lenis.min.js"></script>
+  <link rel="preload" as="image" href="assets/action-figure.png" />
   <style>
     /* ── Reset ──────────────────────────────────────── */
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
@@ -917,7 +918,6 @@
           inner.style.cssText = [
             'display:inline-block',
             'line-height:1.2',
-            'transform:translateY(125%)',
             'will-change:transform'
           ].join(';');
           inner.textContent = char === ' ' ? '\u00A0' : char;
@@ -940,6 +940,10 @@
             inner.style.color                = 'transparent';
           });
         }
+        // Use GSAP to set the initial hidden position — yPercent is relative to
+        // the element's own height, so GSAP owns the transform from the start
+        // and correctly interpolates to yPercent:0 without unit-mismatch bugs.
+        gsap.set(inners, { yPercent: 125 });
         return inners;
       }
 
@@ -951,8 +955,8 @@
       function revealHero() {
         const tl = gsap.timeline();
         tl
-          .to(heroSeniorChars,   {y: 0, duration: 1.1, ease: 'expo.out', stagger: 0.04})
-          .to(heroDesignerChars, {y: 0, duration: 1.1, ease: 'expo.out', stagger: 0.03}, '-=0.85')
+          .to(heroSeniorChars,   {yPercent: 0, duration: 1.1, ease: 'expo.out', stagger: 0.04})
+          .to(heroDesignerChars, {yPercent: 0, duration: 1.1, ease: 'expo.out', stagger: 0.03}, '-=0.85')
           .to('#hero-tag',         {opacity: 1, duration: 0.6, ease: 'power3.out'}, '-=0.5')
           .to('#action-figure',    {opacity: 1, duration: 0.9, ease: 'power3.out'}, '-=0.7')
           .to('#hero-scroll-hint', {opacity: 1, duration: 0.6, ease: 'power3.out'}, '-=0.4')
@@ -981,8 +985,8 @@
 
       loaderTl
         .to('#loader-brand',  {opacity: 1, y: 0, duration: 0.5, ease: 'power3.out'})
-        .to(seniorChars,      {y: 0, duration: 0.8, ease: 'expo.out', stagger: 0.04}, '-=0.2')
-        .to(designerChars,    {y: 0, duration: 0.8, ease: 'expo.out', stagger: 0.04}, '-=0.5')
+        .to(seniorChars,      {yPercent: 0, duration: 0.8, ease: 'expo.out', stagger: 0.04}, '-=0.2')
+        .to(designerChars,    {yPercent: 0, duration: 0.8, ease: 'expo.out', stagger: 0.04}, '-=0.5')
         .to('#loader-tag',    {opacity: 1, y: 0, duration: 0.5, ease: 'power3.out'}, '-=0.3')
         .to({}, {duration: 0.8})
         .to('#loader-top', {yPercent: -100, duration: 0.9, ease: 'expo.inOut'}, 'split')
