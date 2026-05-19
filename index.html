@@ -11,306 +11,643 @@
   <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/ScrollTrigger.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/@studio-freight/lenis@1.0.42/dist/lenis.min.js"></script>
   <style>
+    /* ── Reset ──────────────────────────────────────── */
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
-    :root {
-      --bg-dark: #141414;
-      --bg-lime: #C6FB50;
-      --bg-white: #FFFFFF;
-      --accent: #C6FB50;
-      --primary: #F0F0F0;
-      --muted: rgba(198,251,80,0.4);
-      --font-sans: 'Inter', sans-serif;
-      --font-serif: 'Libre Caslon Text', serif;
+    html {
+      -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
     }
 
     html, body {
-      background: #141414;
-      margin: 0; padding: 0;
+      width: 100%; min-height: 100%;
       overflow-x: hidden;
       cursor: none;
-      font-family: var(--font-sans);
+      font-family: 'Inter', sans-serif;
     }
 
     ::-webkit-scrollbar { display: none; }
     * { scrollbar-width: none; }
 
-    /* ——— Loader ——— */
+    /* ── Fixed BG layer ─────────────────────────────── */
+    #site-bg {
+      position: fixed; inset: 0; z-index: 0;
+      background: #141414;
+      pointer-events: none;
+    }
+
+    /* ── Grain ──────────────────────────────────────── */
+    #grain {
+      position: fixed; inset: 0; z-index: 999;
+      pointer-events: none; opacity: 0.07;
+      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)'/%3E%3C/svg%3E");
+      background-size: 200px 200px;
+    }
+
+    /* ── Vignette ───────────────────────────────────── */
+    #vignette {
+      position: fixed; inset: 0; z-index: 998;
+      pointer-events: none;
+      background: radial-gradient(ellipse at center, transparent 40%, rgba(0,0,0,0.55) 100%);
+      transition: opacity 0.6s ease;
+    }
+
+    /* ── Cursor ─────────────────────────────────────── */
+    #cursor-dot {
+      width: 5px; height: 5px; border-radius: 50%;
+      background: #C6FB50;
+      position: fixed; top: 0; left: 0;
+      pointer-events: none; z-index: 9999; opacity: 0;
+    }
+    #cursor-ring {
+      width: 32px; height: 32px;
+      border: 1px solid rgba(198,251,80,0.6);
+      border-radius: 50%;
+      position: fixed; top: 0; left: 0;
+      pointer-events: none; z-index: 9998; opacity: 0;
+    }
+
+    /* ── Nav ────────────────────────────────────────── */
+    #nav {
+      position: fixed; top: 0; left: 0; right: 0;
+      z-index: 500;
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 24px 32px;
+      opacity: 0;
+    }
+    #nav-logo {
+      font-weight: 700; font-size: 15px;
+      color: #C6FB50; text-decoration: none;
+      letter-spacing: 0.02em;
+      transition: color 0.5s ease;
+    }
+    #nav-star {
+      font-size: 18px; color: #C6FB50;
+      transition: color 0.5s ease;
+    }
+    body[data-theme="light"] #nav-logo,
+    body[data-theme="light"] #nav-star { color: #141414; }
+
+    /* ── Right pill CTA ─────────────────────────────── */
+    #cta-pill {
+      position: fixed; right: 0; top: 50%;
+      z-index: 500;
+      background: #ffffff; color: #000000;
+      font-weight: 700; font-size: 10px;
+      letter-spacing: 0.14em; text-transform: uppercase;
+      padding: 22px 10px;
+      border-radius: 8px 0 0 8px;
+      writing-mode: vertical-lr;
+      transform: translateY(-50%) rotate(180deg);
+      cursor: none; opacity: 0;
+      box-shadow: -3px 0 20px rgba(0,0,0,0.2);
+      transition: background 0.5s, color 0.5s;
+    }
+    body[data-theme="light"] #cta-pill {
+      background: #141414; color: #ffffff;
+    }
+
+    /* ── Bottom bar ─────────────────────────────────── */
+    #bottom-bar {
+      position: fixed; bottom: 0; left: 0; right: 0;
+      z-index: 500; height: 36px;
+      display: grid;
+      grid-template-columns: 1fr 160px 72px;
+      align-items: center;
+      border-top: 1px solid rgba(255,255,255,0.08);
+      background: rgba(0,0,0,0.35);
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
+      opacity: 0;
+      transition: border-top-color 0.5s, background 0.5s;
+    }
+    body[data-theme="light"] #bottom-bar {
+      border-top-color: rgba(0,0,0,0.08);
+      background: rgba(245,245,245,0.7);
+    }
+
+    #bottom-marquee {
+      overflow: hidden; height: 100%;
+      display: flex; align-items: center;
+    }
+    .bm-track {
+      display: flex; width: max-content;
+      animation: bmScroll 35s linear infinite;
+    }
+    .bm-text {
+      font-size: 9px; font-weight: 500;
+      color: rgba(255,255,255,0.28);
+      letter-spacing: 0.18em; white-space: nowrap;
+      padding-left: 24px; text-transform: uppercase;
+      transition: color 0.5s;
+    }
+    body[data-theme="light"] .bm-text { color: rgba(0,0,0,0.28); }
+
+    @keyframes bmScroll {
+      from { transform: translateX(0); }
+      to   { transform: translateX(-50%); }
+    }
+
+    #bottom-progress-wrap {
+      height: 1px; margin: 0 16px;
+      background: rgba(255,255,255,0.1);
+      position: relative; overflow: hidden;
+      transition: background 0.5s;
+    }
+    body[data-theme="light"] #bottom-progress-wrap {
+      background: rgba(0,0,0,0.1);
+    }
+    #bottom-progress-fill {
+      position: absolute; top: 0; left: 0;
+      height: 100%; width: 0%;
+      background: #C6FB50;
+      transition: background 0.5s;
+    }
+    body[data-theme="light"] #bottom-progress-fill {
+      background: #141414;
+    }
+
+    #bottom-pct {
+      font-size: 9px; font-weight: 600;
+      color: rgba(255,255,255,0.35);
+      letter-spacing: 0.12em;
+      text-align: center; padding-right: 12px;
+      font-variant-numeric: tabular-nums;
+      transition: color 0.5s;
+    }
+    body[data-theme="light"] #bottom-pct { color: rgba(0,0,0,0.35); }
+
+    /* ── Loader ─────────────────────────────────────── */
     #loader {
       position: fixed; inset: 0; z-index: 1000;
       pointer-events: all; overflow: hidden;
     }
-
     .loader-panel {
       position: absolute; left: 0; width: 100%;
       background: #141414;
     }
-
     #loader-top { top: 0; height: 50vh; }
     #loader-bot { bottom: 0; height: calc(50vh + 2px); }
-
     #loader-inner {
       position: absolute; inset: 0; z-index: 2;
       display: flex; align-items: center;
       justify-content: center;
       pointer-events: none;
     }
-
     #loader-brand {
       position: absolute;
       top: calc(50% - 137px);
       left: calc(50% - 483px);
-      font-family: 'Inter', sans-serif;
       font-weight: 700; font-size: 16px;
       color: #C6FB50; letter-spacing: 0.32px;
-      margin: 0; opacity: 0;
+      opacity: 0;
     }
-
     #loader-tag {
       position: absolute;
       bottom: calc(50% - 125px);
       right: calc(50% - 483px);
-      font-family: 'Inter', sans-serif;
       font-weight: 700; font-size: 16px;
       color: #C6FB50; letter-spacing: 0.32px;
-      margin: 0; text-align: right; opacity: 0;
+      text-align: right; opacity: 0;
     }
-
     #loader-headline {
-      display: flex;
-      align-items: baseline;
+      display: flex; align-items: baseline;
       overflow: visible;
     }
-
-    /* Parents are plain inline — masks inside are true inline-blocks */
     #loader-senior {
-      font-family: 'Inter', sans-serif;
       font-weight: 500;
       font-size: clamp(72px, 9vw, 128px);
-      letter-spacing: -0.03em;
-      line-height: 1;
+      letter-spacing: -0.03em; line-height: 1;
       display: inline;
     }
-
     #loader-designer {
       font-family: 'Libre Caslon Text', serif;
-      font-style: italic;
-      font-weight: 400;
+      font-style: italic; font-weight: 400;
       font-size: clamp(82px, 10.5vw, 146px);
-      color: #C6FB50;
-      letter-spacing: -0.03em;
-      line-height: 1;
-      display: inline;
-      margin-left: -0.02em;
+      color: #C6FB50; letter-spacing: -0.03em;
+      line-height: 1; display: inline; margin-left: -0.02em;
     }
 
-    /* ——— Page wrapper ——— */
-    #page-wrapper {
-      width: 100%;
-      overflow-x: hidden;
+    /* ── Sections base ──────────────────────────────── */
+    section, footer {
+      position: relative; z-index: 1;
+      background: transparent;
     }
 
-    #horizontal-track-wrapper {
-      position: relative;
-      height: auto;
-      width: 100%;
-      overflow: visible;
+    /* ── HERO ───────────────────────────────────────── */
+    #hero {
+      width: 100%; height: 100vh;
+      display: flex; align-items: center;
+      overflow: hidden; position: relative;
     }
-
-    #horizontal-track {
-      position: relative;
-      top: 0; left: 0;
-      display: flex;
-      flex-direction: row;
-      width: 400vw;
-      height: 100vh;
-      will-change: transform;
-      overflow: visible;
-    }
-
-    .h-scene {
-      width: 100vw;
-      height: 100vh;
-      flex-shrink: 0;
-      position: relative;
-      overflow: hidden;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-    }
-
-    #vertical-section-wrapper {
-      position: relative;
-      width: 100%;
-    }
-
-    .v-section {
-      width: 100%;
-      min-height: 100vh;
-      position: relative;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-    }
-
-    .scene-label {
-      font-family: var(--font-sans);
-      font-weight: 700;
-      font-size: 48px;
-      color: #C6FB50;
-      letter-spacing: -0.02em;
-      pointer-events: none;
-    }
-
-    /* ——— Hero ——— */
     #hero-text {
-      position: absolute;
-      left: 7vw; top: 50%;
-      transform: translateY(-50%);
-      z-index: 10;
+      position: relative; z-index: 10;
+      padding: 0 0 0 7vw;
     }
-
     #hero-type-line {
-      display: flex;
-      align-items: baseline;
-      overflow: visible;
-      line-height: 1;
+      display: flex; align-items: baseline;
+      overflow: visible; line-height: 1;
     }
-
     #hero-senior {
-      font-family: 'Inter', sans-serif;
       font-weight: 500;
       font-size: clamp(72px, 9vw, 128px);
-      letter-spacing: -0.03em;
-      line-height: 1;
+      letter-spacing: -0.03em; line-height: 1;
       display: inline;
     }
-
     #hero-designer {
       font-family: 'Libre Caslon Text', serif;
-      font-style: italic;
-      font-weight: 400;
+      font-style: italic; font-weight: 400;
       font-size: clamp(82px, 10.5vw, 146px);
-      color: #C6FB50;
-      letter-spacing: -0.03em;
-      line-height: 1;
-      margin-left: -0.02em;
-      display: inline;
+      color: #C6FB50; letter-spacing: -0.03em;
+      line-height: 1; display: inline; margin-left: -0.02em;
     }
-
     #hero-tag {
-      font-family: 'Inter', sans-serif;
-      font-weight: 700;
-      font-size: 14px;
-      color: #C6FB50;
-      letter-spacing: 0.02em;
-      margin-top: 28px;
+      font-weight: 700; font-size: 13px;
+      color: #C6FB50; letter-spacing: 0.12em;
+      text-transform: uppercase; margin-top: 28px;
       opacity: 0;
     }
-
-    #hero-figure {
+    #hero-scroll-hint {
       position: absolute;
-      right: 8vw; top: 50%;
+      bottom: 48px; left: 7vw;
+      font-size: 10px; font-weight: 600;
+      color: rgba(255,255,255,0.25);
+      letter-spacing: 0.2em; text-transform: uppercase;
+      opacity: 0;
+      display: flex; align-items: center; gap: 12px;
+    }
+    #hero-scroll-hint::after {
+      content: '';
+      display: block; width: 36px; height: 1px;
+      background: rgba(255,255,255,0.18);
+    }
+    #hero-figure {
+      position: absolute; right: 8vw; top: 50%;
       transform: translateY(-50%);
       height: 85vh; z-index: 5;
     }
-
-    #action-figure {
-      height: 100%; width: auto;
-      display: block;
-      filter: drop-shadow(0 40px 80px rgba(0,0,0,0.9));
+    #hero-figure img {
+      height: 100%; width: auto; display: block;
+      filter: drop-shadow(0 40px 80px rgba(0,0,0,0.8));
       opacity: 0;
     }
 
-    /* ——— Chrome ——— */
-    #logo {
-      position: fixed;
-      top: 24px; left: 28px;
-      z-index: 100;
-      font-family: var(--font-sans);
-      font-weight: 700; font-size: 16px;
-      color: #C6FB50;
-      text-decoration: none;
-      letter-spacing: 0.02em;
+    /* ── PRODUCT REVEAL ─────────────────────────────── */
+    #product-reveal {
+      height: 250vh;
+      position: relative;
     }
-
-    #grain {
-      position: fixed; inset: 0;
-      z-index: 999; pointer-events: none;
-      opacity: 0.10;
-      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)'/%3E%3C/svg%3E");
-      background-size: 200px 200px;
+    #product-reveal-sticky {
+      position: sticky; top: 0;
+      height: 100vh;
+      display: flex; align-items: center; justify-content: center;
+      overflow: hidden;
     }
-
-    #vignette {
-      position: fixed; inset: 0;
-      z-index: 998; pointer-events: none;
-      background: radial-gradient(ellipse at center,
-        transparent 35%, rgba(20,20,20,0.85) 100%);
+    #product-label-top {
+      position: absolute; top: 32px; left: 50%;
+      transform: translateX(-50%);
+      font-size: 10px; font-weight: 600;
+      letter-spacing: 0.28em; text-transform: uppercase;
+      color: rgba(255,255,255,0.22);
+      opacity: 0; white-space: nowrap;
     }
-
-    #cursor-dot {
-      width: 5px; height: 5px;
-      background: #C6FB50;
-      border-radius: 50%;
-      position: fixed; top: 0; left: 0;
-      pointer-events: none; z-index: 9999;
-      opacity: 0;
-    }
-
-    #cursor-ring {
-      width: 32px; height: 32px;
-      border: 1px solid #C6FB50;
-      border-radius: 50%;
-      position: fixed; top: 0; left: 0;
-      pointer-events: none; z-index: 9998;
-      opacity: 0;
-    }
-
-    #progress-track {
-      position: fixed; right: 0; top: 0;
-      width: 3px; height: 100vh;
-      background: rgba(198,251,80,0.1);
-      z-index: 200;
-    }
-
-    #progress-fill {
-      width: 100%; height: 0%;
-      background: #C6FB50;
-      box-shadow: 0 0 8px rgba(198,251,80,0.5);
-    }
-
-    #marquee {
-      position: fixed; bottom: 0; left: 0;
-      width: 100%; z-index: 100;
-      overflow: hidden; padding: 10px 0;
-      border-top: 1px solid rgba(198,251,80,0.1);
-      background: rgba(20,20,20,0.85);
-      backdrop-filter: blur(10px);
-    }
-
-    .marquee-track {
-      display: flex; width: max-content;
-      animation: marqueeScroll 40s linear infinite;
-    }
-
-    .marquee-content {
-      font-family: var(--font-sans);
-      font-size: 10px;
-      color: rgba(198,251,80,0.4);
-      letter-spacing: 0.2em;
+    #product-edition {
+      position: absolute;
+      bottom: 52px; left: 50%;
+      transform: translateX(-50%);
+      text-align: center; opacity: 0;
       white-space: nowrap;
     }
+    #product-edition-title {
+      font-weight: 700;
+      font-size: clamp(32px, 4.5vw, 64px);
+      color: #ffffff; letter-spacing: -0.04em;
+      line-height: 0.9;
+    }
+    #product-edition-sub {
+      font-family: 'Libre Caslon Text', serif;
+      font-style: italic;
+      font-size: clamp(16px, 1.8vw, 26px);
+      color: #C6FB50; margin-top: 10px;
+    }
+    #product-fig-wrap {
+      height: 68vh;
+      display: flex; align-items: center;
+      opacity: 0;
+      transform: scale(0.82) translateY(20px);
+    }
+    #product-fig-wrap img {
+      height: 100%; width: auto; display: block;
+      filter: drop-shadow(0 60px 120px rgba(198,251,80,0.10))
+              drop-shadow(0 20px 40px rgba(0,0,0,0.9));
+    }
 
-    @keyframes marqueeScroll {
-      from { transform: translateX(0); }
-      to { transform: translateX(-50%); }
+    /* ── SPECS ──────────────────────────────────────── */
+    #specs {
+      padding: 120px 7vw 140px;
+      min-height: 100vh;
+      display: flex; flex-direction: column; justify-content: center;
+    }
+    #specs-header {
+      font-size: 10px; font-weight: 600;
+      letter-spacing: 0.28em; text-transform: uppercase;
+      color: rgba(255,255,255,0.22);
+      margin-bottom: 56px;
+    }
+    .spec-row {
+      display: flex; align-items: flex-start;
+      justify-content: space-between;
+      padding: 28px 0;
+      border-bottom: 1px solid rgba(255,255,255,0.05);
+      overflow: hidden;
+    }
+    .spec-row:first-of-type { border-top: 1px solid rgba(255,255,255,0.05); }
+    .spec-label {
+      font-size: 10px; font-weight: 600;
+      letter-spacing: 0.2em; text-transform: uppercase;
+      color: rgba(255,255,255,0.22);
+      flex-shrink: 0; width: 140px; padding-top: 8px;
+    }
+    .spec-value {
+      font-weight: 500;
+      font-size: clamp(22px, 3vw, 44px);
+      color: #ffffff; letter-spacing: -0.02em;
+      line-height: 1.1; text-align: right;
+      transform: translateY(110%); opacity: 0;
+    }
+
+    /* ── CRAFT ──────────────────────────────────────── */
+    #craft {
+      height: 100vh; overflow: hidden;
+      display: flex; align-items: center;
+      position: relative;
+    }
+    #craft-bg-text {
+      font-weight: 700;
+      font-size: clamp(100px, 15vw, 200px);
+      color: rgba(255,255,255,0.04);
+      letter-spacing: -0.05em; white-space: nowrap;
+      line-height: 1; will-change: transform;
+      user-select: none; pointer-events: none;
+    }
+    #craft-content {
+      position: absolute; left: 7vw;
+      opacity: 0; transform: translateY(40px);
+    }
+    #craft-content h2 {
+      font-weight: 700;
+      font-size: clamp(40px, 5.5vw, 80px);
+      color: #ffffff; letter-spacing: -0.04em;
+      line-height: 0.92;
+    }
+    #craft-content h2 em {
+      font-family: 'Libre Caslon Text', serif;
+      font-style: italic; color: #C6FB50;
+    }
+    #craft-content p {
+      font-size: 15px; line-height: 1.68;
+      color: rgba(255,255,255,0.36);
+      max-width: 380px; margin-top: 24px;
+    }
+    #craft-year {
+      position: absolute; right: 7vw; bottom: 48px;
+      font-size: 11px; font-weight: 600;
+      letter-spacing: 0.15em; text-transform: uppercase;
+      color: rgba(255,255,255,0.15);
+    }
+
+    /* ── PROJECTS ───────────────────────────────────── */
+    #projects {
+      padding: 100px 7vw 130px;
+      min-height: 100vh;
+      display: flex; flex-direction: column; justify-content: center;
+    }
+    #projects-header {
+      display: flex; align-items: flex-end;
+      justify-content: space-between;
+      margin-bottom: 48px;
+    }
+    #projects-header h2 {
+      font-weight: 700;
+      font-size: clamp(40px, 5vw, 72px);
+      color: #ffffff; letter-spacing: -0.04em; line-height: 0.9;
+    }
+    #projects-count {
+      font-size: 10px; font-weight: 600;
+      color: rgba(255,255,255,0.22);
+      letter-spacing: 0.18em; text-transform: uppercase;
+      padding-bottom: 8px;
+    }
+    .project-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 16px;
+    }
+    .project-card {
+      border: 1px solid rgba(255,255,255,0.06);
+      border-radius: 16px; overflow: hidden;
+      aspect-ratio: 3/4;
+      display: flex; flex-direction: column;
+      cursor: none;
+      opacity: 0; transform: translateY(50px);
+      transition: border-color 0.4s;
+    }
+    .project-card:hover { border-color: rgba(198,251,80,0.22); }
+    .project-num {
+      font-size: 10px; font-weight: 600;
+      color: rgba(255,255,255,0.15);
+      letter-spacing: 0.18em;
+      padding: 24px 24px 0;
+    }
+    .project-card-swatch {
+      flex: 1; margin: 16px 24px; border-radius: 10px;
+      min-height: 120px;
+    }
+    .project-card-info {
+      padding: 0 24px 28px;
+    }
+    .project-tag {
+      display: inline-block;
+      font-size: 9px; font-weight: 700;
+      letter-spacing: 0.15em; text-transform: uppercase;
+      background: #C6FB50; color: #000000;
+      padding: 4px 10px; border-radius: 100px;
+      margin-bottom: 10px;
+    }
+    .project-title {
+      font-weight: 700;
+      font-size: clamp(20px, 2vw, 28px);
+      color: #ffffff; letter-spacing: -0.03em; line-height: 1;
+    }
+    .project-desc {
+      font-size: 13px; color: rgba(255,255,255,0.32);
+      line-height: 1.55; margin-top: 6px;
+    }
+
+    /* ── STATS ──────────────────────────────────────── */
+    #stats {
+      padding: 110px 7vw 130px;
+      min-height: 100vh;
+      display: flex; flex-direction: column; justify-content: center;
+    }
+    #stats-header {
+      display: flex; align-items: flex-end; justify-content: space-between;
+      margin-bottom: 48px;
+    }
+    #stats-header h2 {
+      font-weight: 700;
+      font-size: clamp(40px, 5vw, 72px);
+      color: #141414; letter-spacing: -0.04em; line-height: 0.9;
+    }
+    #stats-header span {
+      font-size: 10px; font-weight: 600;
+      color: rgba(20,20,20,0.28); letter-spacing: 0.18em;
+      text-transform: uppercase; padding-bottom: 8px;
+    }
+    .stats-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 16px;
+    }
+    .stat-cell {
+      background: rgba(0,0,0,0.04);
+      border: 1px solid rgba(0,0,0,0.06);
+      border-radius: 16px; padding: 40px 32px;
+      opacity: 0; transform: translateY(30px);
+    }
+    .stat-number {
+      font-weight: 700;
+      font-size: clamp(52px, 5vw, 80px);
+      color: #141414; letter-spacing: -0.04em; line-height: 1;
+    }
+    .stat-label {
+      font-size: 13px;
+      color: rgba(20,20,20,0.36);
+      margin-top: 10px; line-height: 1.45;
+    }
+
+    /* ── TESTIMONIALS ───────────────────────────────── */
+    #testimonials {
+      padding: 80px 7vw 120px;
+      display: flex; flex-direction: column; justify-content: center;
+    }
+    #testimonials-label {
+      font-size: 10px; font-weight: 600;
+      letter-spacing: 0.28em; text-transform: uppercase;
+      color: rgba(20,20,20,0.28); margin-bottom: 48px;
+    }
+    .testimonials-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 20px;
+    }
+    .testimonial-card {
+      background: rgba(0,0,0,0.04);
+      border: 1px solid rgba(0,0,0,0.06);
+      border-radius: 16px; padding: 44px;
+      opacity: 0; transform: translateY(30px);
+    }
+    .testimonial-quote {
+      font-family: 'Libre Caslon Text', serif;
+      font-style: italic;
+      font-size: clamp(17px, 1.7vw, 24px);
+      color: #141414; letter-spacing: -0.01em; line-height: 1.48;
+    }
+    .testimonial-author {
+      margin-top: 32px;
+      font-size: 11px; font-weight: 700;
+      color: rgba(20,20,20,0.5);
+      letter-spacing: 0.12em; text-transform: uppercase;
+    }
+    .testimonial-role {
+      font-size: 11px; color: rgba(20,20,20,0.28);
+      margin-top: 3px; letter-spacing: 0.04em;
+    }
+
+    /* ── CTA SECTION ────────────────────────────────── */
+    #cta-section {
+      min-height: 100vh;
+      display: flex; flex-direction: column;
+      align-items: center; justify-content: center;
+      text-align: center;
+      padding: 100px 7vw;
+      overflow: hidden; position: relative;
+    }
+    #cta-eyebrow {
+      font-size: 10px; font-weight: 600;
+      letter-spacing: 0.28em; text-transform: uppercase;
+      color: rgba(255,255,255,0.22);
+      margin-bottom: 40px;
+      opacity: 0; transform: translateY(20px);
+    }
+    #cta-heading {
+      font-weight: 700;
+      font-size: clamp(60px, 10vw, 150px);
+      color: #ffffff; letter-spacing: -0.05em; line-height: 0.88;
+      opacity: 0; transform: translateY(60px);
+    }
+    #cta-heading em {
+      font-family: 'Libre Caslon Text', serif;
+      font-style: italic; color: #C6FB50;
+    }
+    #cta-actions {
+      display: flex; align-items: center; gap: 24px;
+      margin-top: 64px;
+      opacity: 0; transform: translateY(30px);
+    }
+    #cta-btn {
+      display: inline-flex; align-items: center; gap: 10px;
+      background: #C6FB50; color: #000000;
+      font-weight: 700; font-size: 13px;
+      letter-spacing: 0.08em; text-transform: uppercase;
+      padding: 18px 44px; border-radius: 100px;
+      text-decoration: none; cursor: none;
+    }
+    #cta-email {
+      font-size: 13px; font-weight: 500;
+      color: rgba(255,255,255,0.32);
+      letter-spacing: 0.03em;
+      text-decoration: none;
+      transition: color 0.3s;
+    }
+    #cta-email:hover { color: rgba(255,255,255,0.65); }
+
+    /* ── FOOTER ─────────────────────────────────────── */
+    #footer {
+      padding: 56px 7vw;
+      display: flex; align-items: center; justify-content: space-between;
+      border-top: 1px solid rgba(255,255,255,0.04);
+    }
+    .footer-logo {
+      font-weight: 700; font-size: 15px;
+      color: rgba(255,255,255,0.22); letter-spacing: 0.02em;
+    }
+    .footer-links {
+      display: flex; gap: 32px; list-style: none;
+    }
+    .footer-links a {
+      font-size: 12px; font-weight: 500;
+      color: rgba(255,255,255,0.18); letter-spacing: 0.05em;
+      text-decoration: none; cursor: none;
+      transition: color 0.3s;
+    }
+    .footer-links a:hover { color: rgba(255,255,255,0.55); }
+    .footer-copy {
+      font-size: 11px; color: rgba(255,255,255,0.14);
+      letter-spacing: 0.05em;
     }
   </style>
 </head>
-<body>
+<body data-theme="dark">
 
-  <!-- Loader — first child -->
+  <!-- Fixed visual layers -->
+  <div id="site-bg"></div>
+  <div id="grain"></div>
+  <div id="vignette"></div>
+  <div id="cursor-dot"></div>
+  <div id="cursor-ring"></div>
+
+  <!-- Loader -->
   <div id="loader">
     <div class="loader-panel" id="loader-top"></div>
     <div class="loader-panel" id="loader-bot"></div>
@@ -323,69 +660,206 @@
     </div>
   </div>
 
-  <div id="grain"></div>
-  <div id="vignette"></div>
-  <div id="cursor-dot"></div>
-  <div id="cursor-ring"></div>
-  <div id="progress-track"><div id="progress-fill"></div></div>
-  <a id="logo" href="#">CM™</a>
+  <!-- Fixed chrome -->
+  <nav id="nav">
+    <a id="nav-logo" href="#">CM™</a>
+    <span id="nav-star">✦</span>
+  </nav>
 
-  <div id="marquee">
-    <div class="marquee-track">
-      <span class="marquee-content">CORBIN MOFFITT™ ◆ SENIOR DESIGNER ◆ LIMITED EDITION ◆ 1 OF 1 ◆ SARATOGA SPRINGS UT ◆ FIGMA ◆ WEBFLOW ◆ GSAP ◆ BRAND ◆ WEB ◆ UX ◆ PERFORMANCE ◆ ADD TO TEAM ◆ &nbsp;</span>
-      <span class="marquee-content" aria-hidden="true">CORBIN MOFFITT™ ◆ SENIOR DESIGNER ◆ LIMITED EDITION ◆ 1 OF 1 ◆ SARATOGA SPRINGS UT ◆ FIGMA ◆ WEBFLOW ◆ GSAP ◆ BRAND ◆ WEB ◆ UX ◆ PERFORMANCE ◆ ADD TO TEAM ◆ &nbsp;</span>
+  <div id="cta-pill">ADD TO TEAM</div>
+
+  <div id="bottom-bar">
+    <div id="bottom-marquee">
+      <div class="bm-track">
+        <span class="bm-text">CORBIN MOFFITT™ ◆ SENIOR DESIGNER ◆ LIMITED EDITION ◆ 1 OF 1 ◆ FIGMA ◆ WEBFLOW ◆ GSAP ◆ BRAND ◆ UX ◆ MOTION ◆ REACT ◆ FRAMER ◆ &nbsp;</span>
+        <span class="bm-text" aria-hidden="true">CORBIN MOFFITT™ ◆ SENIOR DESIGNER ◆ LIMITED EDITION ◆ 1 OF 1 ◆ FIGMA ◆ WEBFLOW ◆ GSAP ◆ BRAND ◆ UX ◆ MOTION ◆ REACT ◆ FRAMER ◆ &nbsp;</span>
+      </div>
     </div>
+    <div id="bottom-progress-wrap">
+      <div id="bottom-progress-fill"></div>
+    </div>
+    <div id="bottom-pct">0%</div>
   </div>
 
-  <div id="page-wrapper">
+  <!-- Main content -->
+  <main id="main">
 
-    <div id="horizontal-track-wrapper">
-      <div id="horizontal-track">
+    <!-- ── HERO ──────────────────────────────── -->
+    <section id="hero" data-bg="#141414" data-theme="dark">
+      <div id="hero-text">
+        <div id="hero-type-line">
+          <span id="hero-senior"></span><span id="hero-designer">Designer</span>
+        </div>
+        <p id="hero-tag">NEW DROP · LIMITED EDITION · 1 OF 1</p>
+      </div>
+      <div id="hero-scroll-hint">SCROLL TO EXPLORE</div>
+      <div id="hero-figure">
+        <img src="assets/action-figure.png" alt="Corbin Moffitt Action Figure" id="action-figure" />
+      </div>
+    </section>
 
-        <div class="h-scene" id="h-scene-loader" style="background:#141414"></div>
+    <!-- ── PRODUCT REVEAL ────────────────────── -->
+    <section id="product-reveal" data-bg="#000000" data-theme="dark">
+      <div id="product-reveal-sticky">
+        <p id="product-label-top">LIMITED EDITION · SERIES 01</p>
+        <div id="product-fig-wrap">
+          <img src="assets/action-figure.png" alt="" />
+        </div>
+        <div id="product-edition">
+          <div id="product-edition-title">SENIOR DESIGNER</div>
+          <div id="product-edition-sub">1 of 1 — Saratoga Springs, UT</div>
+        </div>
+      </div>
+    </section>
 
-        <div class="h-scene" id="h-scene-hero" style="background:#141414">
-          <div id="hero-text">
-            <div id="hero-type-line">
-              <span id="hero-senior"></span><span id="hero-designer">Designer</span>
-            </div>
-            <p id="hero-tag">NEW DROP · LIMITED EDITION · 1 OF 1</p>
+    <!-- ── SPECS ─────────────────────────────── -->
+    <section id="specs" data-bg="#111111" data-theme="dark">
+      <p id="specs-header">Spec Sheet — v2025</p>
+      <div class="spec-row">
+        <span class="spec-label">Tools</span>
+        <span class="spec-value">Figma · Webflow · Framer · GSAP</span>
+      </div>
+      <div class="spec-row">
+        <span class="spec-label">Craft</span>
+        <span class="spec-value">Brand · Web · Motion · UX</span>
+      </div>
+      <div class="spec-row">
+        <span class="spec-label">Experience</span>
+        <span class="spec-value">7+ Years in the field</span>
+      </div>
+      <div class="spec-row">
+        <span class="spec-label">Shipped</span>
+        <span class="spec-value">50+ Products &amp; Brands</span>
+      </div>
+      <div class="spec-row">
+        <span class="spec-label">Status</span>
+        <span class="spec-value">Open to the right team ✦</span>
+      </div>
+    </section>
+
+    <!-- ── CRAFT ─────────────────────────────── -->
+    <section id="craft" data-bg="#1C1C1E" data-theme="dark">
+      <div id="craft-bg-text">CRAFT OVER EVERYTHING ★ CRAFT OVER EVERYTHING ★ CRAFT OVER EVERYTHING ★</div>
+      <div id="craft-content">
+        <h2>Design is how<br>it <em>works.</em></h2>
+        <p>7 years of shipping beautiful, functional work. From scrappy startups to enterprise teams — always obsessed with the details that make people stop and look twice.</p>
+      </div>
+      <span id="craft-year">© 2025</span>
+    </section>
+
+    <!-- ── PROJECTS ───────────────────────────── -->
+    <section id="projects" data-bg="#0F0F0F" data-theme="dark">
+      <div id="projects-header">
+        <h2>Selected<br>Work</h2>
+        <span id="projects-count">03 Projects</span>
+      </div>
+      <div class="project-grid">
+
+        <div class="project-card" style="background:linear-gradient(145deg,#0d1800 0%,#1a2a00 100%)">
+          <div class="project-num">01</div>
+          <div class="project-card-swatch" style="background:linear-gradient(135deg,#C6FB50 0%,#8ab030 100%)"></div>
+          <div class="project-card-info">
+            <span class="project-tag">Brand &amp; Digital</span>
+            <div class="project-title">NOM NOM</div>
+            <div class="project-desc">Brand system + e-comm redesign for a pet nutrition startup. 3× revenue in 6 months.</div>
           </div>
-          <div id="hero-figure">
-            <img src="assets/action-figure.png" id="action-figure" alt="" />
+        </div>
+
+        <div class="project-card" style="background:linear-gradient(145deg,#080d1c 0%,#0d1535 100%)">
+          <div class="project-num">02</div>
+          <div class="project-card-swatch" style="background:linear-gradient(135deg,#4a6cf7 0%,#7c3aed 100%)"></div>
+          <div class="project-card-info">
+            <span class="project-tag">Design System</span>
+            <div class="project-title">PULSE</div>
+            <div class="project-desc">End-to-end design system for a healthtech platform. 200+ components, zero ambiguity.</div>
           </div>
         </div>
 
-        <div class="h-scene" id="h-scene-statement" style="background:#FFFFFF">
-          <span class="scene-label" style="color:#141414">STATEMENT</span>
+        <div class="project-card" style="background:linear-gradient(145deg,#160d1c 0%,#260f2a 100%)">
+          <div class="project-num">03</div>
+          <div class="project-card-swatch" style="background:linear-gradient(135deg,#9b59b6 0%,#1a1a2e 100%)"></div>
+          <div class="project-card-info">
+            <span class="project-tag">Product UX</span>
+            <div class="project-title">VEIL</div>
+            <div class="project-desc">Privacy-first app UX from zero to App Store. Acquired within 18 months of launch.</div>
+          </div>
         </div>
 
-        <div class="h-scene" id="h-scene-specs" style="background:#141414">
-          <span class="scene-label">SPECS</span>
+      </div>
+    </section>
+
+    <!-- ── STATS ──────────────────────────────── -->
+    <section id="stats" data-bg="#F5F5F5" data-theme="light">
+      <div id="stats-header">
+        <h2>By the<br>numbers</h2>
+        <span>Performance specs</span>
+      </div>
+      <div class="stats-grid">
+        <div class="stat-cell">
+          <div class="stat-number">7+</div>
+          <div class="stat-label">Years designing digital products</div>
         </div>
+        <div class="stat-cell">
+          <div class="stat-number">50+</div>
+          <div class="stat-label">Projects shipped to production</div>
+        </div>
+        <div class="stat-cell">
+          <div class="stat-number">3×</div>
+          <div class="stat-label">Average revenue lift on key projects</div>
+        </div>
+        <div class="stat-cell">
+          <div class="stat-number">∞</div>
+          <div class="stat-label">Cups of coffee consumed in service of craft</div>
+        </div>
+      </div>
+    </section>
 
+    <!-- ── TESTIMONIALS ───────────────────────── -->
+    <section id="testimonials" data-bg="#EFEFEF" data-theme="light">
+      <p id="testimonials-label">What they say</p>
+      <div class="testimonials-grid">
+        <div class="testimonial-card">
+          <div class="testimonial-quote">"Corbin consistently ships beautiful, functional work that moves the needle. He's the rare designer who thinks in systems AND makes things look incredible."</div>
+          <div class="testimonial-author">Jordan K.</div>
+          <div class="testimonial-role">CEO, NomNom</div>
+        </div>
+        <div class="testimonial-card">
+          <div class="testimonial-quote">"The best designer I've worked with. His eye for detail is matched only by his ability to communicate and ship fast. He made our entire team better."</div>
+          <div class="testimonial-author">Alex M.</div>
+          <div class="testimonial-role">CTO, Pulse Health</div>
+        </div>
       </div>
-    </div>
+    </section>
 
-    <div id="vertical-section-wrapper">
-      <div class="v-section" id="v-whats-included" style="background:#C6FB50">
-        <span class="scene-label" style="color:#141414">WHAT'S INCLUDED</span>
+    <!-- ── CTA ───────────────────────────────── -->
+    <section id="cta-section" data-bg="#0F0F0F" data-theme="dark">
+      <p id="cta-eyebrow">Limited availability — 2025</p>
+      <h2 id="cta-heading">ADD ME<br>TO YOUR<br><em>TEAM.</em></h2>
+      <div id="cta-actions">
+        <a id="cta-btn" href="mailto:corbin@corbinmoffitt.com">→ GET IN TOUCH</a>
+        <a id="cta-email" href="mailto:corbin@corbinmoffitt.com">corbin@corbinmoffitt.com</a>
       </div>
-      <div class="v-section" id="v-testimonials" style="background:#141414">
-        <span class="scene-label">TESTIMONIALS</span>
-      </div>
-      <div class="v-section" id="v-cta" style="background:#141414">
-        <span class="scene-label">ADD TO TEAM</span>
-      </div>
-    </div>
+    </section>
 
-  </div>
+    <!-- ── FOOTER ─────────────────────────────── -->
+    <footer id="footer" data-bg="#090909" data-theme="dark">
+      <span class="footer-logo">CM™</span>
+      <ul class="footer-links">
+        <li><a href="#">LinkedIn</a></li>
+        <li><a href="#">Twitter</a></li>
+        <li><a href="#">Dribbble</a></li>
+        <li><a href="#">Read.cv</a></li>
+      </ul>
+      <span class="footer-copy">© 2025 CORBIN MOFFITT™</span>
+    </footer>
+
+  </main>
 
   <script>
     window.addEventListener('load', () => {
       gsap.registerPlugin(ScrollTrigger);
 
-      // ——— Lenis ———
+      // ── Lenis ─────────────────────────────────────
       const lenis = new Lenis({
         duration: 1.6,
         easing: (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t)),
@@ -398,74 +872,39 @@
       gsap.ticker.add((time) => { lenis.raf(time * 1000); });
       gsap.ticker.lagSmoothing(0);
 
-      // ——— Horizontal scroll ———
-      gsap.to("#horizontal-track", {
-        x: () => -(document.getElementById('horizontal-track').scrollWidth - window.innerWidth),
-        ease: "none",
-        scrollTrigger: {
-          trigger: "#horizontal-track-wrapper",
-          start: "top top",
-          end: () => "+=" + (document.getElementById('horizontal-track').scrollWidth - window.innerWidth),
-          scrub: 1.2,
-          pin: true,
-          anticipatePin: 1,
-          invalidateOnRefresh: true
-        }
-      });
-
-      // ——— Progress bar ———
-      ScrollTrigger.create({
-        start: "top top", end: "bottom bottom",
-        onUpdate: (self) => {
-          document.getElementById('progress-fill').style.height = (self.progress * 100) + '%';
-        }
-      });
-
-      // ——— Cursor ———
-      const dot = document.getElementById('cursor-dot');
+      // ── Cursor ────────────────────────────────────
+      const dot  = document.getElementById('cursor-dot');
       const ring = document.getElementById('cursor-ring');
-      const xDot  = gsap.quickTo(dot,  "x", {duration:0.1,  ease:"power3"});
-      const yDot  = gsap.quickTo(dot,  "y", {duration:0.1,  ease:"power3"});
-      const xRing = gsap.quickTo(ring, "x", {duration:0.35, ease:"power3"});
-      const yRing = gsap.quickTo(ring, "y", {duration:0.35, ease:"power3"});
+      const xDot  = gsap.quickTo(dot,  'x', {duration: 0.1,  ease: 'power3'});
+      const yDot  = gsap.quickTo(dot,  'y', {duration: 0.1,  ease: 'power3'});
+      const xRing = gsap.quickTo(ring, 'x', {duration: 0.35, ease: 'power3'});
+      const yRing = gsap.quickTo(ring, 'y', {duration: 0.35, ease: 'power3'});
       window.addEventListener('mousemove', (e) => {
         xDot(e.clientX - 2.5); yDot(e.clientY - 2.5);
         xRing(e.clientX - 16); yRing(e.clientY - 16);
-        gsap.to([dot, ring], {opacity:1, duration:0.3});
+        gsap.to([dot, ring], {opacity: 1, duration: 0.3});
       });
-      document.querySelectorAll('a, button').forEach(el => {
+      document.querySelectorAll('a, button, .project-card').forEach(el => {
         el.addEventListener('mouseenter', () => {
-          gsap.to(ring, {scale:2.5, duration:0.3, ease:"power2.out"});
-          gsap.to(dot,  {scale:0,   duration:0.2});
+          gsap.to(ring, {scale: 2.5, duration: 0.3, ease: 'power2.out'});
+          gsap.to(dot,  {scale: 0,   duration: 0.2});
         });
         el.addEventListener('mouseleave', () => {
-          gsap.to(ring, {scale:1, duration:0.5, ease:"elastic.out(1,0.5)"});
-          gsap.to(dot,  {scale:1, duration:0.3});
+          gsap.to(ring, {scale: 1, duration: 0.5, ease: 'elastic.out(1,0.5)'});
+          gsap.to(dot,  {scale: 1, duration: 0.3});
         });
       });
 
-      // ——————————————————————————————————————————
-      // splitIntoChars
-      //
-      // Clipping fix: masks use line-height:1.2 + padding-bottom:0.2em
-      // → mask height = 1.4em. Inner uses translateY(125%)
-      // → moves 1.25 × 1.2em = 1.5em, which exceeds 1.4em
-      // → inner is FULLY below the mask at start, never peeks through.
-      //
-      // Gradient fix: after inserting all chars we measure each char's
-      // left offset from the parent element, then set background-size
-      // to the full word width and background-position to -offset so
-      // every char sees its own slice of ONE continuous gradient.
-      // ——————————————————————————————————————————
+      // ── splitIntoChars ────────────────────────────
+      // Mask: line-height:1.2 + padding-bottom:0.2em = 1.4em height
+      // Inner: translateY(125%) = 1.5em > 1.4em → fully below clip at start
+      // Gradient: background-size/position measured after DOM insertion
       function splitIntoChars(el, options = {}) {
         const { isGradient = false } = options;
         const text = el.textContent.trim();
         el.innerHTML = '';
-
         const inners = [];
-
         [...text].forEach(char => {
-          // Mask: line-height:1.2 + padding-bottom:0.2em → height = 1.4em
           const mask = document.createElement('span');
           mask.style.cssText = [
             'display:inline-block',
@@ -474,9 +913,6 @@
             'line-height:1.2',
             'padding-bottom:0.2em'
           ].join(';');
-
-          // Inner: same line-height so translateY% is predictable
-          // translateY(125%) = 1.25 × 1.2em = 1.5em > 1.4em → fully hidden
           const inner = document.createElement('span');
           inner.style.cssText = [
             'display:inline-block',
@@ -484,23 +920,19 @@
             'transform:translateY(125%)',
             'will-change:transform'
           ].join(';');
-
           inner.textContent = char === ' ' ? '\u00A0' : char;
           mask.appendChild(inner);
           el.appendChild(mask);
           inners.push(inner);
         });
-
-        // Gradient: measure after DOM insertion so positions are real
         if (isGradient) {
           const elRect = el.getBoundingClientRect();
           const totalWidth = Math.max(elRect.width, 1);
-
           inners.forEach(inner => {
             const maskRect = inner.parentElement.getBoundingClientRect();
             const offset = maskRect.left - elRect.left;
-            inner.style.backgroundImage  = 'linear-gradient(to right, rgba(140,141,143,0.92) 0%, rgba(240,242,245,0.92) 58%, rgba(157,157,157,0.92) 100%)';
-            inner.style.backgroundSize   = totalWidth + 'px 100%';
+            inner.style.backgroundImage    = 'linear-gradient(to right, rgba(140,141,143,0.92) 0%, rgba(240,242,245,0.92) 58%, rgba(157,157,157,0.92) 100%)';
+            inner.style.backgroundSize     = totalWidth + 'px 100%';
             inner.style.backgroundPosition = (-offset) + 'px 0';
             inner.style.webkitBackgroundClip = 'text';
             inner.style.backgroundClip       = 'text';
@@ -508,40 +940,31 @@
             inner.style.color                = 'transparent';
           });
         }
-
         return inners;
       }
 
-      // ——— Hero — populate and split before revealHero is ever called ———
+      // ── Hero splits (before revealHero is defined) ─
       document.getElementById('hero-senior').textContent = 'SENIOR';
-
-      const heroSeniorChars   = splitIntoChars(document.getElementById('hero-senior'),   { isGradient: true  });
-      const heroDesignerChars = splitIntoChars(document.getElementById('hero-designer'),  { isGradient: false });
+      const heroSeniorChars   = splitIntoChars(document.getElementById('hero-senior'),  {isGradient: true});
+      const heroDesignerChars = splitIntoChars(document.getElementById('hero-designer'), {isGradient: false});
 
       function revealHero() {
         const tl = gsap.timeline();
         tl
-          .to(heroSeniorChars, {
-            y: 0, duration: 1.1, ease: 'expo.out', stagger: 0.04
-          })
-          .to(heroDesignerChars, {
-            y: 0, duration: 1.1, ease: 'expo.out', stagger: 0.03
-          }, '-=0.85')
-          .to('#hero-tag', {
-            opacity: 1, duration: 0.6, ease: 'power3.out'
-          }, '-=0.5')
-          .to('#action-figure', {
-            opacity: 1, duration: 0.9, ease: 'power3.out'
-          }, '-=0.7');
+          .to(heroSeniorChars,   {y: 0, duration: 1.1, ease: 'expo.out', stagger: 0.04})
+          .to(heroDesignerChars, {y: 0, duration: 1.1, ease: 'expo.out', stagger: 0.03}, '-=0.85')
+          .to('#hero-tag',         {opacity: 1, duration: 0.6, ease: 'power3.out'}, '-=0.5')
+          .to('#action-figure',    {opacity: 1, duration: 0.9, ease: 'power3.out'}, '-=0.7')
+          .to('#hero-scroll-hint', {opacity: 1, duration: 0.6, ease: 'power3.out'}, '-=0.4')
+          .to(['#nav', '#cta-pill', '#bottom-bar'], {opacity: 1, duration: 0.7, ease: 'power3.out', stagger: 0.08}, '-=0.3');
       }
 
-      // ——— Loader — split and animate ———
-      const seniorChars   = splitIntoChars(document.getElementById('loader-senior'),   { isGradient: true  });
-      const designerChars = splitIntoChars(document.getElementById('loader-designer'),  { isGradient: false });
+      // ── Loader ────────────────────────────────────
+      const seniorChars   = splitIntoChars(document.getElementById('loader-senior'),   {isGradient: true});
+      const designerChars = splitIntoChars(document.getElementById('loader-designer'),  {isGradient: false});
 
       gsap.set('#loader-brand', {opacity: 0, y: 10});
       gsap.set('#loader-tag',   {opacity: 0, y: 10});
-      gsap.set('#loader', {pointerEvents: 'all'});
 
       const loaderTl = gsap.timeline({
         onComplete: () => {
@@ -557,15 +980,147 @@
       });
 
       loaderTl
-        .to('#loader-brand', { opacity: 1, y: 0, duration: 0.5, ease: 'power3.out' })
-        .to(seniorChars,   { y: 0, duration: 0.8, ease: 'expo.out', stagger: 0.04 }, '-=0.2')
-        .to(designerChars, { y: 0, duration: 0.8, ease: 'expo.out', stagger: 0.04 }, '-=0.5')
-        .to('#loader-tag',   { opacity: 1, y: 0, duration: 0.5, ease: 'power3.out' }, '-=0.3')
-        .to({}, { duration: 0.8 })
-        .to('#loader-top', { yPercent: -100, duration: 0.9, ease: 'expo.inOut' }, 'split')
-        .to('#loader-bot', { yPercent:  100, duration: 0.9, ease: 'expo.inOut' }, 'split');
+        .to('#loader-brand',  {opacity: 1, y: 0, duration: 0.5, ease: 'power3.out'})
+        .to(seniorChars,      {y: 0, duration: 0.8, ease: 'expo.out', stagger: 0.04}, '-=0.2')
+        .to(designerChars,    {y: 0, duration: 0.8, ease: 'expo.out', stagger: 0.04}, '-=0.5')
+        .to('#loader-tag',    {opacity: 1, y: 0, duration: 0.5, ease: 'power3.out'}, '-=0.3')
+        .to({}, {duration: 0.8})
+        .to('#loader-top', {yPercent: -100, duration: 0.9, ease: 'expo.inOut'}, 'split')
+        .to('#loader-bot', {yPercent:  100, duration: 0.9, ease: 'expo.inOut'}, 'split');
 
-      console.log('Phase 2 — clean char split');
+      // ── Background color morphing ──────────────────
+      function applyTheme(bg, theme) {
+        gsap.to('#site-bg', {backgroundColor: bg, duration: 0.9, ease: 'power2.inOut'});
+        document.body.dataset.theme = theme;
+        gsap.to('#vignette', {
+          opacity: theme === 'light' ? 0 : 1,
+          duration: 0.6
+        });
+      }
+
+      document.querySelectorAll('[data-bg]').forEach(el => {
+        const bg    = el.dataset.bg;
+        const theme = el.dataset.theme || 'dark';
+        ScrollTrigger.create({
+          trigger: el,
+          start: 'top 55%',
+          end:   'bottom 55%',
+          onEnter:     () => applyTheme(bg, theme),
+          onEnterBack: () => applyTheme(bg, theme),
+        });
+      });
+
+      // ── Scroll progress + percentage ──────────────
+      ScrollTrigger.create({
+        start: 'top top',
+        end: 'bottom bottom',
+        onUpdate: (self) => {
+          const pct = Math.round(self.progress * 100);
+          document.getElementById('bottom-progress-fill').style.width = pct + '%';
+          document.getElementById('bottom-pct').textContent = pct + '%';
+        }
+      });
+
+      // ── Product reveal (CSS sticky, GSAP scrub) ────
+      gsap.timeline({
+        scrollTrigger: {
+          trigger: '#product-reveal',
+          start: 'top top',
+          end: '+=150vh',
+          scrub: 1.5
+        }
+      })
+      .fromTo('#product-fig-wrap',  {opacity: 0, scale: 0.82, y: 20}, {opacity: 1, scale: 1, y: 0}, 0)
+      .fromTo('#product-label-top', {opacity: 0, y: -10},              {opacity: 0.8, y: 0},          0.1)
+      .fromTo('#product-edition',   {opacity: 0, y: 24},               {opacity: 1, y: 0},            0.3);
+
+      // ── Spec rows stagger reveal ───────────────────
+      document.querySelectorAll('.spec-value').forEach(el => {
+        gsap.to(el, {
+          y: 0, opacity: 1,
+          duration: 0.9, ease: 'expo.out',
+          scrollTrigger: {
+            trigger: el.closest('.spec-row'),
+            start: 'top 82%',
+            toggleActions: 'play none none reverse'
+          }
+        });
+      });
+
+      // ── Craft — bg text scroll-driven + content reveal
+      gsap.to('#craft-bg-text', {
+        x: '-18%',
+        ease: 'none',
+        scrollTrigger: {
+          trigger: '#craft',
+          start: 'top bottom',
+          end: 'bottom top',
+          scrub: 1.5
+        }
+      });
+      gsap.to('#craft-content', {
+        opacity: 1, y: 0,
+        duration: 1, ease: 'power3.out',
+        scrollTrigger: {
+          trigger: '#craft',
+          start: 'top 62%',
+          toggleActions: 'play none none reverse'
+        }
+      });
+
+      // ── Project cards stagger ──────────────────────
+      gsap.to('.project-card', {
+        opacity: 1, y: 0,
+        duration: 1, ease: 'expo.out',
+        stagger: 0.14,
+        scrollTrigger: {
+          trigger: '.project-grid',
+          start: 'top 78%',
+          toggleActions: 'play none none reverse'
+        }
+      });
+
+      // ── Stats cells stagger ────────────────────────
+      gsap.to('.stat-cell', {
+        opacity: 1, y: 0,
+        duration: 0.8, ease: 'expo.out',
+        stagger: 0.1,
+        scrollTrigger: {
+          trigger: '.stats-grid',
+          start: 'top 78%',
+          toggleActions: 'play none none reverse'
+        }
+      });
+
+      // ── Testimonials stagger ───────────────────────
+      gsap.to('.testimonial-card', {
+        opacity: 1, y: 0,
+        duration: 0.9, ease: 'expo.out',
+        stagger: 0.16,
+        scrollTrigger: {
+          trigger: '.testimonials-grid',
+          start: 'top 78%',
+          toggleActions: 'play none none reverse'
+        }
+      });
+
+      // ── CTA section reveals ────────────────────────
+      gsap.to('#cta-eyebrow', {
+        opacity: 1, y: 0,
+        duration: 0.7, ease: 'power3.out',
+        scrollTrigger: {trigger: '#cta-section', start: 'top 68%', toggleActions: 'play none none reverse'}
+      });
+      gsap.to('#cta-heading', {
+        opacity: 1, y: 0,
+        duration: 1.1, ease: 'expo.out',
+        scrollTrigger: {trigger: '#cta-section', start: 'top 62%', toggleActions: 'play none none reverse'}
+      });
+      gsap.to('#cta-actions', {
+        opacity: 1, y: 0,
+        duration: 0.9, ease: 'power3.out',
+        scrollTrigger: {trigger: '#cta-section', start: 'top 56%', toggleActions: 'play none none reverse'}
+      });
+
     });
   </script>
 
