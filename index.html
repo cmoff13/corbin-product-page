@@ -195,18 +195,6 @@
       overflow: hidden;
     }
 
-    #hero-brand {
-      position: absolute;
-      top: 28px;
-      left: 28px;
-      font-family: 'Inter', sans-serif;
-      font-weight: 700;
-      font-size: 14px;
-      color: #C6FB50;
-      letter-spacing: 0.02em;
-      margin: 0;
-    }
-
     #hero-text {
       position: absolute;
       left: 7vw;
@@ -783,7 +771,7 @@
 
   <!-- Fixed chrome -->
   <nav id="nav">
-    <a id="nav-logo" href="#">CM™</a>
+    <a id="nav-logo" href="#">CORBIN MOFFITT™</a>
     <span id="nav-star">✦</span>
   </nav>
 
@@ -807,8 +795,6 @@
 
     <!-- ── HERO ──────────────────────────────── -->
     <section id="hero-section" data-bg="#141414" data-theme="dark">
-      <p id="hero-brand">CORBIN MOFFITT™</p>
-
       <div id="hero-text">
         <p id="hero-senior">SENIOR</p>
         <p id="hero-designer">Designer</p>
@@ -882,7 +868,7 @@
     <section id="craft" data-bg="#1C1C1E" data-theme="dark">
       <div id="craft-bg-text">CRAFT OVER EVERYTHING ★ CRAFT OVER EVERYTHING ★ CRAFT OVER EVERYTHING ★</div>
       <div id="craft-content">
-        <h2>BUILT<br><em>DIFFERENT.</em></h2>
+        <h2>BUILT <br><em>DIFFERENT.</em></h2>
         <p>7 years. No shortcuts. No filler. Ships with a full toolkit, a fine arts background, and an unhealthy obsession with details that actually move the needle.</p>
       </div>
       <span id="craft-year">© 2025</span>
@@ -891,7 +877,7 @@
     <!-- ── STATS ──────────────────────────────── -->
     <section id="stats-section" data-bg="#F5F5F5" data-theme="light">
       <div id="stats-header">
-        <h2>PERFORMANCE<br>SPECS</h2>
+        <h2>PERFORMANCE <br>SPECS</h2>
         <span>Measured. Verified. Repeatable.</span>
       </div>
       <div class="stats-grid">
@@ -957,7 +943,7 @@
     <section id="cta-section" data-bg="#141414" data-theme="dark">
       <div id="cta-content">
         <p id="cta-eyebrow">ONLY 1 LEFT IN STOCK</p>
-        <h2 id="cta-headline">ADD TO<br>TEAM</h2>
+        <h2 id="cta-headline">ADD TO <br>TEAM</h2>
         <div id="cta-details">
           <p><span>Condition:</span> Available Now</p>
           <p><span>Ships to:</span> Saratoga Springs, UT</p>
@@ -1002,6 +988,8 @@
       lenis.on('scroll', ScrollTrigger.update);
       gsap.ticker.add((time) => { lenis.raf(time * 1000); });
       gsap.ticker.lagSmoothing(0);
+      // Refresh after Lenis is running so ScrollTrigger calculates positions correctly
+      ScrollTrigger.refresh();
 
       // ── Cursor ────────────────────────────────────
       const dot  = document.getElementById('cursor-dot');
@@ -1027,7 +1015,7 @@
       });
 
       // ── Hero reveal — simple fade in ──────────────
-      gsap.from('#hero-section, #hero-text, #action-figure', {
+      gsap.from(['#hero-section', '#hero-text'], {
         opacity: 0, duration: 0.8, ease: 'power3.out', stagger: 0.15
       });
       gsap.to(['#nav', '#cta-pill', '#bottom-bar'], {
@@ -1076,8 +1064,9 @@
           scrub: 1.5
         }
       })
-      .fromTo('#product-label-top', {opacity: 0, y: -10}, {opacity: 0.8, y: 0}, 0)
-      .fromTo('#product-edition',   {opacity: 0, y: 24},  {opacity: 1,   y: 0}, 0.2);
+      .fromTo('#product-label-top', {opacity: 0, y: -10},               {opacity: 0.8, y: 0},            0)
+      .fromTo('#product-fig-wrap',  {opacity: 0, scale: 0.82, y: 20},  {opacity: 1, scale: 1, y: 0},    0.1)
+      .fromTo('#product-edition',   {opacity: 0, y: 24},                {opacity: 1, y: 0},              0.2);
 
       // ── Fixed figure fades in with product reveal ──
       ScrollTrigger.create({
