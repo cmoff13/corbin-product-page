@@ -80,18 +80,16 @@
       display: flex;
       align-items: baseline;
       overflow: visible;
-      position: relative;
     }
 
+    /* Parents are plain inline — masks inside are true inline-blocks */
     #loader-senior {
       font-family: 'Inter', sans-serif;
       font-weight: 500;
       font-size: clamp(72px, 9vw, 128px);
       letter-spacing: -0.03em;
-      line-height: 1.1;
-      display: inline-flex;
-      align-items: baseline;
-      vertical-align: bottom;
+      line-height: 1;
+      display: inline;
     }
 
     #loader-designer {
@@ -101,10 +99,8 @@
       font-size: clamp(82px, 10.5vw, 146px);
       color: #C6FB50;
       letter-spacing: -0.03em;
-      line-height: 1.1;
-      display: inline-flex;
-      align-items: baseline;
-      vertical-align: bottom;
+      line-height: 1;
+      display: inline;
       margin-left: -0.02em;
     }
 
@@ -123,8 +119,7 @@
 
     #horizontal-track {
       position: relative;
-      top: 0;
-      left: 0;
+      top: 0; left: 0;
       display: flex;
       flex-direction: row;
       width: 400vw;
@@ -167,7 +162,7 @@
       pointer-events: none;
     }
 
-    /* ——— Hero scene typography ——— */
+    /* ——— Hero ——— */
     #hero-text {
       position: absolute;
       left: 7vw; top: 50%;
@@ -179,7 +174,7 @@
       display: flex;
       align-items: baseline;
       overflow: visible;
-      line-height: 1.1;
+      line-height: 1;
     }
 
     #hero-senior {
@@ -187,10 +182,8 @@
       font-weight: 500;
       font-size: clamp(72px, 9vw, 128px);
       letter-spacing: -0.03em;
-      line-height: 1.1;
-      display: inline-flex;
-      align-items: baseline;
-      overflow: visible;
+      line-height: 1;
+      display: inline;
     }
 
     #hero-designer {
@@ -200,11 +193,9 @@
       font-size: clamp(82px, 10.5vw, 146px);
       color: #C6FB50;
       letter-spacing: -0.03em;
-      line-height: 1.1;
+      line-height: 1;
       margin-left: -0.02em;
-      display: inline-flex;
-      align-items: baseline;
-      overflow: visible;
+      display: inline;
     }
 
     #hero-tag {
@@ -237,8 +228,7 @@
       top: 24px; left: 28px;
       z-index: 100;
       font-family: var(--font-sans);
-      font-weight: 700;
-      font-size: 16px;
+      font-weight: 700; font-size: 16px;
       color: #C6FB50;
       text-decoration: none;
       letter-spacing: 0.02em;
@@ -327,8 +317,7 @@
     <div id="loader-inner">
       <p id="loader-brand">CORBIN MOFFITT™</p>
       <div id="loader-headline">
-        <span id="loader-senior">SENIOR</span>
-        <span id="loader-designer">Designer</span>
+        <span id="loader-senior">SENIOR</span><span id="loader-designer">Designer</span>
       </div>
       <p id="loader-tag">NEW DROP · LIMITED EDITION · 1 OF 1</p>
     </div>
@@ -353,10 +342,8 @@
     <div id="horizontal-track-wrapper">
       <div id="horizontal-track">
 
-        <!-- Scene 1: Loader (empty — full-screen loader overlay handles this) -->
         <div class="h-scene" id="h-scene-loader" style="background:#141414"></div>
 
-        <!-- Scene 2: Hero -->
         <div class="h-scene" id="h-scene-hero" style="background:#141414">
           <div id="hero-text">
             <div id="hero-type-line">
@@ -369,12 +356,10 @@
           </div>
         </div>
 
-        <!-- Scene 3: Statement -->
         <div class="h-scene" id="h-scene-statement" style="background:#FFFFFF">
           <span class="scene-label" style="color:#141414">STATEMENT</span>
         </div>
 
-        <!-- Scene 4: Specs -->
         <div class="h-scene" id="h-scene-specs" style="background:#141414">
           <span class="scene-label">SPECS</span>
         </div>
@@ -400,34 +385,27 @@
     window.addEventListener('load', () => {
       gsap.registerPlugin(ScrollTrigger);
 
-      // ——— Lenis smooth scroll ———
+      // ——— Lenis ———
       const lenis = new Lenis({
         duration: 1.6,
         easing: (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t)),
         orientation: 'vertical',
         smoothWheel: true
       });
-      function raf(time) {
-        lenis.raf(time);
-        requestAnimationFrame(raf);
-      }
+      function raf(time) { lenis.raf(time); requestAnimationFrame(raf); }
       requestAnimationFrame(raf);
       lenis.on('scroll', ScrollTrigger.update);
       gsap.ticker.add((time) => { lenis.raf(time * 1000); });
       gsap.ticker.lagSmoothing(0);
 
-      // ——— Horizontal scroll (pin approach) ———
+      // ——— Horizontal scroll ———
       gsap.to("#horizontal-track", {
-        x: () => -(document.getElementById('horizontal-track')
-          .scrollWidth - window.innerWidth),
+        x: () => -(document.getElementById('horizontal-track').scrollWidth - window.innerWidth),
         ease: "none",
         scrollTrigger: {
           trigger: "#horizontal-track-wrapper",
           start: "top top",
-          end: () => "+=" + (
-            document.getElementById('horizontal-track')
-            .scrollWidth - window.innerWidth
-          ),
+          end: () => "+=" + (document.getElementById('horizontal-track').scrollWidth - window.innerWidth),
           scrub: 1.2,
           pin: true,
           anticipatePin: 1,
@@ -437,137 +415,132 @@
 
       // ——— Progress bar ———
       ScrollTrigger.create({
-        start: "top top",
-        end: "bottom bottom",
+        start: "top top", end: "bottom bottom",
         onUpdate: (self) => {
-          document.getElementById('progress-fill')
-            .style.height = (self.progress * 100) + '%';
+          document.getElementById('progress-fill').style.height = (self.progress * 100) + '%';
         }
       });
 
       // ——— Cursor ———
       const dot = document.getElementById('cursor-dot');
       const ring = document.getElementById('cursor-ring');
-      const xDot = gsap.quickTo(dot, "x", {duration:0.1, ease:"power3"});
-      const yDot = gsap.quickTo(dot, "y", {duration:0.1, ease:"power3"});
+      const xDot  = gsap.quickTo(dot,  "x", {duration:0.1,  ease:"power3"});
+      const yDot  = gsap.quickTo(dot,  "y", {duration:0.1,  ease:"power3"});
       const xRing = gsap.quickTo(ring, "x", {duration:0.35, ease:"power3"});
       const yRing = gsap.quickTo(ring, "y", {duration:0.35, ease:"power3"});
       window.addEventListener('mousemove', (e) => {
-        xDot(e.clientX - 2.5);
-        yDot(e.clientY - 2.5);
-        xRing(e.clientX - 16);
-        yRing(e.clientY - 16);
+        xDot(e.clientX - 2.5); yDot(e.clientY - 2.5);
+        xRing(e.clientX - 16); yRing(e.clientY - 16);
         gsap.to([dot, ring], {opacity:1, duration:0.3});
       });
       document.querySelectorAll('a, button').forEach(el => {
         el.addEventListener('mouseenter', () => {
           gsap.to(ring, {scale:2.5, duration:0.3, ease:"power2.out"});
-          gsap.to(dot, {scale:0, duration:0.2});
+          gsap.to(dot,  {scale:0,   duration:0.2});
         });
         el.addEventListener('mouseleave', () => {
           gsap.to(ring, {scale:1, duration:0.5, ease:"elastic.out(1,0.5)"});
-          gsap.to(dot, {scale:1, duration:0.3});
+          gsap.to(dot,  {scale:1, duration:0.3});
         });
       });
 
-      // ——— Definitive splitIntoChars ———
+      // ——————————————————————————————————————————
+      // splitIntoChars
+      //
+      // Clipping fix: masks use line-height:1.2 + padding-bottom:0.2em
+      // → mask height = 1.4em. Inner uses translateY(125%)
+      // → moves 1.25 × 1.2em = 1.5em, which exceeds 1.4em
+      // → inner is FULLY below the mask at start, never peeks through.
+      //
+      // Gradient fix: after inserting all chars we measure each char's
+      // left offset from the parent element, then set background-size
+      // to the full word width and background-position to -offset so
+      // every char sees its own slice of ONE continuous gradient.
+      // ——————————————————————————————————————————
       function splitIntoChars(el, options = {}) {
         const { isGradient = false } = options;
         const text = el.textContent.trim();
         el.innerHTML = '';
 
-        const chars = [];
+        const inners = [];
 
         [...text].forEach(char => {
-          // Outer mask — tall enough to never clip
+          // Mask: line-height:1.2 + padding-bottom:0.2em → height = 1.4em
           const mask = document.createElement('span');
           mask.style.cssText = [
             'display:inline-block',
             'overflow:hidden',
-            'vertical-align:top',
-            'padding-bottom:0.3em',
-            'line-height:1.1'
+            'vertical-align:bottom',
+            'line-height:1.2',
+            'padding-bottom:0.2em'
           ].join(';');
 
-          // Inner character — starts below mask
+          // Inner: same line-height so translateY% is predictable
+          // translateY(125%) = 1.25 × 1.2em = 1.5em > 1.4em → fully hidden
           const inner = document.createElement('span');
           inner.style.cssText = [
             'display:inline-block',
-            'transform:translateY(105%)',
+            'line-height:1.2',
+            'transform:translateY(125%)',
             'will-change:transform'
           ].join(';');
 
           inner.textContent = char === ' ' ? '\u00A0' : char;
-
-          // Apply gradient directly to inner span
-          if (isGradient) {
-            inner.style.backgroundImage = 'linear-gradient(85deg, rgba(140,141,143,0.92) 0%, rgba(240,242,245,0.92) 58%, rgba(157,157,157,0.92) 100%)';
-            inner.style.webkitBackgroundClip = 'text';
-            inner.style.backgroundClip = 'text';
-            inner.style.webkitTextFillColor = 'transparent';
-            inner.style.color = 'transparent';
-          }
-
           mask.appendChild(inner);
           el.appendChild(mask);
-          chars.push(inner);
+          inners.push(inner);
         });
 
-        return chars;
+        // Gradient: measure after DOM insertion so positions are real
+        if (isGradient) {
+          const elRect = el.getBoundingClientRect();
+          const totalWidth = Math.max(elRect.width, 1);
+
+          inners.forEach(inner => {
+            const maskRect = inner.parentElement.getBoundingClientRect();
+            const offset = maskRect.left - elRect.left;
+            inner.style.backgroundImage  = 'linear-gradient(to right, rgba(140,141,143,0.92) 0%, rgba(240,242,245,0.92) 58%, rgba(157,157,157,0.92) 100%)';
+            inner.style.backgroundSize   = totalWidth + 'px 100%';
+            inner.style.backgroundPosition = (-offset) + 'px 0';
+            inner.style.webkitBackgroundClip = 'text';
+            inner.style.backgroundClip       = 'text';
+            inner.style.webkitTextFillColor  = 'transparent';
+            inner.style.color                = 'transparent';
+          });
+        }
+
+        return inners;
       }
 
-      // ——— Hero — set text and split immediately so chars are in scope ———
+      // ——— Hero — populate and split before revealHero is ever called ———
       document.getElementById('hero-senior').textContent = 'SENIOR';
 
-      const heroSeniorChars = splitIntoChars(
-        document.getElementById('hero-senior'),
-        { isGradient: true }
-      );
-      const heroDesignerChars = splitIntoChars(
-        document.getElementById('hero-designer'),
-        { isGradient: false }
-      );
+      const heroSeniorChars   = splitIntoChars(document.getElementById('hero-senior'),   { isGradient: true  });
+      const heroDesignerChars = splitIntoChars(document.getElementById('hero-designer'),  { isGradient: false });
 
-      // ——— Hero reveal ———
       function revealHero() {
         const tl = gsap.timeline();
         tl
           .to(heroSeniorChars, {
-            y: 0,
-            duration: 1.1,
-            ease: 'expo.out',
-            stagger: 0.04
+            y: 0, duration: 1.1, ease: 'expo.out', stagger: 0.04
           })
           .to(heroDesignerChars, {
-            y: 0,
-            duration: 1.1,
-            ease: 'expo.out',
-            stagger: 0.03
+            y: 0, duration: 1.1, ease: 'expo.out', stagger: 0.03
           }, '-=0.85')
           .to('#hero-tag', {
-            opacity: 1,
-            duration: 0.6,
-            ease: 'power3.out'
+            opacity: 1, duration: 0.6, ease: 'power3.out'
           }, '-=0.5')
           .to('#action-figure', {
-            opacity: 1,
-            duration: 0.9,
-            ease: 'power3.out'
+            opacity: 1, duration: 0.9, ease: 'power3.out'
           }, '-=0.7');
       }
 
       // ——— Loader — split and animate ———
-      const seniorChars = splitIntoChars(
-        document.getElementById('loader-senior'),
-        { isGradient: true }
-      );
-      const designerChars = splitIntoChars(
-        document.getElementById('loader-designer'),
-        { isGradient: false }
-      );
+      const seniorChars   = splitIntoChars(document.getElementById('loader-senior'),   { isGradient: true  });
+      const designerChars = splitIntoChars(document.getElementById('loader-designer'),  { isGradient: false });
 
       gsap.set('#loader-brand', {opacity: 0, y: 10});
-      gsap.set('#loader-tag', {opacity: 0, y: 10});
+      gsap.set('#loader-tag',   {opacity: 0, y: 10});
       gsap.set('#loader', {pointerEvents: 'all'});
 
       const loaderTl = gsap.timeline({
@@ -584,35 +557,15 @@
       });
 
       loaderTl
-        .to('#loader-brand', {
-          opacity: 1, y: 0, duration: 0.5,
-          ease: 'power3.out'
-        })
-        .to(seniorChars, {
-          y: 0, duration: 0.8,
-          ease: 'expo.out',
-          stagger: 0.04
-        }, '-=0.2')
-        .to(designerChars, {
-          y: 0, duration: 0.8,
-          ease: 'expo.out',
-          stagger: 0.04
-        }, '-=0.5')
-        .to('#loader-tag', {
-          opacity: 1, y: 0, duration: 0.5,
-          ease: 'power3.out'
-        }, '-=0.3')
-        .to({}, {duration: 0.8})
-        .to('#loader-top', {
-          yPercent: -100, duration: 0.9,
-          ease: 'expo.inOut'
-        }, 'split')
-        .to('#loader-bot', {
-          yPercent: 100, duration: 0.9,
-          ease: 'expo.inOut'
-        }, 'split');
+        .to('#loader-brand', { opacity: 1, y: 0, duration: 0.5, ease: 'power3.out' })
+        .to(seniorChars,   { y: 0, duration: 0.8, ease: 'expo.out', stagger: 0.04 }, '-=0.2')
+        .to(designerChars, { y: 0, duration: 0.8, ease: 'expo.out', stagger: 0.04 }, '-=0.5')
+        .to('#loader-tag',   { opacity: 1, y: 0, duration: 0.5, ease: 'power3.out' }, '-=0.3')
+        .to({}, { duration: 0.8 })
+        .to('#loader-top', { yPercent: -100, duration: 0.9, ease: 'expo.inOut' }, 'split')
+        .to('#loader-bot', { yPercent:  100, duration: 0.9, ease: 'expo.inOut' }, 'split');
 
-      console.log('Phase 2 running — definitive char split');
+      console.log('Phase 2 — clean char split');
     });
   </script>
 
