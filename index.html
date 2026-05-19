@@ -256,16 +256,20 @@
     #hero-figure {
       position: absolute;
       right: 0;
-      top: 50%;
-      transform: translateY(-50%);
-      height: 92vh;
-      z-index: 5;
+      top: 0;
+      height: 100vh;
+      width: auto;
+      display: flex;
+      align-items: center;
+      overflow: hidden;
+      max-width: 55%;
     }
 
     #action-figure {
       height: 100%;
       width: auto;
       display: block;
+      object-fit: contain;
       filter: drop-shadow(0 40px 80px rgba(0,0,0,0.9));
     }
 
