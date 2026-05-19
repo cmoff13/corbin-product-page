@@ -77,16 +77,10 @@
     }
 
     #loader-headline {
-      display: flex; align-items: baseline;
-      position: relative;
-    }
-
-    #loader-headline .clip-wrap {
-      overflow: hidden;
-      display: inline-block;
-      vertical-align: bottom;
-      padding-bottom: 0.15em;
-      margin-bottom: -0.15em;
+      display: flex;
+      align-items: baseline;
+      overflow: visible;
+      padding: 0.2em 0;
     }
 
     #loader-senior {
@@ -175,45 +169,31 @@
     }
 
     .hero-type-block {
-      display: flex; align-items: baseline;
-      gap: 0;
-    }
-
-    .clip-wrap {
-      overflow: hidden;
-      display: inline-block;
-      padding-bottom: 0.15em;
-      margin-bottom: -0.15em;
-      vertical-align: bottom;
+      display: flex;
+      align-items: baseline;
+      overflow: visible;
+      line-height: 1;
     }
 
     .hero-senior {
-      display: block;
       font-family: 'Inter', sans-serif;
       font-weight: 500;
       font-size: clamp(72px, 9vw, 128px);
-      background: linear-gradient(85deg,
-        rgba(140,141,143,0.92) 0%,
-        rgba(240,242,245,0.92) 58%,
-        rgba(157,157,157,0.92) 100%);
-      -webkit-background-clip: text;
-      -webkit-text-fill-color: transparent;
-      background-clip: text;
       letter-spacing: -0.03em;
       line-height: 1;
-      transform: translateY(110%);
+      display: inline-block;
     }
 
     .hero-designer {
-      display: block;
       font-family: 'Libre Caslon Text', serif;
-      font-style: italic; font-weight: 400;
+      font-style: italic;
+      font-weight: 400;
       font-size: clamp(82px, 10.5vw, 146px);
       color: #C6FB50;
       letter-spacing: -0.03em;
       line-height: 1;
-      margin-left: -4px;
-      transform: translateY(110%);
+      margin-left: -0.02em;
+      display: inline-block;
     }
 
     .hero-tag {
@@ -333,12 +313,8 @@
     <div id="loader-inner">
       <p id="loader-brand">CORBIN MOFFITT™</p>
       <div id="loader-headline">
-        <div class="clip-wrap">
-          <span id="loader-senior" class="gradient-text">SENIOR</span>
-        </div>
-        <div class="clip-wrap">
-          <span id="loader-designer">Designer</span>
-        </div>
+        <span id="loader-senior" class="gradient-text">SENIOR</span>
+        <span id="loader-designer">Designer</span>
       </div>
       <p id="loader-tag">NEW DROP · LIMITED EDITION · 1 OF 1</p>
     </div>
@@ -370,12 +346,7 @@
         <div class="h-scene" id="h-scene-hero" style="background:#141414">
           <div id="hero-text">
             <div class="hero-type-block">
-              <div class="clip-wrap">
-                <span class="hero-senior">SENIOR</span>
-              </div>
-              <div class="clip-wrap">
-                <span class="hero-designer">Designer</span>
-              </div>
+              <span class="hero-senior gradient-text">SENIOR</span><span class="hero-designer">Designer</span>
             </div>
             <p class="hero-tag">NEW DROP · LIMITED EDITION · 1 OF 1</p>
           </div>
@@ -485,38 +456,33 @@
         });
       });
 
-      // ——— Hero reveal ———
-      function revealHero() {
-        const heroTl = gsap.timeline();
-        heroTl
-          .to('.hero-senior', {
-            y: 0, duration: 1,
-            ease: 'expo.out'
-          })
-          .to('.hero-designer', {
-            y: 0, duration: 1,
-            ease: 'expo.out'
-          }, '-=0.7')
-          .to('.hero-tag', {
-            opacity: 1, duration: 0.6,
-            ease: 'power3.out'
-          }, '-=0.4')
-          .to('#action-figure', {
-            opacity: 1, duration: 0.8,
-            ease: 'power3.out'
-          }, '-=0.6');
-      }
-
-      // ——— Loader char split ———
+      // ——— Char split ———
       function splitIntoChars(el) {
         const isGradient = el.classList.contains('gradient-text');
         const text = el.textContent;
         el.textContent = '';
+        el.style.display = 'flex';
+        el.style.flexWrap = 'wrap';
+        el.style.overflow = 'visible';
+
         text.split('').forEach(char => {
           const wrap = document.createElement('span');
-          wrap.style.cssText = 'display:inline-block; overflow:hidden; vertical-align:bottom; padding-bottom:0.15em; margin-bottom:-0.15em;';
+          wrap.style.cssText = `
+            display:inline-block;
+            overflow:hidden;
+            padding-top:0.2em;
+            padding-bottom:0.25em;
+            margin-top:-0.2em;
+            margin-bottom:-0.25em;
+            vertical-align:bottom;
+            line-height:1;
+          `;
           const inner = document.createElement('span');
-          inner.style.cssText = 'display:inline-block; transform:translateY(110%);';
+          inner.style.cssText = `
+            display:inline-block;
+            transform:translateY(115%);
+            line-height:1;
+          `;
           inner.textContent = char === ' ' ? '\u00A0' : char;
           if (isGradient) {
             inner.style.background = 'linear-gradient(85deg, rgba(140,141,143,0.92) 0%, rgba(240,242,245,0.92) 58%, rgba(157,157,157,0.92) 100%)';
@@ -530,6 +496,36 @@
         return el.querySelectorAll('span > span');
       }
 
+      // ——— Hero reveal ———
+      function revealHero() {
+        const heroSeniorChars = splitIntoChars(
+          document.querySelector('.hero-senior'));
+        const heroDesignerChars = splitIntoChars(
+          document.querySelector('.hero-designer'));
+
+        const heroTl = gsap.timeline();
+        heroTl
+          .to(heroSeniorChars, {
+            y: 0, duration: 1,
+            ease: 'expo.out',
+            stagger: 0.03
+          })
+          .to(heroDesignerChars, {
+            y: 0, duration: 1,
+            ease: 'expo.out',
+            stagger: 0.03
+          }, '-=0.7')
+          .to('.hero-tag', {
+            opacity: 1, duration: 0.6,
+            ease: 'power3.out'
+          }, '-=0.4')
+          .to('#action-figure', {
+            opacity: 1, duration: 0.8,
+            ease: 'power3.out'
+          }, '-=0.6');
+      }
+
+      // ——— Loader ———
       const seniorChars = splitIntoChars(
         document.getElementById('loader-senior'));
       const designerChars = splitIntoChars(
